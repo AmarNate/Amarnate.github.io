@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#07060b">
-<title>The Scribe v0.16</title>
+<title>The Scribe v0.18</title>
 <style>
 /* ---- UI FREQUENCY REALISM ---------------------------------------------------
    The screen is a dark field, not a page. Mist in uneven pockets, grain like a
@@ -20,6 +20,7 @@
    HUD where the two colours meet; the vias along a crack are the motes.
    Instrument colours are untouched: they are DB-locked.                    */
 :root{
+  --scopeH:58px;
   --bg:#04070b; --p1:#080d15; --p2:#0b1320;
   --blue:#8fd6ff; --blue-dim:#3f7ea3; --edge:#1c3a4f;
   --grn:#b6ff3c; --grn-dim:#4f8f1e;              /* the lamp: green-yellow core */
@@ -94,13 +95,13 @@ button,input,textarea{font-family:inherit;font-size:16px}
 .lay-mute.on{opacity:1;color:var(--rec);border-color:rgba(255,61,102,.45)}
 .lay.live{box-shadow:0 0 0 1.5px var(--grn),0 0 14px var(--shine),inset 0 0 16px color-mix(in srgb,currentColor 18%,transparent)}
 .lay.empty{border-style:dashed;opacity:.85}
-.scope-wrap{margin-bottom:4px}
-.scope{position:relative;height:96px;border-radius:10px;overflow:hidden;
+.scope-wrap{margin:0}
+.scope{position:relative;height:var(--scopeH,58px);border-radius:10px;overflow:hidden;
   border:1px solid var(--edge);background:#03050a;touch-action:none;
   box-shadow:inset 0 3px 10px rgba(0,0,0,.8),inset 0 0 0 1px rgba(143,214,255,.06)}
 .scope canvas{display:block;width:100%;height:100%}
 .scope-handle{position:absolute;top:0;bottom:0;width:18px;margin-left:-9px;cursor:ew-resize;z-index:2}
-.scope.pick{height:84px}
+.scope.pick{height:var(--scopeH,58px)}
 .scope-handle::after{content:"";position:absolute;top:0;bottom:0;left:8px;width:1.5px;
   background:var(--grn);box-shadow:var(--glow)}
 /* the playhead is a string: the newest inch is alive, the trail is what it left */
@@ -110,7 +111,7 @@ button,input,textarea{font-family:inherit;font-size:16px}
 .scope-ylab{position:absolute;right:6px;top:4px;bottom:4px;display:flex;flex-direction:column;
   justify-content:space-between;font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--dim);
   pointer-events:none}
-.scope-x{position:relative;height:16px;margin-top:2px;font-size:10px;font-weight:800;color:var(--dim);
+.scope-x{position:relative;height:12px;margin-top:1px;font-size:9px;font-weight:800;color:var(--dim);
   font-variant-numeric:tabular-nums}
 .scope-x span{position:absolute;transform:translateX(-50%)}
 .count-veil{position:fixed;inset:0;background:rgba(4,7,11,.72);z-index:50;display:grid;place-items:center;
@@ -146,9 +147,11 @@ button,input,textarea{font-family:inherit;font-size:16px}
   color:var(--dim);font-size:22px;font-weight:900}
 
 #panel{flex:1 1 auto;min-height:88px;overflow:hidden;display:flex;flex-direction:column;padding:0}
-#panel .sticky-scope{flex:none;position:sticky;top:0;z-index:5;padding:9px 9px 6px;
+#panel .sticky-scope{flex:0 1 auto;max-height:22%;padding:4px 8px 3px;
   background:linear-gradient(180deg,#0d1624 0%,#080e17 100%);border-bottom:1px solid rgba(143,214,255,.12)}
-#panel .panel-rest{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 9px 12px}
+#panel .rail-bar{display:flex;gap:5px;align-items:center;margin-top:3px}
+#panel .rail-bar .btn{min-height:28px;padding:4px 4px;font-size:11px}
+#panel .panel-rest{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 9px 14px}
 #panel>.note,#panel>p,#panel>.sl,#panel>.row,#panel>.shape-g,#panel>.grid3,#panel>.touch,#panel>.lbl{ }
 .row{display:flex;gap:6px;align-items:stretch}
 .btn{flex:1;border:1px solid var(--edge);background:var(--face);box-shadow:var(--lift);color:var(--ink);border-radius:11px;
@@ -290,7 +293,25 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
    Left: the note readout, the layers. Right: the control panel (scope, shape,
    notes), full height. Keyboard and dock span the bottom. Needs BOTH a short
    screen and landscape, so tablets and desktops keep their own rules. */
+/* iPhone 16 Pro portrait: 402 × 874, safe 62 / 34. Safari chrome on top of that.
+   Head + layer strip + keyboard + dock are capped so the tools pane keeps a
+   real scrolling slice under a short rail. */
+@media (orientation:portrait) and (max-width:430px){
+  :root{ --scopeH:52px }
+  #head{padding:6px 8px}
+  #nBig{font-size:26px;min-width:56px}
+  .freq-meter{max-width:200px}
+  #zLay #bLay{padding:0 8px 6px}
+  #strip .lay{width:108px}
+  #zKb .zhead{padding:5px 8px}
+  body.tool-view #zKb .zbody{max-height:108px;overflow:hidden;padding:0 8px 6px}
+  body.tool-view #kb{max-height:96px}
+  #dock{padding:5px}
+  .seg button{min-height:42px}
+  #panel .sticky-scope{max-height:18%}
+}
 @media (orientation:landscape) and (max-height:560px) and (max-width:959px){
+  :root{ --scopeH:42px }
   /* phone on its side: layers + the panel (song / layer edit) own the width.
      keyboard and the note readout shrink. dock stays reachable at the bottom. */
   body{display:grid;grid-template-columns:minmax(132px,.38fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto;
@@ -305,8 +326,10 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
   #strip .lay{width:100%}
   #strip .addlay{width:100%;padding:8px 0}
   #panel{grid-column:2;grid-row:1 / 3;min-height:0}
-  .scope{height:108px}
-  body.song-view .scope{height:0;display:none}
+  #panel .sticky-scope{max-height:28%}
+  #panel .panel-rest{min-height:0}
+  .scope{height:var(--scopeH)}
+  body.song-view .sticky-scope{display:none}
   #zKb{grid-column:1 / -1;grid-row:3}
   body.song-view #zKb{display:none}
   #zKb .zhead{padding:4px 8px}
@@ -314,6 +337,21 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
   #dock{grid-column:1 / -1;grid-row:4;padding:4px 6px}
   .seg button{min-height:36px;font-size:11px} .tbtn{min-height:36px;width:50px}
   .toast{bottom:calc(72px + var(--sB) + var(--chromeB))}
+}
+/* iPhone 16 Pro on its side: 874 × 402 after rotation, island + home on the
+   left/right (62px), home bar 21px. Height is the scarce thing. */
+@media (orientation:landscape) and (max-height:430px){
+  :root{ --scopeH:36px }
+  #head{padding:3px 6px}
+  #head .ico{width:30px;height:30px}
+  #zLay .zhead{padding:4px 6px}
+  #strip .lay{padding:5px 30px 5px 6px}
+  #panel .sticky-scope{max-height:24%;padding:3px 6px 2px}
+  #panel .rail-bar .btn{min-height:26px}
+  #zKb .zbody{padding:0 6px 4px}
+  body.tool-view #zKb .zbody{max-height:72px;overflow:hidden}
+  .tbtn{width:44px;min-height:32px}
+  .seg button{min-height:32px}
 }
 
 /* ---- DESKTOP 16:9 ----------------------------------------------------------
@@ -449,7 +487,7 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
         grand from the same FluidR3 set so it is not a twin of Piano.
    =========================================================================== */
 const DB=Object.freeze({
-  version:"0.16", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
+  version:"0.18", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
   SF:"https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
   A4:440, A4_MIDI:69, PPQ:480, OCT_MIN:1, OCT_MAX:6,
   BPM0:128, BPM_MIN:40, BPM_MAX:240, GRID:4,   /* 128 is the count-in that was already there (470ms a tick) */
@@ -591,6 +629,7 @@ const DB=Object.freeze({
     shapeWarp:"The pitch slowly drifts, a little, like the take is breathing. Not a new instrument.",
     shapeChrome:"Puts the recording through a digital screen: crunchy, stepped, the sound of a file not a room. That is the broken-digital colour.",
     shapeTune:"Pulls each note onto its pitch the way a hard tuner does — a tiny chirp onto the note. Higher is a tighter lock. The notes you played stay the same names; only the start of each one is grabbed.",
+    dressNotes:"If notes are picked in the picture, Shape dresses only those notes. If nothing is picked, it dresses the whole layer. One note can carry the hall, the screen, the lock; the others stay as they were.",
     pickMore:"Tap this, then tap notes in the picture to pick several. What you do next (move, hold, a touch) happens to all of them.",
     handTo:"Hands the ending of this layer to another layer: the last note here fades, the first note there grows, so a bridge can walk into a chorus. Hall also leaves air between them. Echo leaves an answer behind.",
     undo:"Walks back the last change to layers or the song. The dock arrow is the same thing.",
@@ -1001,6 +1040,7 @@ function loopBars(l){ return Math.max(1,Math.round(layLen(l)/barMs())); }
 function loopStep(l){ return Math.max(80,barSnap?loopBars(l)*barMs():layLen(l)); }
 function firstAttack(l){ return l.ev.length?Math.min(...l.ev.map(e=>e.start)):0; }
 function layVol(l){ if(!l) return 1; const v=+l.vol; return isFinite(v)?Math.max(0,Math.min(1,v)):1; }
+function noteSh(l,e){ return {...(l&&l.sh?l.sh:shape),...((e&&e.sh)||{})}; }
 function layerAudible(l){
   if(!playing||!l||l.mute||!l.ev.length) return false;
   if(soloId) return soloId===l.id;
@@ -1020,11 +1060,11 @@ function mix(){
   layers.forEach(l=>{
     if(l.mute||!l.ev.length) return;
     const ev=eventsOf(l);
-    if(!l.loop){ ev.forEach(e=>out.push({...e,inst:l.inst,sh:l.sh,lay:l.id,vol:layVol(l)})); return; }
+    if(!l.loop){ ev.forEach(e=>out.push({...e,inst:l.inst,sh:noteSh(l,e),lay:l.id,vol:layVol(l)})); return; }
     const step=aL||loopStep(l);
     const reps=Math.max(1,Math.ceil(Math.max(total,step)/step));
     for(let k=0;k<reps;k++) ev.forEach(e=>
-      out.push({...e,inst:l.inst,sh:l.sh,start:e.start+k*step,lay:l.id,vol:layVol(l)}));
+      out.push({...e,inst:l.inst,sh:noteSh(l,e),start:e.start+k*step,lay:l.id,vol:layVol(l)}));
   });
   return out.sort((a,b)=>a.start-b.start);
 }
@@ -1365,6 +1405,7 @@ $("bUp").onclick=()=>{ if(octave<DB.OCT_MAX){ allOff(); octave++; buildKB(); } }
 /* =========================== PANELS ==================================== */
 function setView(v){
   document.body.classList.toggle("song-view", v==="song");
+  document.body.classList.toggle("tool-view", v==="layers"||v==="shape");
   view=v;
   [...$("seg").children].forEach(b=>b.classList.toggle("on",b.dataset.v===v));
   paint();
@@ -1445,6 +1486,26 @@ $("panel").addEventListener("click",e=>{
     const r=ln.getBoundingClientRect(), bar=Math.max(0,Math.floor((e.clientX-r.left)/songBW*4)/4);
     snap(); const c={id:newId(),lay:l.id,bar,reps:1}; song.push(c); selB=c.id; paint(); save(); return; }
 });
+function scopeRail(l){
+  if(!l) return '';
+  const tw=trimWindow(l), I=IN(l.inst), nPick=selNs.length;
+  let ticks=""; const step=tw.raw/1000>4?1:.5;
+  for(let t=0;t<=tw.raw/1000+.01;t+=step) ticks+='<span style="left:'+(t*1000/Math.max(tw.raw,1)*100)+'%">'+t.toFixed(t%1?1:0)+'s</span>';
+  return '<div class="sticky-scope">'+
+    '<div class="scope-wrap"><div class="scope" id="scope">'+
+      '<canvas id="scopeCv"></canvas>'+
+      '<div class="scope-handle in" data-h="in" style="left:'+(tw.tIn/Math.max(tw.raw,1)*100)+'%"></div>'+
+      '<div class="scope-handle out" data-h="out" style="left:'+(tw.tOut/Math.max(tw.raw,1)*100)+'%"></div>'+
+      '<div class="scope-play" id="scopePlay"></div>'+
+      '<div class="scope-ylab" aria-hidden><span>2k</span><span>500</span><span>100</span></div>'+
+    '</div><div class="scope-x">'+ticks+'</div></div>'+
+    '<div class="rail-bar">'+
+    '<span class="lbl" style="flex:1;min-width:0;color:'+I.c+'">'+esc(I.n)+(nPick?(' \u00b7 '+nPick+' picked'):'')+'</span>'+
+    '<button class="btn sm'+(pickMore?" on":"")+'" data-act="pickmore">pick</button>'+
+    '<button class="btn sm" data-act="clearpick">clear</button>'+
+    '<button class="btn sm" data-act="undo">↩</button>'+
+    '<button class="qm" data-help="pickMore" aria-label="How to pick notes">?</button></div></div>';
+}
 function paintLayers(){
   const l=layers.find(x=>x.id===selL);
   if(!layers.length) return '<div class="panel-rest"><p style="font-size:14px;line-height:1.6;color:var(--dim);margin:6px 2px">'+
@@ -1453,31 +1514,11 @@ function paintLayers(){
   if(!l) return '<div class="panel-rest"><p style="font-size:14px;color:var(--dim);margin:6px 2px">Tap a layer above to work on it.</p></div>';
   const I=IN(l.inst), an=anchorLayer(), mx=layLen(l), tw=trimWindow(l), soloOn=playing&&soloId===l.id;
   const max=Math.max(tw.raw,40);
-  let ticks="";
-  const step=tw.raw/1000>4?1:.5;
-  for(let t=0;t<=tw.raw/1000+.01;t+=step) ticks+='<span style="left:'+(t*1000/Math.max(tw.raw,1)*100)+'%">'+t.toFixed(t%1?1:0)+'s</span>';
   const others=layers.filter(x=>x.id!==l.id);
   const hand=joins.find(j=>j.from===l.id);
-  return '<div class="sticky-scope">'+
-    '<div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">'+
-    '<span class="lbl" style="flex:1;color:'+I.c+'">'+esc(I.n)+' \u00b7 '+l.ev.length+' notes \u00b7 '+
-    (mx/1000).toFixed(2)+'s</span>'+
-    '<button class="btn sm" data-act="undo">walk back</button></div>'+
-    '<div class="scope-wrap"><div class="scope" id="scope">'+
-      '<canvas id="scopeCv"></canvas>'+
-      '<div class="scope-handle in" data-h="in" style="left:'+(tw.tIn/Math.max(tw.raw,1)*100)+'%"></div>'+
-      '<div class="scope-handle out" data-h="out" style="left:'+(tw.tOut/Math.max(tw.raw,1)*100)+'%"></div>'+
-      '<div class="scope-play" id="scopePlay"></div>'+
-      '<div class="scope-ylab" aria-hidden><span>2k</span><span>500</span><span>100</span></div>'+
-    '</div><div class="scope-x">'+ticks+'</div></div>'+
-    '<div class="row" style="margin-top:6px">'+
-    '<button class="btn sm'+(pickMore?" on":"")+'" data-act="pickmore">pick several'+(selNs.length>1?" \u00b7 "+selNs.length:"")+'</button>'+
-    '<button class="qm" data-help="pickMore" aria-label="How to pick several notes">?</button>'+
-    '<button class="btn sm" data-act="clearpick">clear pick</button></div>'+
-    '</div><div class="panel-rest">'+
+  return scopeRail(l)+'<div class="panel-rest">'+
     noteTools(l)+
     '<div class="sl"><div class="st"><span>Layer volume</span>'+
-    '<div class="sl" style="margin-top:8px"><div class="st"><span>Layer volume</span>'+
       '<span class="sv" id="svLayVol">'+Math.round(layVol(l)*100)+'%</span>'+
       '<button class="qm" data-help="layVol" aria-label="What layer volume does">?</button></div>'+
       '<input type="range" min="0" max="100" step="1" id="layVol" value="'+Math.round(layVol(l)*100)+'" aria-label="Layer volume"></div>'+
@@ -1595,14 +1636,16 @@ function vibStrip(fx){
     '<input type="range" min="5" max="100" step="1" data-fx="v" value="'+Math.round(fx.v*100)+'" aria-label="Vibrato width"></div></div>';
 }
 function hearNote(l,e){ boot(); if(ctx.resume) ctx.resume();
-  if(e.pad){ drum(e.pad,l.sh,layVol(l)); return; }
-  const v=voice(l.inst,e.midi,l.sh,e.fx,e.dur/1000,layVol(l)); timers.push(setTimeout(()=>release(v),e.dur)); }
+  if(e.pad){ drum(e.pad,noteSh(l,e),layVol(l)); return; }
+  const v=voice(l.inst,e.midi,noteSh(l,e),e.fx,e.dur/1000,layVol(l)); timers.push(setTimeout(()=>release(v),e.dur)); }
 function paintShape(){
   const l=layers.find(x=>x.id===selL);
-  const target=l?("Layer: "+IN(l.inst).n):("Keyboard: "+IN(inst).n);
-  return '<div class="panel-rest"><div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">'+
+  const notes=l?picked(l):[];
+  const target=notes.length?(notes.length===1?"Dressing one note":"Dressing "+notes.length+" notes")
+    :(l?("Whole layer: "+IN(l.inst).n):("Keyboard: "+IN(inst).n));
+  return (l?scopeRail(l):'')+'<div class="panel-rest"><div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">'+
     '<span class="lbl" style="flex:1">'+esc(target)+'</span>'+
-    '<button class="qm" data-help="preset" aria-label="What presets are">?</button></div>'+
+    '<button class="qm" data-help="dressNotes" aria-label="Who the sliders dress">?</button></div>'+
     (l?'<div class="sl"><div class="st"><span>Layer volume</span><span class="sv" id="svLayVol">'+Math.round(layVol(l)*100)+'%</span>'+
     '<button class="qm" data-help="layVol" aria-label="What layer volume does">?</button></div>'+
     '<input type="range" min="0" max="100" step="1" id="layVol" value="'+Math.round(layVol(l)*100)+'" aria-label="Layer volume"></div>':'')+
@@ -1619,7 +1662,8 @@ function paintShape(){
           '<input type="range" min="0" max="100" step="1" id="sk_'+s.k+'" data-k="'+s.k+'" '+
           'aria-label="'+esc(s.n)+'"></div>').join("")+'</div>';
     }).join("")+
-    '<button class="btn sm" data-act="hearit" style="margin-top:4px">'+(l&&l.ev.length?"Hear the layer like this":"Hear it")+'</button></div>';
+    '<div class="row" style="margin-top:6px"><button class="btn sm" data-act="hearit">'+(l&&picked(l).length?"Hear these notes":(l&&l.ev.length?"Hear the layer like this":"Hear it"))+'</button>'+
+    (l&&picked(l).length?'<button class="btn sm" data-act="undress">put these back</button>':'')+'</div></div>';
 }
 function paintNotes(){
   return '<div class="panel-rest"><div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">'+
@@ -1629,9 +1673,16 @@ function paintNotes(){
     'aria-label="Notepad" placeholder="TaTaTaTaTaTaTaTa&#10;M&mdash; M-m-m- &mdash;&#10;M&ndash;M&ndash; M^&mdash;M^__&#10;. .. .. ...."></textarea>'+
     '<p style="font-size:13px;color:var(--dim);margin:8px 2px 0">Your own shorthand. Saved with everything else, and it rides along in the track code.</p></div>';
 }
-function curShape(){ const l=layers.find(x=>x.id===selL); return l?l.sh:shape; }
+function curShape(){
+  const l=layers.find(x=>x.id===selL);
+  const notes=l?picked(l):[];
+  if(notes.length) return noteSh(l,notes[0]);
+  return l?l.sh:shape;
+}
 function setShape(k,v){
   const l=layers.find(x=>x.id===selL);
+  const notes=l?picked(l):[];
+  if(notes.length){ notes.forEach(e=>{ e.sh={...noteSh(l,e),[k]:v}; }); return; }
   if(l){ l.sh={...l.sh,[k]:v}; } else { shape={...shape,[k]:v}; }
 }
 function syncSliders(){
@@ -1684,7 +1735,9 @@ $("panel").addEventListener("click",e=>{
   const pre=e.target.closest("[data-pre]");
   if(pre){ const p=DB.PRESETS[+pre.dataset.pre];
     const l=layers.find(x=>x.id===selL);
-    if(l) l.sh={...p.s}; else shape={...p.s};
+    const notes=l?picked(l):[];
+    if(notes.length) notes.forEach(e=>{ e.sh={...p.s}; });
+    else if(l) l.sh={...p.s}; else shape={...p.s};
     syncSliders(); save(); toast(p.n); hearIt(); return; }
   const nn=e.target.closest("[data-nn]");
   if(nn){ const l=layers.find(x=>x.id===selL); if(!l||!l.ev.length) return;
@@ -1710,6 +1763,7 @@ $("panel").addEventListener("click",e=>{
   if(!a) return;
   const act=a.dataset.act, l=layers.find(x=>x.id===selL);
   if(act==="hearit"){ hearIt(); return; }
+  if(act==="undress"){ if(!l) return; snap(); picked(l).forEach(e=>{ e.sh=undefined; }); paint(); save(); toast("those notes wear the layer again"); return; }
   if(!l) return;
   if(act==="hearnote"){ const ev=l.ev[selN]; if(ev) hearNote(l,ev); return; }
   if(act==="tempofrom"){ if(!l.ev.length) return; snap(); fitToBeat(l); renderStrip(); paint(); save(); toast("fitted to the beat"); return; }
@@ -1722,7 +1776,7 @@ $("panel").addEventListener("click",e=>{
   if(act==="clearpick"){ selNs=[]; selN=-1; paint(); return; }
   if(act==="undo"){ undo(); return; }
   if(act==="redo"){ redo(); return; }
-  if(act==="resetlay"){ snap(); l.sh={...DB.SHAPE0}; l.even=0; l.holdMs=undefined; paint(); save(); toast("shape put back"); return; }
+  if(act==="resetlay"){ snap(); l.sh={...DB.SHAPE0}; l.even=0; l.holdMs=undefined; l.ev.forEach(e=>{ e.sh=undefined; }); paint(); save(); toast("shape put back"); return; }
   if(act==="resetsong"){ snap(); song=[]; selB=null; paint(); save(); toast("song line cleared"); return; }
   if(act==="fxall"){ const ev=l.ev[selN]; if(!ev) return; snap(); l.ev.forEach(x=>{ x.fx=ev.fx?{...ev.fx}:undefined; }); save(); toast("every note in this layer"); return; }
   if(act==="fxclear"){ snap(); picked(l).forEach(ev=>{ ev.fx=undefined; }); paint(); save(); return; }
@@ -1749,6 +1803,11 @@ $("panel").addEventListener("click",e=>{
 function hearIt(){
   boot(); if(ctx.resume) ctx.resume();
   const l=layers.find(x=>x.id===selL), id=l?l.inst:inst, sh=curShape();
+  if(l&&picked(l).length){
+    const notes=picked(l), t0=Math.min(...notes.map(e=>e.start));
+    play(notes.map(e=>({...e,inst:l.inst,sh:noteSh(l,e),lay:l.id,vol:layVol(l),start:e.start-t0})),false,l.id);
+    return;
+  }
   if(l&&l.ev.length){ if(playing) stop(); playLayer(l.id); return; }
   if(id==="drums"){ drum("kick",sh); setTimeout(()=>drum("snare",sh),260); return; }
   const base=(IN(id).o+1)*12+7;
@@ -1829,7 +1888,7 @@ function songMix(){
   const out=[];
   song.forEach(b=>{ const l=layers.find(x=>x.id===b.lay); if(!l||!l.ev.length||l.mute) return;
     const ev=eventsOf(l), cyc=cycleMs(l), t0=b.bar*barMs();
-    for(let k=0;k<b.reps;k++) ev.forEach(e=>out.push({...e,inst:l.inst,sh:l.sh,start:t0+k*cyc+e.start,lay:l.id,blk:b.id,vol:layVol(l)})); });
+    for(let k=0;k<b.reps;k++) ev.forEach(e=>out.push({...e,inst:l.inst,sh:noteSh(l,e),start:t0+k*cyc+e.start,lay:l.id,blk:b.id,vol:layVol(l)})); });
   return out;
 }
 const songLenBars=()=>Math.ceil(song.reduce((m,b)=>{ const l=layers.find(x=>x.id===b.lay); return l?Math.max(m,b.bar+b.reps*loopBars(l)):m; },0));
@@ -1893,7 +1952,7 @@ function playLayer(id){
   if(playing) stop();
   const ev=eventsOf(l);
   if(!ev.length){ toast("this trim is empty"); return; }
-  play(ev.map(e=>({...e,inst:l.inst,sh:l.sh,lay:l.id,vol:layVol(l)})),false,l.id);
+  play(ev.map(e=>({...e,inst:l.inst,sh:noteSh(l,e),lay:l.id,vol:layVol(l)})),false,l.id);
 }
 $("bPlay").onclick=togglePlay;
 $("bUndo").onclick=undo;
@@ -2075,7 +2134,9 @@ function pack(){
       evn:Math.round((l.even||0)*100)/100, ho:l.holdMs||0,
       ti:l.trimIn||0, to:l.trimOut==null?-1:l.trimOut,
       e:l.ev.map(e=>{ const a=[e.pad?DB.PADS.findIndex(p=>p.id===e.pad):e.midi,e.start,e.dur,e.pad?1:0];
-        if(fxAny(e.fx)) a.push([e.fx.v||0,e.fx.s||0,e.fx.f||0,e.fx.b||0,e.fx.t?1:0,e.fx.vr==null?.5:e.fx.vr].map(x=>Math.round(x*100)/100)); return a; })})),
+        if(fxAny(e.fx)) a.push([e.fx.v||0,e.fx.s||0,e.fx.f||0,e.fx.b||0,e.fx.t?1:0,e.fx.vr==null?.5:e.fx.vr].map(x=>Math.round(x*100)/100));
+        else if(e.sh) a.push(null);
+        if(e.sh&&typeof e.sh==="object") a.push(e.sh); return a; })})),
     song:song.map(b=>[b.lay,b.bar,b.reps]),
     joins:joins.map(j=>[j.from,j.to,j.kind])};
   return DB.code+"|"+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
@@ -2112,7 +2173,8 @@ function unpack(code){
         midi:f[3]||id==="drums"?padAt(f[0]).m:clampM(f[0]),
         pad:(f[3]||id==="drums")?padAt(f[0]).id:null,
         start:Math.max(0,f[1]|0),dur:Math.max(40,f[2]|0),
-        fx:Array.isArray(f[4])?readFx(f[4]):undefined}))});
+        fx:Array.isArray(f[4])?readFx(f[4]):undefined,
+        sh:f[5]&&typeof f[5]==="object"&&!Array.isArray(f[5])?{...DB.SHAPE0,...f[5]}:undefined}))});
   });
   (o.takes||[]).slice(0,32).forEach(t=>{
     const id=fixId(t.i);
