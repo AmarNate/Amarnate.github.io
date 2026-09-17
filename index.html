@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#07060b">
-<title>The Scribe v0.12.1</title>
+<title>The Scribe v0.13</title>
 <style>
 /* ---- UI FREQUENCY REALISM ---------------------------------------------------
    The screen is a dark field, not a page. Mist in uneven pockets, grain like a
@@ -64,12 +64,13 @@ button,input,textarea{font-family:inherit;font-size:16px}
 .card:not(#panel)::after{content:"";position:absolute;inset:3px;border-radius:11px;pointer-events:none;
   border:1px solid rgba(143,214,255,.09);box-shadow:inset 0 0 18px rgba(0,0,0,.35)}
 .card.zone::before,#head::before,#dock::before{content:"";position:absolute;pointer-events:none;z-index:2;
-  width:230px;height:36px;top:-6px;left:14px;opacity:.85;
+  width:170px;height:36px;top:-13px;left:12px;opacity:.7;transform:scale(.62);transform-origin:0 50%;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 86%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 86%,transparent);
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='230' height='36' viewBox='0 0 230 36'%3E%3Cg fill='none' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M0 18h24l9-9 11 15 8-4 12 1 7 11 10-16 9 6 13-3 8 8 11-11 12 2 9 9h16l10 7 14-12h17' stroke='%2302040a' stroke-width='6'/%3E%3Cpath d='M0 18h24l9-9 11 15 8-4 12 1 7 11 10-16 9 6 13-3 8 8 11-11 12 2 9 9h16l10 7 14-12h17' stroke='%238fd6ff' stroke-opacity='.55' stroke-width='3.2'/%3E%3Cpath d='M0 18h24l9-9 11 15 8-4 12 1 7 11 10-16 9 6 13-3 8 8 11-11 12 2 9 9h16l10 7 14-12h17' stroke='%23b6ff3c' stroke-width='1.2'/%3E%3Cpath d='M44 24l-6 9M83 22l7 7M132 14l4-10M176 24l5 9' stroke='%2302040a' stroke-width='3.5'/%3E%3Cpath d='M44 24l-6 9M83 22l7 7M132 14l4-10M176 24l5 9' stroke='%238fd6ff' stroke-opacity='.5' stroke-width='1.6'/%3E%3Cpath d='M44 24l-6 9M83 22l7 7M132 14l4-10M176 24l5 9' stroke='%23b6ff3c' stroke-width='.8'/%3E%3C/g%3E%3Cg fill='%23e6ffb0'%3E%3Ccircle cx='33' cy='9' r='1.9'/%3E%3Ccircle cx='101' cy='9' r='1.9'/%3E%3Ccircle cx='151' cy='4' r='1.6'/%3E%3Ccircle cx='206' cy='29' r='1.6'/%3E%3C/g%3E%3Cg fill='%238fd6ff'%3E%3Ccircle cx='71' cy='22' r='1.3'/%3E%3Ccircle cx='172' cy='24' r='1.3'/%3E%3C/g%3E%3C/svg%3E") no-repeat;
   filter:drop-shadow(0 0 3px rgba(143,214,255,.35))}
-#dock::before{top:auto;bottom:-6px;left:auto;right:12px;transform:scaleX(-1)}
-#zKb::before{left:auto;right:18px;transform:scaleX(-1)}
+#dock::before{top:auto;bottom:-13px;left:auto;right:12px;transform:scale(-.62,.62);transform-origin:100% 50%}
+#zKb::before{left:auto;right:14px;transform:scale(-.62,.62);transform-origin:100% 50%}
+#head::before{left:auto;right:150px}
 .pad{padding:9px}
 
 #head{display:flex;align-items:flex-start;gap:7px;flex:none;padding:8px 10px}
@@ -93,6 +94,7 @@ button,input,textarea{font-family:inherit;font-size:16px}
   box-shadow:inset 0 3px 10px rgba(0,0,0,.8),inset 0 0 0 1px rgba(143,214,255,.06)}
 .scope canvas{display:block;width:100%;height:100%}
 .scope-handle{position:absolute;top:0;bottom:0;width:18px;margin-left:-9px;cursor:ew-resize;z-index:2}
+.scope.pick{height:84px}
 .scope-handle::after{content:"";position:absolute;top:0;bottom:0;left:8px;width:1.5px;
   background:var(--grn);box-shadow:var(--glow)}
 /* the playhead is a string: the newest inch is alive, the trail is what it left */
@@ -259,7 +261,7 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
 .lane-l{flex:0 0 92px;position:sticky;left:0;z-index:2;background:linear-gradient(90deg,#070c14 80%,transparent);padding:5px 6px;font-size:11px;font-weight:900;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:currentColor}
 .lane-l small{display:block;font-size:9px;color:var(--dim);font-weight:800}
 .lane-t{position:relative;flex:none;min-height:40px;background:repeating-linear-gradient(90deg,rgba(143,214,255,.07) 0 1px,transparent 1px 48px)}
-.blk{position:absolute;top:5px;height:30px;border-radius:7px;padding:0 6px;font-size:11px;font-weight:900;line-height:30px;overflow:hidden;white-space:nowrap;
+.blk{position:absolute;top:5px;height:30px;border-radius:7px;padding:0 6px;font-size:11px;font-weight:900;line-height:30px;overflow:hidden;white-space:nowrap;touch-action:none;cursor:grab;
   color:#04070b;background:linear-gradient(180deg,color-mix(in srgb,currentColor 92%,#fff),color-mix(in srgb,currentColor 70%,#000));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 5px rgba(0,0,0,.6);border:1px solid rgba(0,0,0,.4)}
 .blk b{color:#04070b;opacity:.75}
@@ -404,9 +406,13 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
         timeline, same layer as many times as you like, repeats x1/2/4/8.
         Duplicate layer. Track code SCR8 (adds per-note fx + song). Reads SCR1-7.
    0.12.1: vibrato has its own speed and width (vibrate / viBRate / viBRRRate).
+   0.13: touches live in Shape (note picker + strip), not Layers. Song timeline
+        counts bars, moves in beats, zooms, blocks drag. "Tempo from this layer"
+        reads the tempo out of how the hits were punched; "tighten" snaps them.
+        Cracks calmed down to the edge. Track code unchanged (SCR8).
    =========================================================================== */
 const DB=Object.freeze({
-  version:"0.12.1", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
+  version:"0.13", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
   SF:"https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
   A4:440, A4_MIDI:69, PPQ:480, OCT_MIN:1, OCT_MAX:6,
   BPM0:128, BPM_MIN:40, BPM_MAX:240, GRID:4,   /* 128 is the count-in that was already there (470ms a tick) */
@@ -546,15 +552,17 @@ const DB=Object.freeze({
     vol:"How loud the whole app is. Every instrument, the click, the count-in.",
     settings:"Everything that is a switch or a system-wide setting lives here, so there is one place to look.",
     guitars:"They are not effects: each is a real recording of a guitar played a different way. See the note under Guitars in the sound picker.",
-    touches:"Tap a note in the picture above to pick it. Then give just that note something: vibrato, a swell, a fade, a bend, a trill. Nothing else in the layer changes. 'All notes' copies this note's touches to every note in the layer.",
+    touches:"In Shape, tap a note in the picture to pick it. Then give just that note something: vibrato, a swell, a fade, a bend, a trill. Nothing else in the layer changes. 'All notes' copies this note's touches to every note in the layer.",
     vibrato:"The wobble a singer or a violin puts on a held note. Speed is how fast it shakes: slow is 'vibrate', medium 'viBRate', fast 'viBRRRate'. Width is how far the pitch moves. Fast vibrato also sets in sooner.",
     swell:"Crescendo: the note starts quiet and grows. Amount is how much of the note it spends growing.",
     fadeout:"The note dies away before its end instead of stopping. Amount is how early it starts going.",
     bend:"Slides into the note from below (bend up) or from above (bend down), like a guitar string being pushed. Amount is how far it slides from.",
     trill:"Flutters quickly between the note and the one just above it, the whole time it sounds.",
-    song:"The Song is your layers arranged on a bar line. Tap an empty spot on a layer's lane to put that layer there; tap a block to move it, repeat it, or take it away. The same layer can appear as many times as you like, and fixing the layer fixes every copy. When the Song has anything in it, play and Write it down use the Song.",
+    song:"Numbers along the top are bars; the thin lines inside are beats. The Song is your layers arranged on that line. Tap an empty spot on a layer's lane to put that layer there; tap a block to move it, repeat it, or take it away. The same layer can appear as many times as you like, and fixing the layer fixes every copy. When the Song has anything in it, play and Write it down use the Song.",
     block:"One appearance of a layer in the Song. Its length is the layer's whole-bar cycle. Repeats stretch it: x2 plays the cycle twice in a row.",
     dup:"Makes an independent copy of this layer: same notes, same shape, its own life from here on. Use it when you want a variation without losing the original.",
+    tempofrom:"Reads the tempo out of how you punched this layer: it looks at where the hits fall and finds the beat they fit. Best on a drum layer. Sets the sketch's tempo, so every repeat, the click, the Song and the sheet follow your feel instead of a number.",
+    tighten:"Moves every hit in this layer onto the nearest grid step at the current tempo (16ths, or 8ths if detail is coarse). It changes what you played, a little: do 'tempo from this layer' first so the grid is your grid.",
     barsnap:"A repeating layer normally cycles every whole bar at the tempo: a take that runs 3.9 bars repeats every 4, so the first beat waits for the bar line instead of jumping in after the last note. Every repeating layer follows the anchor's cycle, so they stay lined up. Off: repeats use the exact recorded length, like before."
   })
 });
@@ -628,9 +636,9 @@ let shape={...DB.SHAPE0}, notepad="", fragName="sketch";
 let collapsed={Lay:false,Kb:false};
 let pf=null;
 const LS={auto:"scribe.v6.auto",slots:"scribe.v6.slots",seen:"scribe.v6.seen",col:"scribe.v6.col",click:"scribe.v6.click",
-  clickVol:"scribe.v6.clickvol",vol:"scribe.v6.vol",bars:"scribe.v6.bars"};
+  clickVol:"scribe.v6.clickvol",vol:"scribe.v6.vol",bars:"scribe.v6.bars",zoom:"scribe.v6.zoom"};
 let clickOn=true, clickT=0, clickAt=0, clickN=0, clickVol=.3, vol=.7, barSnap=true;
-let song=[], selB=null, selN=-1, touchAmt=.6;
+let song=[], selB=null, selN=-1, touchAmt=.6, songBW=DB.SONG_BW, songDragged=false;
 const $=id=>document.getElementById(id);
 const setLS=(k,v)=>{ try{ localStorage.setItem(k,v); return true }catch(e){ return false } };
 const getLS=k=>{ try{ return localStorage.getItem(k) }catch(e){ return null } };
@@ -968,7 +976,7 @@ function scopeTick(){
   scopeRaf=0;
   const tp=$("tlPlay");
   if(tp){ if(!playing||playOrigin==null){ tp.style.opacity=0; return; }
-    const t=performance.now()-playOrigin; tp.style.opacity=1; tp.style.left=(92+(t/barMs())*DB.SONG_BW)+"px";
+    const t=performance.now()-playOrigin; tp.style.opacity=1; tp.style.left=(92+(t/barMs())*songBW)+"px";
     scopeRaf=requestAnimationFrame(scopeTick); return; }
   const ph=$("scopePlay"); if(!ph) return;
   if(!playing||playOrigin==null){ ph.style.opacity=0; return; }
@@ -1091,7 +1099,7 @@ function renderStrip(){
     return '<button class="lay'+(l.id===selL?" sel":"")+(l.mute?" off":"")+
       '" data-lay="'+l.id+'" style="color:'+I.c+'">'+
       '<div class="ln">'+esc(I.n)+'</div>'+
-      '<div class="lm">'+l.ev.length+' notes'+(l.loop&&l.ev.length?' \u00b7 '+(barSnap?loopBars(l)+(loopBars(l)===1?' bar':' bars'):(layLen(l)/1000).toFixed(1)+'s'):'')+'</div>'+
+      '<div class="lm">'+l.ev.length+(l.ev.length===1?' note':' notes')+(l.loop&&l.ev.length?' \u00b7 '+(barSnap?loopBars(l)+(loopBars(l)===1?' bar':' bars'):(layLen(l)/1000).toFixed(1)+'s'):'')+'</div>'+
       '<div class="lr">'+(l.loop?(an&&an.id===l.id?"anchor":"loop"):"once")+'</div>'+
       '<span class="lay-play'+(on?" on":"")+'" data-playlay="'+l.id+'" role="button" aria-label="Play this layer">'+(on?"&#9632;":"&#9654;")+'</span>'+
       '</button>';
@@ -1208,27 +1216,46 @@ function setView(v){
 $("seg").onclick=e=>{ const b=e.target.closest("[data-v]"); if(b) setView(b.dataset.v); };
 
 function paintSong(){
-  const BW=DB.SONG_BW, total=Math.max(8,songLenBars()+4), b=song.find(x=>x.id===selB);
+  const BW=songBW, total=Math.max(8,songLenBars()+8), b=song.find(x=>x.id===selB);
   if(!layers.length) return '<p style="font-size:14px;line-height:1.6;color:var(--dim);margin:6px 2px">Record a layer first. Then this is where you lay layers out along the bars into a whole track.</p>';
   let ruler=""; for(let i=0;i<total;i++) ruler+='<span style="left:'+(i*BW)+'px">'+(i+1)+'</span>';
+  const grid='background:repeating-linear-gradient(90deg,rgba(143,214,255,.05) 0 1px,transparent 1px '+(BW/4)+'px),repeating-linear-gradient(90deg,rgba(143,214,255,.16) 0 1px,transparent 1px '+BW+'px)';
   const lanes=layers.map(l=>{ const I=IN(l.inst), cyc=l.ev.length?loopBars(l):1;
     const blocks=song.filter(x=>x.lay===l.id).map(x=>'<div class="blk'+(x.id===selB?" sel":"")+'" data-blk="'+x.id+'" style="left:'+(x.bar*BW)+'px;width:'+(x.reps*cyc*BW-3)+'px">'+
       esc(I.n)+(x.reps>1?' <b>&times;'+x.reps+'</b>':'')+'</div>').join("");
     return '<div class="lane" style="color:'+I.c+'"><div class="lane-l">'+esc(I.n)+'<small>'+(l.ev.length?cyc+(cyc===1?" bar":" bars"):"empty")+'</small></div>'+
-      '<div class="lane-t" data-lane="'+l.id+'" style="width:'+(total*BW)+'px">'+blocks+'</div></div>'; }).join("");
-  return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">'+
+      '<div class="lane-t" data-lane="'+l.id+'" style="width:'+(total*BW)+'px;'+grid+'">'+blocks+'</div></div>'; }).join("");
+  const pos=b?'bar '+(Math.floor(b.bar)+1)+(b.bar%1?' beat '+(Math.round((b.bar%1)*4)+1):''):'';
+  return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">'+
     '<span class="lbl" style="flex:1">Song \u00b7 '+songLenBars()+' bars \u00b7 '+song.length+' blocks</span>'+
+    '<button class="qm" data-sz="-1" aria-label="Zoom out">&minus;</button><button class="qm" data-sz="1" aria-label="Zoom in">+</button>'+
     '<button class="qm" data-help="song" aria-label="What the song is">?</button></div>'+
     (b?'<div class="row" style="margin-bottom:8px">'+
       '<button class="btn sm" data-sb="reps">&times;'+b.reps+'</button>'+
-      '<button class="btn sm" data-sb="left" aria-label="Earlier">&#9664;</button>'+
-      '<button class="btn sm" data-sb="right" aria-label="Later">&#9654;</button>'+
+      '<button class="btn sm" data-sb="left" aria-label="A beat earlier">&#9664;</button>'+
+      '<button class="btn sm" data-sb="right" aria-label="A beat later">&#9654;</button>'+
       '<button class="btn sm" data-sb="dup">again</button>'+
       '<button class="btn sm dan" data-sb="del">remove</button>'+
-      '<button class="qm" data-help="block" aria-label="What a block is">?</button></div>'
-     :'<p class="note">Tap an empty spot on a lane to place that layer there. Tap a block to change it.</p>')+
-    '<div class="tl" id="tl"><div class="tl-in" style="width:'+(total*BW+92)+'px"><div class="ruler"><div class="ruler-in">'+ruler+'</div></div>'+lanes+
+      '<button class="qm" data-help="block" aria-label="What a block is">?</button></div>'+
+      '<p class="note">'+pos+' \u00b7 drag the block to move it; arrows move one beat.</p>'
+     :'<p class="note">Numbers are bars, thin lines are beats. Tap an empty spot on a lane to place that layer there; tap a block to change it, or drag it.</p>')+
+    '<div class="tl" id="tl"><div class="tl-in" style="width:'+(total*BW+92)+'px"><div class="ruler"><div class="ruler-in" style="background:repeating-linear-gradient(90deg,rgba(143,214,255,.12) 0 1px,transparent 1px '+BW+'px)">'+ruler+'</div></div>'+lanes+
     '<div class="tl-play" id="tlPlay"></div></div></div>';
+}
+function bindSong(){
+  const tl=$("tl"); if(!tl) return;
+  tl.querySelectorAll(".blk").forEach(el=>{
+    el.onpointerdown=ev=>{
+      const b=song.find(x=>x.id===el.dataset.blk); if(!b) return;
+      const x0=ev.clientX, bar0=b.bar; let bar=bar0; songDragged=false;
+      try{ el.setPointerCapture(ev.pointerId); }catch(e){}
+      const move=e=>{ const dx=e.clientX-x0; if(Math.abs(dx)>5) songDragged=true;
+        bar=Math.max(0,Math.min(999,Math.round((bar0*songBW+dx)/songBW*4)/4)); el.style.left=(bar*songBW)+"px"; };
+      const up=()=>{ el.removeEventListener("pointermove",move); el.removeEventListener("pointerup",up); el.removeEventListener("pointercancel",up);
+        if(songDragged&&bar!==bar0){ b.bar=bar; selB=b.id; paint(); save(); } };
+      el.addEventListener("pointermove",move); el.addEventListener("pointerup",up); el.addEventListener("pointercancel",up);
+    };
+  });
 }
 function paint(){
   const el=$("panel");
@@ -1238,24 +1265,26 @@ function paint(){
   else el.innerHTML=paintNotes();
   if(view==="notes"){ const t=$("np"); if(t) t.value=notepad; }
   if(view==="shape") syncSliders();
-  if(view==="layers"){ drawScope(); bindScopeDrag(); if(playing) scopeOn(); }
-  if(view==="song"&&playing) scopeOn();
+  if(view==="layers"||view==="shape"){ drawScope(); bindScopeDrag(); if(playing) scopeOn(); }
+  if(view==="song"){ bindSong(); if(playing) scopeOn(); }
 }
 $("panel").addEventListener("click",e=>{
   if(view!=="song") return;
+  const sz=e.target.closest("[data-sz]");
+  if(sz){ const Z=[24,36,48,72,96], k=Math.max(0,Math.min(Z.length-1,Z.indexOf(songBW)+(+sz.dataset.sz))); songBW=Z[k]; setLS(LS.zoom,String(songBW)); paint(); return; }
   const sb=e.target.closest("[data-sb]");
   if(sb){ const b=song.find(x=>x.id===selB); if(!b) return; const a=sb.dataset.sb;
     if(a==="reps") b.reps={1:2,2:4,4:8,8:1}[b.reps]||1;
-    else if(a==="left") b.bar=Math.max(0,b.bar-1);
-    else if(a==="right") b.bar=Math.min(999,b.bar+1);
+    else if(a==="left") b.bar=Math.max(0,b.bar-.25);
+    else if(a==="right") b.bar=Math.min(999,b.bar+.25);
     else if(a==="dup"){ const l=layers.find(x=>x.id===b.lay); const c={id:newId(),lay:b.lay,bar:b.bar+b.reps*(l?loopBars(l):1),reps:b.reps}; song.push(c); selB=c.id; }
     else if(a==="del"){ song=song.filter(x=>x.id!==b.id); selB=null; }
     paint(); save(); return; }
   const bk=e.target.closest("[data-blk]");
-  if(bk){ selB=selB===bk.dataset.blk?null:bk.dataset.blk; paint(); return; }
+  if(bk){ if(songDragged){ songDragged=false; return; } selB=selB===bk.dataset.blk?null:bk.dataset.blk; paint(); return; }
   const ln=e.target.closest("[data-lane]");
   if(ln){ const l=layers.find(x=>x.id===ln.dataset.lane); if(!l||!l.ev.length){ toast("that layer is empty"); return; }
-    const r=ln.getBoundingClientRect(), bar=Math.max(0,Math.floor((e.clientX-r.left)/DB.SONG_BW));
+    const r=ln.getBoundingClientRect(), bar=Math.max(0,Math.floor((e.clientX-r.left)/songBW*4)/4);
     const c={id:newId(),lay:l.id,bar,reps:1}; song.push(c); selB=c.id; paint(); save(); return; }
 });
 function paintLayers(){
@@ -1286,11 +1315,15 @@ function paintLayers(){
     '<div class="sl"><div class="st"><span>Cut after</span>'+
       '<span class="sv" id="svOut">'+(tw.tOut/1000).toFixed(2)+'s</span></div>'+
       '<input type="range" id="trOut" min="0" max="'+max+'" step="10" value="'+tw.tOut+'" data-trim="out" aria-label="Cut after"></div>'+
-    touchStrip(l)+
     '<div class="row" style="margin-bottom:6px">'+
     '<button class="btn sm'+(soloOn?" on":"")+'" data-act="playlay">'+(soloOn?"stop this":"play this layer")+'</button>'+
     '<button class="qm" data-help="playLayer" aria-label="What play this does">?</button>'+
     '<button class="btn sm" data-act="trimsilence">trim silence</button></div>'+
+    '<div class="row" style="margin-bottom:6px">'+
+    '<button class="btn sm" data-act="tempofrom">tempo from this layer</button>'+
+    '<button class="qm" data-help="tempofrom" aria-label="What tempo from this layer does">?</button>'+
+    '<button class="btn sm" data-act="tighten">tighten to the beat</button>'+
+    '<button class="qm" data-help="tighten" aria-label="What tighten does">?</button></div>'+
     '<div class="row" style="margin-bottom:6px">'+
     '<button class="btn sm'+(l.loop?" on":"")+'" data-act="loop">'+(l.loop?"repeats":"plays once")+'</button>'+
     '<button class="qm" data-help="loop" aria-label="What loop does">?</button>'+
@@ -1314,7 +1347,7 @@ function noteLabel(l,e){
 }
 function touchStrip(l){
   const e=l.ev[selN];
-  if(!e) return '<p class="note" style="margin:2px 2px 8px">Tap a note in the picture to give just that note a touch: vibrato, swell, fade, bend, trill.'+
+  if(!e) return '<p class="note" style="margin:6px 2px 8px">Tap a note in the picture above to give just that note a touch: vibrato, swell, fade, bend, trill. The sliders above are the whole layer; this is one note.'+
     ' <button class="qm" data-help="touches" aria-label="What touches are" style="vertical-align:middle">?</button></p>';
   const fx=e.fx||{};
   const on=k=>k==="bu"?fx.b>0:k==="bd"?fx.b<0:!!fx[k];
@@ -1371,7 +1404,10 @@ function paintShape(){
       '<button class="qm" data-help="'+s.h+'" aria-label="What '+esc(s.n)+' does">?</button></div>'+
       '<input type="range" min="0" max="100" step="1" id="sk_'+s.k+'" data-k="'+s.k+'" '+
       'aria-label="'+esc(s.n)+'"></div>').join("")+
-    '<button class="btn sm" data-act="hearit" style="margin-top:4px">'+(l&&l.ev.length?"Hear the layer like this":"Hear it")+'</button>';
+    '<button class="btn sm" data-act="hearit" style="margin-top:4px">'+(l&&l.ev.length?"Hear the layer like this":"Hear it")+'</button>'+
+    (l&&l.ev.length?'<div class="lbl mh" style="margin-top:16px">Just one note</div>'+
+      '<div class="scope-wrap"><div class="scope pick" id="scope"><canvas id="scopeCv"></canvas><div class="scope-play" id="scopePlay"></div>'+
+      '<div class="scope-ylab" aria-hidden><span>2k</span><span>500</span><span>100</span></div></div></div>'+touchStrip(l):'');
 }
 function paintNotes(){
   return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">'+
@@ -1441,6 +1477,9 @@ $("panel").addEventListener("click",e=>{
   if(act==="hearit"){ hearIt(); return; }
   if(!l) return;
   if(act==="hearnote"){ const ev=l.ev[selN]; if(ev) hearNote(l,ev); return; }
+  if(act==="tempofrom"){ const b=detectTempo(l); if(!b){ toast("needs at least three hits"); return; }
+    setBpm(b); paint(); toast("tempo set to "+b+" from this layer"); return; }
+  if(act==="tighten"){ if(!l.ev.length) return; tighten(l); renderStrip(); paint(); save(); toast("hits moved onto the beat"); return; }
   if(act==="fxall"){ const ev=l.ev[selN]; if(!ev) return; l.ev.forEach(x=>{ x.fx=ev.fx?{...ev.fx}:undefined; }); save(); toast("every note in this layer"); return; }
   if(act==="fxclear"){ const ev=l.ev[selN]; if(ev) ev.fx=undefined; paint(); save(); return; }
   if(act==="dup"){ const c={...l,id:newId(),sh:{...l.sh},ev:l.ev.map(x=>({...x,fx:x.fx?{...x.fx}:undefined}))};
@@ -1473,6 +1512,22 @@ function hearIt(){
     const v=voice(id,base+(i===3?5:0),sh); timers.push(setTimeout(()=>release(v),200)); },d)));
 }
 
+/* =========================== TEMPO FROM FEEL ============================ */
+/* read the tempo out of how a layer was punched: try every tempo, score how
+   close the hits fall to an 8th-note grid, how many land on whole beats, and
+   whether the take is a whole number of bars. mild pull toward 90-140. */
+function detectTempo(l){
+  const on=eventsOf(l).map(e=>e.start).sort((a,b)=>a-b); if(on.length<3) return null;
+  const len=layLen(l); let best=null;
+  for(let b=56;b<=190;b+=.5){ const beat=60000/b, g=beat/2; let err=0, onBeat=0;
+    on.forEach(t=>{ err+=Math.abs(t-Math.round(t/g)*g)/g; if(Math.abs(t-Math.round(t/beat)*beat)<beat*.18) onBeat++; });
+    err/=on.length; const bars=len/(4*beat);
+    const s=err+.5*(1-onBeat/on.length)+.12*Math.abs(bars-Math.round(bars))+.002*Math.abs(b-115);
+    if(!best||s<best.s) best={s,b}; }
+  return Math.round(best.b);
+}
+function tighten(l){ const u=unitMs(); l.ev.forEach(e=>{ e.start=Math.round(e.start/u)*u; }); }
+
 /* =========================== SONG ====================================== */
 /* a block is one appearance of a layer at a bar. its cycle is the layer's
    whole-bar length; reps plays that cycle back to back. the layer is the
@@ -1485,7 +1540,7 @@ function songMix(){
     for(let k=0;k<b.reps;k++) ev.forEach(e=>out.push({...e,inst:l.inst,sh:l.sh,start:t0+k*cyc+e.start,lay:l.id,blk:b.id})); });
   return out;
 }
-const songLenBars=()=>song.reduce((m,b)=>{ const l=layers.find(x=>x.id===b.lay); return l?Math.max(m,b.bar+b.reps*loopBars(l)):m; },0);
+const songLenBars=()=>Math.ceil(song.reduce((m,b)=>{ const l=layers.find(x=>x.id===b.lay); return l?Math.max(m,b.bar+b.reps*loopBars(l)):m; },0));
 /* what "play" and "write it down" mean right now */
 const useSong=()=>song.length>0&&songMix().length>0;
 const activeMix=()=>useSong()?songMix():mix();
@@ -1753,7 +1808,7 @@ function unpack(code){
 }
 function readSong(raw,L){ const S=[], ids=new Set(L.map(l=>l.id));
   (Array.isArray(raw)?raw:[]).slice(0,400).forEach(b=>{ if(!Array.isArray(b)||!ids.has(b[0])) return;
-    S.push({id:newId(),lay:b[0],bar:Math.max(0,Math.min(999,b[1]|0)),reps:[1,2,4,8].includes(b[2]|0)?b[2]|0:1}); });
+    S.push({id:newId(),lay:b[0],bar:Math.max(0,Math.min(999,Math.round((+b[1]||0)*4)/4)),reps:[1,2,4,8].includes(b[2]|0)?b[2]|0:1}); });
   return S; }
 const c01=x=>Math.max(0,Math.min(1,+x||0));
 function readFx(a){ const fx={v:c01(a[0]),s:c01(a[1]),f:c01(a[2]),b:Math.max(-1,Math.min(1,+a[3]||0)),t:a[4]?1:0,vr:a[5]==null?.5:c01(a[5])}; return fxAny(fx)?fx:undefined; }
@@ -2159,6 +2214,7 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 document.addEventListener("gesturestart",e=>e.preventDefault());
 try{ const c=JSON.parse(getLS(LS.col)||"null"); if(c&&typeof c==="object") collapsed={...collapsed,...c}; }catch(e){}
 if(getLS(LS.click)==="0") clickOn=false; if(getLS(LS.bars)==="0") barSnap=false;
+{ const z=parseInt(getLS(LS.zoom)); if([24,36,48,72,96].includes(z)) songBW=z; }
 { const cv=parseFloat(getLS(LS.clickVol)), mv=parseFloat(getLS(LS.vol));
   if(isFinite(cv)) clickVol=Math.min(1,Math.max(0,cv)); if(isFinite(mv)) vol=Math.min(1,Math.max(0,mv)); }
 const saved=getLS(LS.auto);
