@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#07060b">
-<title>The Scribe v0.20</title>
+<title>The Scribe v0.21</title>
 <style>
 /* ---- UI FREQUENCY REALISM ---------------------------------------------------
    The screen is a dark field, not a page. Mist in uneven pockets, grain like a
@@ -568,9 +568,24 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
         Track code still SCR8 (adds the raw hold `rd` per note, ignored by 0.19).
         Keyboard measures its own card (keys fell off the edge beside the island);
         the home-screen web app no longer leaves a dead band under the dock.
+   0.21: the shape rebuilt as audio. Digital was a bit-crusher wired backwards
+        (cleaner the higher it went): now a ring modulator + crush + metallic
+        band, the sci-fi voice. Darken was too gentle and skipped stand-ins and
+        drums: now dull from the first moment and sinking, everywhere. Tune lock
+        was a 40ms chirp: now Auto-tune, stepping semitone by semitone from the
+        note before (the yodel) and flicking past half. New: Harmonies (the same
+        recording stacked at fifth / octave / third / sub-octave, the Hide and
+        Seek stack), Breath, Grit, Swirl (phaser), Double (chorus), Pulse
+        (tremolo). Five more voices from the same server: Synth choir, Lead
+        voice, Choir pad, Halo, Whistle (34 sounds). Presets: Mythic, Hide and
+        seek, Robot, Auto-tuned. Track code still SCR8 (new shape keys default 0).
    =========================================================================== */
+/* every knob on a sound, all at rest. new keys default to 0 so old codes read the same. */
+const SHAPE0=Object.freeze({fade:0,bite:.5,dark:0,tail:.12,room:0,echo:0,len:.5,warp:0,chrome:0,tune:0,
+  harm:0,swirl:0,dbl:0,pulse:0,breath:0,grit:0});
+const P=o=>Object.freeze({...SHAPE0,...o});
 const DB=Object.freeze({
-  version:"0.20", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
+  version:"0.21", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
   SF:"https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
   A4:440, A4_MIDI:69, PPQ:480, OCT_MIN:1, OCT_MAX:6,
   BPM0:128, BPM_MIN:40, BPM_MAX:240, GRID:4,   /* 128 is the count-in that was already there (470ms a tick) */
@@ -583,7 +598,8 @@ const DB=Object.freeze({
   BLACK:Object.freeze([[1,1],[3,2],[6,4],[8,5],[10,6]]),
   IDS:Object.freeze(["piano","synth","pizz","harp","organ","violin","cello","contrabass",
     "strings","bass","trumpet","horn","trombone","brass","timpani","taiko","aah","ooh","drums",
-    "gclean","gjazz","gmuted","gdrive","gdist","gharm","bright","epiano","acoustic","nylon"]),
+    "gclean","gjazz","gmuted","gdrive","gdist","gharm","bright","epiano","acoustic","nylon",
+    "svoice","lvoice","cpad","halo","whistle"]),
   V5_IDS:Object.freeze(["piano","pluck","saw","violin","cello","contrabass","strings","harp",
     "trumpet","horn","trombone","brass","organ","timpani","taiko","aah","ooh","bass","drums"]),
   V4_IDS:Object.freeze(["piano","pluck","saw","violin","strings","bass","aah","ooh","drums"]),
@@ -620,10 +636,16 @@ const DB=Object.freeze({
     bright:    Object.freeze({n:"Bright piano",c:"#8fe9ff",o:4,pg:2, sf:"electric_grand_piano", hold:0}),
     epiano:    Object.freeze({n:"Electric piano",c:"#6fb0ff",o:4,pg:4,sf:"electric_piano_1",     hold:0}),
     acoustic:  Object.freeze({n:"Acoustic",  c:"#fbe3c4",o:3,pg:25, sf:"acoustic_guitar_steel", hold:0}),
-    nylon:     Object.freeze({n:"Nylon",     c:"#d9b691",o:3,pg:24, sf:"acoustic_guitar_nylon", hold:0})
+    nylon:     Object.freeze({n:"Nylon",     c:"#d9b691",o:3,pg:24, sf:"acoustic_guitar_nylon", hold:0}),
+    /* 0.21 voices: everything the FluidR3 set has that sings */
+    lvoice:    Object.freeze({n:"Lead voice",c:"#b0f0ff",o:4,pg:85, sf:"lead_6_voice",         hold:1}),
+    svoice:    Object.freeze({n:"Synth choir",c:"#7fe0ea",o:4,pg:54,sf:"synth_choir",          hold:1}),
+    cpad:      Object.freeze({n:"Choir pad", c:"#8ad9c0",o:4,pg:91, sf:"pad_4_choir",          hold:1}),
+    halo:      Object.freeze({n:"Halo",      c:"#d4fff2",o:4,pg:94, sf:"pad_7_halo",           hold:1}),
+    whistle:   Object.freeze({n:"Whistle",   c:"#e0fbe8",o:5,pg:78, sf:"whistle",              hold:1})
   }),
   GROUPS:Object.freeze([
-    Object.freeze({g:"Voices",        ids:Object.freeze(["ooh","aah"])}),
+    Object.freeze({g:"Voices",        ids:Object.freeze(["ooh","aah","lvoice","svoice","cpad","halo","whistle"])}),
     Object.freeze({g:"Keys and plucked",ids:Object.freeze(["piano","bright","epiano","harp","organ","pizz","synth"])}),
     Object.freeze({g:"Strings",       ids:Object.freeze(["violin","cello","contrabass","strings","bass"])}),
     Object.freeze({g:"Guitars",       ids:Object.freeze(["acoustic","nylon","gclean","gjazz","gmuted","gdrive","gdist","gharm"])}),
@@ -632,7 +654,7 @@ const DB=Object.freeze({
   ]),
   /* one line under each family in the sound picker, so the names make sense */
   GROUP_NOTES:Object.freeze({
-    "Voices":"Real singers. Hum is closed-mouth, Choir is open.",
+    "Voices":"Hum is closed-mouth singers, Choir is open-mouth, both a whole group. Lead voice is the closest thing to one singer. Synth choir and Choir pad are softer, wider. Halo is air. Whistle is a whistle. Nothing here is a solo woman or man: the recordings do not exist in this set, so gentle, feminine, raspy all come from Shape (Breath, Grit, Harmonies, the octave you play in).",
     "Keys and plucked":"Piano is the wooden grand. Bright piano is a harder, glassier grand from the same recordings — same house, different room. Electric piano is the warm 70s one. Harp and Pizzicato are plucked strings; Synth is the only sound here that is not a recording of a real instrument.",
     "Strings":"Bowed. Violin high, Cello mid, Contrabass low, Strings is a whole section. Bass is the electric bass guitar.",
     "Guitars":"These are not effects: each is a real recording of a guitar played a different way. Acoustic and Nylon are unplugged (steel strings vs soft strings). Electric is plugged in and clean. Jazz is the hollow, round one. Muted is played with the palm resting on the strings. Overdrive and Distortion are through an amp turned up, gentle then heavy. Harmonics are the bell-like chimes you get by touching a string lightly.",
@@ -663,34 +685,45 @@ const DB=Object.freeze({
   DASH:Object.freeze({"-":1,"\u2013":2,"\u2014":3}),
   MODS:"^-\u2013\u2014_",
   /* shaping - what used to be fake instruments */
-  SHAPE0:Object.freeze({fade:0,bite:.5,dark:0,tail:.12,room:0,echo:0,len:.5,warp:0,chrome:0,tune:0}),
+  SHAPE0:SHAPE0,
   SHAPE_GROUPS:Object.freeze([
-    Object.freeze({n:"How it starts", ids:Object.freeze(["bite","fade"])}),
+    Object.freeze({n:"How it starts", ids:Object.freeze(["bite","fade","tune"])}),
     Object.freeze({n:"How long it stays", ids:Object.freeze(["len","tail"])}),
-    Object.freeze({n:"The space around it", ids:Object.freeze(["room","echo"])}),
-    Object.freeze({n:"The colour of it", ids:Object.freeze(["dark","warp","chrome","tune"])})
+    Object.freeze({n:"The space around it", ids:Object.freeze(["room","echo","dbl","swirl"])}),
+    Object.freeze({n:"The colour of it", ids:Object.freeze(["dark","grit","breath","warp"])}),
+    Object.freeze({n:"The machine", ids:Object.freeze(["chrome","harm","pulse"])})
   ]),
   PRESETS:Object.freeze([
-    Object.freeze({n:"As it is",    s:Object.freeze({fade:0,  bite:.5,dark:0, tail:.12,room:0, echo:0,len:.5,warp:0, chrome:0,tune:0})}),
-    Object.freeze({n:"Pluck it",    s:Object.freeze({fade:.85,bite:1, dark:0, tail:.4, room:0, echo:0,len:.2,warp:0, chrome:0,tune:0})}),
-    Object.freeze({n:"Stutter",     s:Object.freeze({fade:.7, bite:.9,dark:0, tail:.1, room:.1,echo:.75,len:.15,warp:0,chrome:0,tune:0})}),
-    Object.freeze({n:"Ceremonial",  s:Object.freeze({fade:.15,bite:.45,dark:0,tail:.35,room:.7,echo:.15,len:.7,warp:0,chrome:0,tune:0})}),
-    Object.freeze({n:"Long hum",    s:Object.freeze({fade:0,  bite:.2,dark:.1,tail:.3, room:.3,echo:0, len:1, warp:0, chrome:0,tune:0})}),
-    Object.freeze({n:"Far away",    s:Object.freeze({fade:.2, bite:.4,dark:.5,tail:.3, room:.8,echo:.45,len:.7,warp:0, chrome:0,tune:0})}),
-    Object.freeze({n:"Drifting",    s:Object.freeze({fade:.1, bite:.3,dark:.15,tail:.25,room:.35,echo:0,len:.8,warp:.7,chrome:0,tune:0})}),
-    Object.freeze({n:"Broken digital",s:Object.freeze({fade:.2,bite:.75,dark:.15,tail:.15,room:.1,echo:.15,len:.4,warp:0,chrome:.8,tune:.35})})
+    Object.freeze({n:"As it is",     s:P({})}),
+    Object.freeze({n:"Pluck it",     s:P({fade:.85,bite:1,tail:.4,len:.2})}),
+    Object.freeze({n:"Stutter",      s:P({fade:.7,bite:.9,tail:.1,room:.1,echo:.75,len:.15})}),
+    Object.freeze({n:"Ceremonial",   s:P({fade:.15,bite:.45,tail:.35,room:.7,echo:.15,len:.7})}),
+    Object.freeze({n:"Long hum",     s:P({bite:.2,dark:.1,tail:.3,room:.3,len:1})}),
+    Object.freeze({n:"Far away",     s:P({fade:.2,bite:.4,dark:.5,tail:.3,room:.8,echo:.45,len:.7})}),
+    Object.freeze({n:"Mythic",       s:P({bite:.25,tail:.4,room:.65,echo:.2,len:.9,harm:.55,breath:.45,dbl:.3,swirl:.15})}),
+    Object.freeze({n:"Hide and seek",s:P({bite:.4,tail:.2,room:.35,len:.8,harm:.85,chrome:.12,breath:.3,dbl:.2})}),
+    Object.freeze({n:"Robot",        s:P({bite:.8,tail:.1,len:.5,chrome:.85,dark:.2,tune:.6})}),
+    Object.freeze({n:"Auto-tuned",   s:P({tune:.9,len:.7,tail:.2,room:.2,breath:.2})}),
+    Object.freeze({n:"Drifting",     s:P({fade:.1,bite:.3,dark:.15,tail:.25,room:.35,len:.8,warp:.7})}),
+    Object.freeze({n:"Broken digital",s:P({fade:.2,bite:.75,dark:.15,tail:.15,room:.1,echo:.15,len:.4,chrome:.6,grit:.5})})
   ]),
   SLIDERS:Object.freeze([
-    Object.freeze({k:"bite",  n:"Bite",     lo:"soft in",    hi:"smacks",      h:"shapeBite"}),
-    Object.freeze({k:"fade",  n:"Fade",     lo:"rings on",   hi:"collapses",   h:"shapeFade"}),
-    Object.freeze({k:"len",   n:"Length",   lo:"clipped",    hi:"held",        h:"shapeLen"}),
-    Object.freeze({k:"tail",  n:"Tail",     lo:"none",       hi:"hangs",       h:"shapeTail"}),
-    Object.freeze({k:"room",  n:"Room",     lo:"right here", hi:"a cathedral", h:"shapeRoom"}),
-    Object.freeze({k:"echo",  n:"Echo",     lo:"once",       hi:"many times",  h:"shapeEcho"}),
-    Object.freeze({k:"dark",  n:"Darken",   lo:"stays open", hi:"closes down", h:"shapeDark"}),
-    Object.freeze({k:"warp",  n:"Drift",    lo:"still",      hi:"seasick",     h:"shapeWarp"}),
-    Object.freeze({k:"chrome",n:"Digital",  lo:"clean",      hi:"broken",      h:"shapeChrome"}),
-    Object.freeze({k:"tune",  n:"Tune lock",lo:"as played",  hi:"hard lock",   h:"shapeTune"})
+    Object.freeze({k:"bite",  n:"Bite",     lo:"soft in",    hi:"smacks",        h:"shapeBite"}),
+    Object.freeze({k:"fade",  n:"Fade",     lo:"rings on",   hi:"collapses",     h:"shapeFade"}),
+    Object.freeze({k:"tune",  n:"Auto-tune",lo:"as played",  hi:"full T-Pain",   h:"shapeTune"}),
+    Object.freeze({k:"len",   n:"Length",   lo:"clipped",    hi:"held",          h:"shapeLen"}),
+    Object.freeze({k:"tail",  n:"Tail",     lo:"none",       hi:"hangs",         h:"shapeTail"}),
+    Object.freeze({k:"room",  n:"Room",     lo:"right here", hi:"a cathedral",   h:"shapeRoom"}),
+    Object.freeze({k:"echo",  n:"Echo",     lo:"once",       hi:"many times",    h:"shapeEcho"}),
+    Object.freeze({k:"dbl",   n:"Double",   lo:"one of you", hi:"two of you",    h:"shapeDouble"}),
+    Object.freeze({k:"swirl", n:"Swirl",    lo:"still",      hi:"whooshing",     h:"shapeSwirl"}),
+    Object.freeze({k:"dark",  n:"Darken",   lo:"stays open", hi:"closes down",   h:"shapeDark"}),
+    Object.freeze({k:"grit",  n:"Grit",     lo:"smooth",     hi:"raspy",         h:"shapeGrit"}),
+    Object.freeze({k:"breath",n:"Breath",   lo:"none",       hi:"all air",       h:"shapeBreath"}),
+    Object.freeze({k:"warp",  n:"Drift",    lo:"still",      hi:"seasick",       h:"shapeWarp"}),
+    Object.freeze({k:"chrome",n:"Digital",  lo:"clean",      hi:"dalek",         h:"shapeChrome"}),
+    Object.freeze({k:"harm",  n:"Harmonies",lo:"alone",      hi:"a choir of you",h:"shapeHarm"}),
+    Object.freeze({k:"pulse", n:"Pulse",    lo:"steady",     hi:"beating",       h:"shapePulse"})
   ]),
   HELP:Object.freeze({
     layers:"A layer is one pass. + opens an empty one so you can pick the sound and shape it first; the red button is what records. Layers stack, so a second part plays on top of the first.",
@@ -710,10 +743,16 @@ const DB=Object.freeze({
     shapeTail:"A tiny bit of room right after the note, so silence never fully lands before the next one.",
     shapeRoom:"How big the room is. Low is the note sitting next to you. High is the note in a big stone hall, hanging in the air after.",
     shapeEcho:"The note answers itself a moment later, quieter each time.",
-    shapeDark:"The note gets duller as it fades, like it is sinking into itself.",
-    shapeWarp:"The pitch drifts a little while the note sounds, like the take is breathing. Low is a slow sway, high is seasick.",
-    shapeChrome:"Puts the note through a digital screen: crunchy, stepped, the sound of a broken file instead of a room.",
-    shapeTune:"Grabs the start of each note and pulls it onto its pitch with a tiny chirp, the way a hard tuner does. Higher is a tighter grab. The notes stay the notes you played.",
+    shapeDark:"Closes the top of the sound down. A little and the note is duller from the first moment; all the way and it sinks into a muffled hum as it goes. Works on every sound, drums too.",
+    shapeWarp:"The pitch drifts a little while the note sounds, like the take is breathing. Low is a slow sway, high is seasick. Auto-tune switches it off while it is stepping.",
+    shapeHarm:"The same recording sung again on top of itself: first a fifth up, then an octave, then a third, then an octave below. Each copy sits a hair off pitch so the stack breathes. This is the Hide and Seek sound: one voice becoming a choir of itself.",
+    shapeBreath:"Air on the note: a thin, high hiss that comes in with it and settles. What makes a voice sound close and gentle instead of clean and far.",
+    shapeGrit:"Rasp. The sound is pushed until its edges roughen, then brought back down so it is not just louder. A little is warmth, a lot is a torn throat.",
+    shapeSwirl:"A slow whoosh moving through the sound, like it is turning in the air. Low is a gentle turn, high is a jet going over.",
+    shapeDouble:"A second copy of the note a few thousandths of a second behind, wandering. One voice becomes two people singing the same line.",
+    shapePulse:"The loudness beats. Low is a slow shimmer, high is a hard throb.",
+    shapeChrome:"The sci-fi voice. The note is multiplied by a low tone so it turns metallic and robotic, with a crunchy stepped copy underneath. Low is a hint of machine, high is a dalek. Stack it with Auto-tune for the full robot.",
+    shapeTune:"The auto-tune sound. When one note runs straight into the next, the pitch does not slide there, it steps there, one semitone at a time: the yodel. Past halfway it also flicks a semitone now and then while a note holds. Play notes back to back (or hold one key while pressing the next) to hear it.",
     dressNotes:"If notes are picked in the picture, Shape changes only those notes and the rest of the layer stays as it was. If nothing is picked, Shape changes the whole layer. With no layer selected it shapes the keyboard.",
     pickMore:"Turn this on, then tap notes in the picture to pick several at once. Whatever you do next (move, hold, a touch, a shape) happens to all of them.",
     handTo:"Hands the ending of this layer to another one: the last note here fades out while the first note there swells in, so one part can walk into the next. Echo leaves an answer behind; hall leaves air between them.",
@@ -823,7 +862,7 @@ const LS={auto:"scribe.v6.auto",slots:"scribe.v6.slots",seen:"scribe.v6.seen",co
 let clickOn=true, clickT=0, clickAt=0, clickN=0, clickVol=.3, vol=.7, barSnap=true;
 let song=[], selB=null, selN=-1, selNs=[], pickMore=false, touchAmt=.6, songBW=DB.SONG_BW, songDragged=false;
 let joins=[], hist=[], future=[], hushHist=false;
-let folds={fit:true,notes:false,layer:false,touch:true,start:true,stay:false,space:false,colour:false};
+let folds={fit:true,notes:false,layer:false,touch:true,start:true,stay:false,space:false,colour:false,machine:false};
 let panelScroll={}, paintedView=null, auxVoices=[];
 const $=id=>document.getElementById(id);
 const setLS=(k,v)=>{ try{ localStorage.setItem(k,v); return true }catch(e){ return false } };
@@ -921,54 +960,130 @@ function nearest(id,midi){
   if(best==null||bd>7) return null;
   return {buf:m[best],rate:Math.pow(2,(midi-best)/12)};
 }
-function fallback(id,midi,sh,fx,dur,vol){
-  const t=ctx.currentTime, f=mFreq(midi), I=IN(id); dur=dur||1; vol=vol==null?1:vol;
-  const out=ctx.createGain(); out.gain.value=0;
-  const nodes=[];
-  const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.Q.value=3;
-  lp.frequency.value=Math.min(f*8,7000);
-  ["sawtooth","triangle"].forEach((ty,k)=>{ const o=ctx.createOscillator(); o.type=ty;
-    o.frequency.value=f; const g=ctx.createGain(); g.gain.value=k?.25:.35;
-    o.connect(g); g.connect(lp); o.start(t); nodes.push(o); fxPitch(o.detune,0,fx,t,dur,nodes,true); });
-  let node=colour(lp,sh,t,null,0,nodes,true);
-  node.connect(out);
-  wire(out,sh);
-  const atk=env(out,sh,t,.55*vol,I.hold); fxGain(out,t,.55*vol,fx,dur,atk);
-  return {out,nodes,sh};
-}
-function chromeCurve(amt){
-  const steps=Math.pow(2, 3+Math.round(amt*5)), n=257, c=new Float32Array(n);
-  for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.round(x*steps)/steps; }
-  return c;
-}
-function colour(node,sh,t,param,base,nodes,cents){
-  if(!sh) return node;
-  if(sh.tune>.03&&param){
-    const at=c=>cents?base+c:base*Math.pow(2,c/1200);
-    const off=28+sh.tune*90, len=Math.max(.02,.09-sh.tune*.05);
-    try{ param.setValueAtTime(at(-off),t); param.linearRampToValueAtTime(at(0),t+len); }catch(e){}
+/* ---- the shape, as audio -------------------------------------------------
+   one chain per note: sources -> hub -> darken -> instrument eq -> colour ->
+   out (the envelope) -> dry + room / echo / tail sends.
+   pitchShape() is everything that moves the pitch (auto-tune, drift).
+   colour() is everything that reshapes the sound (grit, digital, swirl,
+   double, pulse) and returns the last node of the chain.                  */
+function lfoTo(param,hz,depth,t,nodes,type){ const o=ctx.createOscillator(); o.type=type||"sine"; o.frequency.value=hz;
+  const g=ctx.createGain(); g.gain.value=depth; o.connect(g); g.connect(param); o.start(t); nodes.push(o); return o; }
+function curveSteps(steps){ const n=257, c=new Float32Array(n);
+  for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.round(x*steps)/steps; } return c; }
+function curveGrit(k){ const n=513, c=new Float32Array(n), d=Math.tanh(k);
+  for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.tanh(x*k)/d; } return c; }
+/* auto-tune: the note does not slide into place, it STEPS into place, one
+   semitone at a time, from wherever the last note was (only when the last
+   note was still ringing, so a run turns into the yodel). the harder the lock
+   the faster the steps, and past half it flicks a semitone now and then. */
+function autoTune(param,base,sh,t,dur,cents,from){
+  if(!param||!(sh.tune>.03)) return false;
+  const at=c=>cents?base+c:base*Math.pow(2,c/1200);
+  const d=from&&from.d!=null?from.d:0;
+  const legato=!!from&&from.gap!=null&&from.gap<280&&d!==0&&Math.abs(d)<=12;
+  if(legato){
+    const n=Math.abs(d), step=Math.max(.018,Math.min(.06,(.28-.2*sh.tune)/n));
+    param.setValueAtTime(at(-d*100),t);
+    for(let k=1;k<=n;k++) param.setValueAtTime(at((k-n)*Math.sign(d)*100),t+k*step);
   }
-  if(sh.warp>.03&&param){
-    const lfo=ctx.createOscillator(); lfo.type="sine"; lfo.frequency.value=.55+sh.warp*2.8;
-    const lg=ctx.createGain();
+  if(sh.tune>.45){
+    const every=.95-sh.tune*.55, on=.045, t0=t+(legato?.4:.28);
+    for(let tt=t0,k=0;tt<t+dur-.1&&k<40;tt+=every,k++){ param.setValueAtTime(at(k%3===1?-100:100),tt); param.setValueAtTime(at(0),tt+on); }
+  }
+  return legato;
+}
+function pitchShape(param,base,sh,t,dur,cents,from,nodes){
+  if(!sh||!param) return;
+  const tuned=autoTune(param,base,sh,t,dur,cents,from);
+  if(sh.warp>.03&&!tuned){
     const depth=cents?(18+sh.warp*70):(base*(Math.pow(2,(12+sh.warp*55)/1200)-1));
-    lg.gain.setValueAtTime(0,t); lg.gain.linearRampToValueAtTime(depth,t+.12);
+    const lfo=ctx.createOscillator(); lfo.type="sine"; lfo.frequency.value=.55+sh.warp*2.8;
+    const lg=ctx.createGain(); lg.gain.setValueAtTime(0,t); lg.gain.linearRampToValueAtTime(depth,t+.12);
     lfo.connect(lg); lg.connect(param); lfo.start(t); nodes.push(lfo);
   }
+}
+function colour(node,sh,t,nodes,dur){
+  if(!sh) return node; dur=dur||1;
+  /* grit: soft clip, rasp in the throat. makeup gain so it does not just get louder */
+  if(sh.grit>.03){
+    const ws=ctx.createWaveShaper(); ws.curve=curveGrit(1+sh.grit*11); ws.oversample="2x";
+    const pre=ctx.createGain(); pre.gain.value=1+sh.grit*3; const post=ctx.createGain(); post.gain.value=1/(1+sh.grit*1.7);
+    node.connect(pre); pre.connect(ws); ws.connect(post); node=post;
+  }
+  /* digital: a ring modulator (the note multiplied by a low tone: the dalek, the
+     robot), a bit-crush underneath, a metallic band on top. the dry note steps back. */
   if(sh.chrome>.03){
-    const shaper=ctx.createWaveShaper(); shaper.curve=chromeCurve(sh.chrome); shaper.oversample="2x";
-    const hp=ctx.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=280+sh.chrome*2200; hp.Q.value=0.7;
-    const dl=ctx.createDelay(0.08); dl.delayTime.value=.011+.018*sh.chrome;
-    const mix=ctx.createGain(); mix.gain.value=.22+sh.chrome*.45;
-    const dry=ctx.createGain(); dry.gain.value=1-.35*sh.chrome;
-    const split=ctx.createGain();
-    node.connect(split);
-    split.connect(dry);
-    split.connect(shaper); shaper.connect(hp); hp.connect(dl); dl.connect(mix);
-    const sum=ctx.createGain(); dry.connect(sum); mix.connect(sum);
-    return sum;
+    const a=sh.chrome, sum=ctx.createGain();
+    const dryG=ctx.createGain(); dryG.gain.value=1-.72*a; node.connect(dryG); dryG.connect(sum);
+    const rm=ctx.createGain(); rm.gain.value=0; lfoTo(rm.gain,28+a*92,1,t,nodes,"sine");
+    const rmG=ctx.createGain(); rmG.gain.value=.15+.6*a; node.connect(rm); rm.connect(rmG); rmG.connect(sum);
+    const cr=ctx.createWaveShaper(); cr.curve=curveSteps(Math.pow(2,Math.round(6-a*4.5)));
+    const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=1600+a*1800; bp.Q.value=1.4;
+    const crG=ctx.createGain(); crG.gain.value=.32*a; node.connect(cr); cr.connect(bp); bp.connect(crG); crG.connect(sum);
+    node=sum;
+  }
+  /* swirl: four all-pass stages swept by one slow lfo. a phaser. */
+  if(sh.swirl>.03){
+    let n=node; const centre=450+sh.swirl*750;
+    const lf=ctx.createOscillator(); lf.type="sine"; lf.frequency.value=.15+sh.swirl*.9;
+    const lg=ctx.createGain(); lg.gain.value=centre*.8; lf.connect(lg); lf.start(t); nodes.push(lf);
+    for(let k=0;k<4;k++){ const ap=ctx.createBiquadFilter(); ap.type="allpass"; ap.frequency.value=centre*(1+k*.6); ap.Q.value=.9;
+      lg.connect(ap.frequency); n.connect(ap); n=ap; }
+    const wet=ctx.createGain(); wet.gain.value=.5+.4*sh.swirl; const sum=ctx.createGain();
+    n.connect(wet); wet.connect(sum); node.connect(sum); node=sum;
+  }
+  /* double: a second copy a few ms behind, wandering. a chorus. */
+  if(sh.dbl>.03){
+    const dl=ctx.createDelay(.06); dl.delayTime.value=.014+sh.dbl*.01; lfoTo(dl.delayTime,.22+sh.dbl*.5,.003+sh.dbl*.004,t,nodes);
+    const wet=ctx.createGain(); wet.gain.value=.35+.35*sh.dbl; const sum=ctx.createGain();
+    node.connect(dl); dl.connect(wet); wet.connect(sum); node.connect(sum); node=sum;
+  }
+  /* pulse: tremolo, the loudness beating */
+  if(sh.pulse>.03){
+    const tg=ctx.createGain(); tg.gain.value=1-.45*sh.pulse; lfoTo(tg.gain,3.5+sh.pulse*5.5,.45*sh.pulse,t,nodes);
+    node.connect(tg); node=tg;
   }
   return node;
+}
+/* darken: duller from the first moment, then it keeps sinking */
+function darken(node,sh,t){
+  if(!(sh.dark>.02)) return node;
+  const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.Q.value=1.5+sh.dark*4;
+  lp.frequency.setValueAtTime(Math.max(900,9000-sh.dark*7200),t);
+  lp.frequency.exponentialRampToValueAtTime(Math.max(180,1800-sh.dark*1650),t+.08+(1-sh.dark)*.6);
+  node.connect(lp); return lp;
+}
+/* breath: air on the note. thin, high noise that follows the note in */
+function breath(hub,sh,t,dur){
+  if(!(sh.breath>.03)) return;
+  const n=Math.floor(ctx.sampleRate*Math.min(4,dur+.6)), b=ctx.createBuffer(1,n,ctx.sampleRate), d=b.getChannelData(0);
+  for(let i=0;i<n;i++) d[i]=Math.random()*2-1;
+  const src=ctx.createBufferSource(); src.buffer=b;
+  const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=2600; bp.Q.value=.5;
+  const g=ctx.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.18*sh.breath,t+.07);
+  g.gain.exponentialRampToValueAtTime(.035*sh.breath,t+Math.max(.3,dur*.6));
+  src.connect(bp); bp.connect(g); g.connect(hub); src.start(t); src.stop(t+n/ctx.sampleRate);
+}
+const HARM=[7,12,4,-12];   /* fifth, octave, third, sub-octave: joining in that order as the slider rises */
+function fallback(id,midi,sh,fx,dur,vol,from){
+  const t=ctx.currentTime, f=mFreq(midi), I=IN(id); dur=dur||1; vol=vol==null?1:vol;
+  const out=ctx.createGain(); out.gain.value=0;
+  const nodes=[], hub=ctx.createGain();
+  const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.Q.value=3;
+  lp.frequency.value=Math.min(f*8,7000);
+  const osc=(hz,g0,ty)=>{ const o=ctx.createOscillator(); o.type=ty; o.frequency.value=hz;
+    const g=ctx.createGain(); g.gain.value=g0; o.connect(g); g.connect(hub); o.start(t); nodes.push(o);
+    fxPitch(o.detune,0,fx,t,dur,nodes,true); pitchShape(o.detune,0,sh,t,dur,true,from,nodes); };
+  osc(f,.35,"sawtooth"); osc(f,.25,"triangle");
+  if(sh.harm>.03){ const n=Math.min(4,Math.ceil(sh.harm*4));
+    for(let k=0;k<n;k++) osc(f*Math.pow(2,HARM[k]/12),.22*Math.min(1,sh.harm*4-k),"triangle"); }
+  breath(hub,sh,t,dur);
+  hub.connect(lp);
+  let node=colour(darken(lp,sh,t),sh,t,nodes,dur);
+  node.connect(out);
+  wire(out,sh);
+  const atk=env(out,sh,t,.55*vol/(1+(sh.harm>.03?sh.harm*.6:0)),I.hold); fxGain(out,t,.55*vol,fx,dur,atk);
+  return {out,nodes,sh};
 }
 function wire(out,sh){
   out.connect(dry);
@@ -1013,24 +1128,30 @@ function fxGain(out,t,amp,fx,dur,atk){
     g.exponentialRampToValueAtTime(.0008,t+Math.max(hold+.05,dur)); }
 }
 const fxAny=fx=>!!(fx&&(fx.v||fx.s||fx.f||fx.b||fx.t));
-function voice(id,midi,sh,fx,dur,vol){
+/* from = the note before this one in the same line: {d: semitones from it, gap: ms
+   between its end and this start}. auto-tune reads it; nothing else does. */
+function voice(id,midi,sh,fx,dur,vol,from){
   boot(); meterOn();
   sh=sh||shape; dur=dur||1; vol=vol==null?1:Math.max(0,Math.min(1,vol));
   const I=IN(id);
-  if(packState(id)!=="ready") return fallback(id,midi,sh,fx,dur,vol);
+  if(packState(id)!=="ready") return fallback(id,midi,sh,fx,dur,vol,from);
   const hit=nearest(id,midi);
-  if(!hit) return fallback(id,midi,sh,fx,dur,vol);
-  const t=ctx.currentTime;
-  const src=ctx.createBufferSource(); src.buffer=hit.buf; src.playbackRate.value=hit.rate;
+  if(!hit) return fallback(id,midi,sh,fx,dur,vol,from);
+  const t=ctx.currentTime, hub=ctx.createGain();
   const out=ctx.createGain(); out.gain.value=0;
-  const nodes=[src]; fxPitch(src.playbackRate,hit.rate,fx,t,dur,nodes,false);
-  let node=src;
-  if(sh.dark>.02){
-    const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.Q.value=2+sh.dark*4;
-    lp.frequency.setValueAtTime(8000,t);
-    lp.frequency.exponentialRampToValueAtTime(Math.max(300,2600-sh.dark*2300),t+.1+(1-sh.dark)*.5);
-    src.connect(lp); node=lp;
-  }
+  const nodes=[];
+  const addSrc=(h,gain)=>{ const src=ctx.createBufferSource(); src.buffer=h.buf; src.playbackRate.value=h.rate;
+    const g=ctx.createGain(); g.gain.value=gain; src.connect(g); g.connect(hub);
+    fxPitch(src.playbackRate,h.rate,fx,t,dur,nodes,false); pitchShape(src.playbackRate,h.rate,sh,t,dur,false,from,nodes);
+    nodes.push(src); src.start(t); return src; };
+  addSrc(hit,1);
+  /* harmonies: the same recording again at the fifth, the octave, the third, the
+     sub-octave, each a hair off pitch so the stack breathes */
+  if(sh.harm>.03){ const n=Math.min(4,Math.ceil(sh.harm*4));
+    for(let k=0;k<n;k++){ const h=nearest(id,midi+HARM[k]); if(!h) continue;
+      addSrc({buf:h.buf,rate:h.rate*Math.pow(2,(k%2?-6:6)/1200)},(k===3?.5:.6)*Math.min(1,sh.harm*4-k)); } }
+  breath(hub,sh,t,dur);
+  let node=darken(hub,sh,t);
   if(id==="bright"){
     const hs=ctx.createBiquadFilter(); hs.type="highshelf"; hs.frequency.value=2600; hs.gain.value=6.5;
     node.connect(hs); node=hs;
@@ -1038,11 +1159,10 @@ function voice(id,midi,sh,fx,dur,vol){
     const ls=ctx.createBiquadFilter(); ls.type="lowshelf"; ls.frequency.value=420; ls.gain.value=2.2;
     node.connect(ls); node=ls;
   }
-  node=colour(node,sh,t,src.playbackRate,hit.rate,nodes,false);
+  node=colour(node,sh,t,nodes,dur);
   node.connect(out);
   wire(out,sh);
-  const atk=env(out,sh,t,.95*vol,I.hold); fxGain(out,t,.95*vol,fx,dur,atk);
-  src.start(t);
+  const atk=env(out,sh,t,.95*vol/(1+(sh.harm>.03?sh.harm*.6:0)),I.hold); fxGain(out,t,.95*vol,fx,dur,atk);
   return {out,nodes,sh};
 }
 function release(v){
@@ -1055,8 +1175,9 @@ function release(v){
 }
 function drum(id,sh,vol){
   boot(); meterOn(); sh=sh||shape; vol=vol==null?1:Math.max(0,Math.min(1,vol));
-  const t=ctx.currentTime;
-  const hub=ctx.createGain(); hub.gain.value=vol; wire(hub,sh);
+  const t=ctx.currentTime, nodes=[];
+  const hub=ctx.createGain(); hub.gain.value=vol;
+  wire(colour(darken(hub,sh,t),sh,t,nodes,.6),sh); nodes.forEach(n=>{ try{ n.stop(t+2.2) }catch(e){} });
   const noise=(dur,hz,ty,g0)=>{
     const n=Math.floor(ctx.sampleRate*dur), b=ctx.createBuffer(1,n,ctx.sampleRate), d=b.getChannelData(0);
     for(let i=0;i<n;i++) d[i]=Math.random()*2-1;
@@ -1449,20 +1570,22 @@ $("dpads").innerHTML=DB.PADS.map(p=>'<button class="dpad" data-p="'+p.id+'">'+p.
 /* what the keyboard sounds like: the selected layer's shape when there is one,
    the keyboard's own shape otherwise. while recording, the layer being recorded. */
 function kbShape(){ const l=recording&&recL?recL:layers.find(x=>x.id===selL); return l&&l.sh?l.sh:shape; }
+let kbLast={midi:null,off:0};
 function noteOn(key,midi,padId){
   if(live.has(key)) return;
   const t0=recording?performance.now()-recT0:null;
   let v=null,m=midi;
   const recVol=recL?layVol(recL):1, sh=kbShape();
   if(inst==="drums"){ drum(padId,sh,recVol); m=(DB.PADS.find(p=>p.id===padId)||DB.PADS[0]).m; }
-  else v=voice(inst,midi,sh,null,1,recVol);
+  else { const from=kbLast.midi==null?null:{d:midi-kbLast.midi,gap:live.size?0:performance.now()-kbLast.off};
+    v=voice(inst,midi,sh,null,1,recVol,from); kbLast.midi=midi; }
   live.set(key,{v,midi:m,padId,t0,inst});
   showNote(m,padId);
   if(inst==="drums"&&recording) addNote({midi:m,pad:padId,start:t0,dur:130});
 }
 function noteOff(key){
   const h=live.get(key); if(!h) return;
-  live.delete(key);
+  live.delete(key); kbLast.off=performance.now();
   if(h.v) release(h.v);
   if(recording&&h.inst!=="drums"&&h.t0!=null)
     addNote({midi:h.midi,pad:null,start:h.t0,dur:Math.max(70,performance.now()-recT0-h.t0)});
@@ -1776,7 +1899,7 @@ function paintShape(){
     DB.PRESETS.map((p,i)=>'<button class="btn sm zap" data-pre="'+i+'">'+esc(p.n)+'</button>').join("")+
     '</div>'+
     DB.SHAPE_GROUPS.map((g,i)=>{
-      const id=["start","stay","space","colour"][i]||("g"+i);
+      const id=["start","stay","space","colour","machine"][i]||("g"+i);
       const sl=g.ids.map(k=>DB.SLIDERS.find(s=>s.k===k)).filter(Boolean);
       return foldBox(id,g.n, sl.map(s=>'<div class="sl">'+
           '<div class="st"><span>'+esc(s.n)+'</span>'+
@@ -2066,9 +2189,11 @@ function play(list,isGuide,sid){
     scopeOn();
   }
   const end=Math.max(...list.map(e=>e.start+e.dur));
+  { const last={}; list.slice().sort((a,b)=>a.start-b.start).forEach(ev=>{ if(ev.inst==="drums"||ev.pad) return;
+      const p=last[ev.lay]; ev.from=p?{d:ev.midi-p.midi,gap:ev.start-(p.start+p.dur)}:null; last[ev.lay]=ev; }); }
   list.forEach(ev=>timers.push(setTimeout(()=>{
     if(ev.inst==="drums"){ drum(ev.pad||"kick",ev.sh,ev.vol); return; }
-    const v=voice(ev.inst,ev.midi,ev.sh,ev.fx,ev.dur/1000,ev.vol);
+    const v=voice(ev.inst,ev.midi,ev.sh,ev.fx,ev.dur/1000,ev.vol,ev.from);
     timers.push(setTimeout(()=>release(v),ev.dur));
   },ev.start)));
   timers.push(setTimeout(stop,end+1100));
