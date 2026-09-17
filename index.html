@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#07060b">
-<title>The Scribe v0.15</title>
+<title>The Scribe v0.16</title>
 <style>
 /* ---- UI FREQUENCY REALISM ---------------------------------------------------
    The screen is a dark field, not a page. Mist in uneven pockets, grain like a
@@ -145,7 +145,11 @@ button,input,textarea{font-family:inherit;font-size:16px}
 .addlay{flex:none;width:56px;border:1px dashed var(--edge);border-radius:12px;background:var(--face);box-shadow:var(--lift);
   color:var(--dim);font-size:22px;font-weight:900}
 
-#panel{flex:1 1 auto;min-height:88px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:9px}
+#panel{flex:1 1 auto;min-height:88px;overflow:hidden;display:flex;flex-direction:column;padding:0}
+#panel .sticky-scope{flex:none;position:sticky;top:0;z-index:5;padding:9px 9px 6px;
+  background:linear-gradient(180deg,#0d1624 0%,#080e17 100%);border-bottom:1px solid rgba(143,214,255,.12)}
+#panel .panel-rest{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 9px 12px}
+#panel>.note,#panel>p,#panel>.sl,#panel>.row,#panel>.shape-g,#panel>.grid3,#panel>.touch,#panel>.lbl{ }
 .row{display:flex;gap:6px;align-items:stretch}
 .btn{flex:1;border:1px solid var(--edge);background:var(--face);box-shadow:var(--lift);color:var(--ink);border-radius:11px;
   padding:14px 6px;font-size:13px;font-weight:900;letter-spacing:.04em;min-height:46px}
@@ -186,7 +190,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;heigh
   font-size:12px;font-weight:900;touch-action:none;padding:19px 2px;min-height:52px}
 .dpad.hit{background:#ff6b8a;color:#04070b;border-color:transparent;box-shadow:0 0 24px #ff6b8a}
 
-#dock{flex:none;display:flex;gap:6px;align-items:stretch;padding:7px}
+#dock{flex:none;display:flex;gap:5px;align-items:stretch;padding:7px}
+.tbtn.un{width:42px;border-color:var(--edge);color:var(--blue);background:var(--face)}
 .seg button{font-size:11px}
 .seg{flex:1;display:flex;border:1px solid var(--edge);border-radius:11px;overflow:hidden}
 .seg{box-shadow:var(--lift)}
@@ -391,6 +396,7 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
     <button data-v="notes">Notes</button>
     <button data-v="song">Song</button>
   </div>
+  <button class="tbtn un" id="bUndo" aria-label="Walk back">↩</button>
   <button class="tbtn pl" id="bPlay" aria-label="Play everything">&#9654;</button>
   <button class="tbtn" id="bRec" aria-label="Record a new layer">&#9679;</button>
 </div>
@@ -443,7 +449,7 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
         grand from the same FluidR3 set so it is not a twin of Piano.
    =========================================================================== */
 const DB=Object.freeze({
-  version:"0.15", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
+  version:"0.16", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
   SF:"https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
   A4:440, A4_MIDI:69, PPQ:480, OCT_MIN:1, OCT_MAX:6,
   BPM0:128, BPM_MIN:40, BPM_MAX:240, GRID:4,   /* 128 is the count-in that was already there (470ms a tick) */
@@ -536,20 +542,20 @@ const DB=Object.freeze({
   DASH:Object.freeze({"-":1,"\u2013":2,"\u2014":3}),
   MODS:"^-\u2013\u2014_",
   /* shaping - what used to be fake instruments */
-  SHAPE0:Object.freeze({fade:0,bite:.5,dark:0,tail:.12,room:0,echo:0,len:.5,warp:0,chrome:0}),
+  SHAPE0:Object.freeze({fade:0,bite:.5,dark:0,tail:.12,room:0,echo:0,len:.5,warp:0,chrome:0,tune:0}),
   SHAPE_GROUPS:Object.freeze([
     Object.freeze({n:"How it starts", ids:Object.freeze(["bite","fade"])}),
     Object.freeze({n:"How long it stays", ids:Object.freeze(["len","tail"])}),
     Object.freeze({n:"The space around it", ids:Object.freeze(["room","echo"])}),
-    Object.freeze({n:"The colour of it", ids:Object.freeze(["dark","warp","chrome"])})
+    Object.freeze({n:"The colour of it", ids:Object.freeze(["dark","warp","chrome","tune"])})
   ]),
   PRESETS:Object.freeze([
-    Object.freeze({n:"As it is",    s:Object.freeze({fade:0,  bite:.5,dark:0, tail:.12,room:0, echo:0,len:.5,warp:0, chrome:0})}),
-    Object.freeze({n:"Pluck it",    s:Object.freeze({fade:.85,bite:1, dark:0, tail:.4, room:0, echo:0,len:.2,warp:0, chrome:0})}),
-    Object.freeze({n:"In a hall",   s:Object.freeze({fade:.15,bite:.45,dark:0,tail:.35,room:.7,echo:.15,len:.7,warp:0,chrome:0})}),
-    Object.freeze({n:"Far away",    s:Object.freeze({fade:.2, bite:.4,dark:.5,tail:.3, room:.8,echo:.45,len:.7,warp:0, chrome:0})}),
-    Object.freeze({n:"It swims",    s:Object.freeze({fade:.1, bite:.3,dark:.15,tail:.25,room:.35,echo:0,len:.8,warp:.7,chrome:0})}),
-    Object.freeze({n:"Through a machine",s:Object.freeze({fade:.25,bite:.8,dark:.2,tail:.2,room:.15,echo:.2,len:.45,warp:.15,chrome:.75})})
+    Object.freeze({n:"As it is",    s:Object.freeze({fade:0,  bite:.5,dark:0, tail:.12,room:0, echo:0,len:.5,warp:0, chrome:0,tune:0})}),
+    Object.freeze({n:"Pluck it",    s:Object.freeze({fade:.85,bite:1, dark:0, tail:.4, room:0, echo:0,len:.2,warp:0, chrome:0,tune:0})}),
+    Object.freeze({n:"In a hall",   s:Object.freeze({fade:.15,bite:.45,dark:0,tail:.35,room:.7,echo:.15,len:.7,warp:0,chrome:0,tune:0})}),
+    Object.freeze({n:"Far away",    s:Object.freeze({fade:.2, bite:.4,dark:.5,tail:.3, room:.8,echo:.45,len:.7,warp:0, chrome:0,tune:0})}),
+    Object.freeze({n:"It drifts",   s:Object.freeze({fade:.1, bite:.3,dark:.15,tail:.25,room:.35,echo:0,len:.8,warp:.7,chrome:0,tune:0})}),
+    Object.freeze({n:"Through a screen",s:Object.freeze({fade:.2,bite:.75,dark:.15,tail:.15,room:.1,echo:.15,len:.4,warp:0,chrome:.8,tune:.35})})
   ]),
   SLIDERS:Object.freeze([
     Object.freeze({k:"bite",  n:"How it hits",     lo:"soft in",    hi:"smacks",     h:"shapeBite"}),
@@ -559,8 +565,9 @@ const DB=Object.freeze({
     Object.freeze({k:"room",  n:"A hall around it",lo:"right here", hi:"a cathedral",h:"shapeRoom"}),
     Object.freeze({k:"echo",  n:"It answers itself",lo:"once",      hi:"many times", h:"shapeEcho"}),
     Object.freeze({k:"dark",  n:"It sinks",        lo:"stays open", hi:"closes down",h:"shapeDark"}),
-    Object.freeze({k:"warp",  n:"It swims",        lo:"still",      hi:"sways",      h:"shapeWarp"}),
-    Object.freeze({k:"chrome",n:"Metal on it",     lo:"plain",      hi:"machine",    h:"shapeChrome"})
+    Object.freeze({k:"warp",  n:"It drifts",         lo:"still",      hi:"sways",      h:"shapeWarp"}),
+    Object.freeze({k:"chrome",n:"Through a screen",  lo:"plain",      hi:"digital",    h:"shapeChrome"}),
+    Object.freeze({k:"tune",  n:"Lock the pitch",    lo:"as played",  hi:"hard lock",  h:"shapeTune"})
   ]),
   HELP:Object.freeze({
     layers:"A layer is one pass. + makes an empty one so you can line up the sound first; the red button is what records. Layers stack, so a second part plays on top of the first.",
@@ -581,12 +588,18 @@ const DB=Object.freeze({
     shapeRoom:"This is the hall. Low is the note sitting next to you. High is the note in a big stone room — the sound that hangs in the air after. That is what people call reverb. It was always here; it used to be named Room.",
     shapeEcho:"The note answers itself a moment later, quieter each time.",
     shapeLen:"How long a note carries on after you let go of the key.",
-    shapeWarp:"The pitch slowly sways, like tape that has gone a bit tired, or like you are underwater. The whole layer swims together.",
-    shapeChrome:"A thin metal colour on the note, as if it went through a machine. Not a different instrument — the same recording, dressed.",
+    shapeWarp:"The pitch slowly drifts, a little, like the take is breathing. Not a new instrument.",
+    shapeChrome:"Puts the recording through a digital screen: crunchy, stepped, the sound of a file not a room. That is the broken-digital colour.",
+    shapeTune:"Pulls each note onto its pitch the way a hard tuner does — a tiny chirp onto the note. Higher is a tighter lock. The notes you played stay the same names; only the start of each one is grabbed.",
+    pickMore:"Tap this, then tap notes in the picture to pick several. What you do next (move, hold, a touch) happens to all of them.",
+    handTo:"Hands the ending of this layer to another layer: the last note here fades, the first note there grows, so a bridge can walk into a chorus. Hall also leaves air between them. Echo leaves an answer behind.",
+    undo:"Walks back the last change to layers or the song. The dock arrow is the same thing.",
+    resetLay:"Puts this layer's shape back to 'as it is' and clears even-holds. Notes stay.",
+    resetSong:"Takes every block off the song line. The layers themselves stay.",
     evenHolds:"Some notes you held longer than others. This slides every hold toward the same length so the layer speaks more evenly. 0 keeps what you played. 100 makes every note the length below.",
     holdLen:"The length every note walks toward when you even the holds. Short is a tap. Long is a sung note.",
-    nudge:"Slides the whole take a little earlier or later without changing the gaps between notes. Use it when you came in a hair before the click.",
-    dragNote:"In the picture, drag a note left or right to move it. Drag the right end of a note to change how long it rings.",
+    nudge:"Moves only the notes you picked. Earlier / later slide them. Shorter / longer change how long they ring. The rest of the layer stays put.",
+    dragNote:"Tap a note to pick it. Drag slides it. Earlier / later / shorter / longer are buttons for the picked notes only. Pick several if you want three of six to move together.",
     notes:"A notepad for writing a line down when you have no time to play it. Your own shorthand, nothing to learn.",
     preset:"A whole shape in one tap. Start here, then nudge the sliders if it's not quite right.",
     trim:"The layer starts when the first note lands, so the second you spent getting ready is not part of the take. Drag the gold marks, or use Start from, to keep or cut more.",
@@ -607,7 +620,7 @@ const DB=Object.freeze({
     song:"Numbers along the top are bars; the thin lines inside are beats. The Song is your layers arranged on that line. Tap an empty spot on a layer's lane to put that layer there; tap a block to move it, repeat it, or take it away. The same layer can appear as many times as you like, and fixing the layer fixes every copy. When the Song has anything in it, play and Write it down use the Song.",
     block:"One appearance of a layer in the Song. Its length is the layer's whole-bar cycle. Repeats stretch it: x2 plays the cycle twice in a row.",
     dup:"Makes an independent copy of this layer: same notes, same shape, its own life from here on. Use it when you want a variation without losing the original.",
-    tempofrom:"Listens to where you punched this layer, finds the beat hiding in it, sets the sketch to that speed, then slides every hit onto that beat. Early taps walk forward. Late taps walk back. The gaps you meant to play stay; the wobble goes.",
+    tempofrom:"Listens to the hits, finds the speed hiding in them, then places the notes on that beat. Starts and holds snap to the grid. If the notes were already a regular run, they get spaced evenly so the count of notes is what writes the rhythm, not the wobble of your finger.",
     tighten:"Slides every hit onto the nearest step of the beat you already have. Does not change the speed. Use it after you have a tempo you like.",
     barsnap:"A repeating layer normally cycles every whole bar at the tempo: a take that runs 3.9 bars repeats every 4, so the first beat waits for the bar line instead of jumping in after the last note. Every repeating layer follows the anchor's cycle, so they stay lined up. Off: repeats use the exact recorded length, like before."
   })
@@ -684,12 +697,36 @@ let pf=null;
 const LS={auto:"scribe.v6.auto",slots:"scribe.v6.slots",seen:"scribe.v6.seen",col:"scribe.v6.col",click:"scribe.v6.click",
   clickVol:"scribe.v6.clickvol",vol:"scribe.v6.vol",bars:"scribe.v6.bars",zoom:"scribe.v6.zoom"};
 let clickOn=true, clickT=0, clickAt=0, clickN=0, clickVol=.3, vol=.7, barSnap=true;
-let song=[], selB=null, selN=-1, touchAmt=.6, songBW=DB.SONG_BW, songDragged=false;
+let song=[], selB=null, selN=-1, selNs=[], pickMore=false, touchAmt=.6, songBW=DB.SONG_BW, songDragged=false;
+let joins=[], hist=[], future=[], hushHist=false;
 const $=id=>document.getElementById(id);
 const setLS=(k,v)=>{ try{ localStorage.setItem(k,v); return true }catch(e){ return false } };
 const getLS=k=>{ try{ return localStorage.getItem(k) }catch(e){ return null } };
 function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show");
   clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),1700); }
+function liveSnap(){ return {layers,song,bpm,shape,anchorId,joins,selL,selNs,notepad,fragName}; }
+function snap(){
+  if(hushHist) return;
+  hist.push(JSON.stringify(liveSnap()));
+  if(hist.length>40) hist.shift();
+  future=[];
+}
+function loadSnap(o){
+  hushHist=true;
+  layers=o.layers||[]; song=o.song||[]; bpm=o.bpm||DB.BPM0; shape=o.shape||{...DB.SHAPE0};
+  anchorId=o.anchorId||null; joins=o.joins||[]; selL=o.selL||(layers[0]&&layers[0].id)||null;
+  selNs=Array.isArray(o.selNs)?o.selNs:[]; selN=selNs.length?selNs[0]:-1;
+  if(o.notepad!=null) notepad=o.notepad; if(o.fragName) fragName=o.fragName;
+  renderStrip(); paint(); save(); hushHist=false;
+}
+function undo(){
+  if(!hist.length){ toast("nothing to walk back"); return; }
+  future.push(JSON.stringify(liveSnap())); loadSnap(JSON.parse(hist.pop())); toast("walked back");
+}
+function redo(){
+  if(!future.length){ toast("nothing to walk forward"); return; }
+  hist.push(JSON.stringify(liveSnap())); loadSnap(JSON.parse(future.pop())); toast("walked forward");
+}
 
 /* =========================== AUDIO ===================================== */
 function boot(){
@@ -774,12 +811,17 @@ function fallback(id,midi,sh,fx,dur,vol){
   return {out,nodes,sh};
 }
 function chromeCurve(amt){
-  const n=257, c=new Float32Array(n), k=1+amt*12;
-  for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.tanh(x*k)/Math.tanh(k); }
+  const steps=Math.pow(2, 3+Math.round(amt*5)), n=257, c=new Float32Array(n);
+  for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.round(x*steps)/steps; }
   return c;
 }
 function colour(node,sh,t,param,base,nodes,cents){
   if(!sh) return node;
+  if(sh.tune>.03&&param){
+    const at=c=>cents?base+c:base*Math.pow(2,c/1200);
+    const off=28+sh.tune*90, len=Math.max(.02,.09-sh.tune*.05);
+    try{ param.setValueAtTime(at(-off),t); param.linearRampToValueAtTime(at(0),t+len); }catch(e){}
+  }
   if(sh.warp>.03&&param){
     const lfo=ctx.createOscillator(); lfo.type="sine"; lfo.frequency.value=.55+sh.warp*2.8;
     const lg=ctx.createGain();
@@ -1120,7 +1162,7 @@ function drawScope(){
     ctx2.fillStyle="rgba("+r+","+g+","+b+",0.92)";      /* the emitter itself */
     ctx2.fillRect(x,y-hh/2,tw,hh);
     if(fxAny(e.fx)){ ctx2.fillStyle="#b6ff3c"; ctx2.fillRect(x,y-hh/2-3,Math.max(2,tw),1.5); }
-    if(l.ev.indexOf(e)===selN){ ctx2.strokeStyle="rgba(143,214,255,.95)"; ctx2.lineWidth=1.5;
+    if(selNs.indexOf(l.ev.indexOf(e))>=0){ ctx2.strokeStyle="rgba(143,214,255,.95)"; ctx2.lineWidth=1.5;
       ctx2.strokeRect(x-2.5,y-hh/2-2.5,tw+5,hh+5); ctx2.fillStyle="rgba(143,214,255,.18)"; ctx2.fillRect(x-6,y-hh-4,tw+12,hh*2+8); }
     if(!e.pad){
       ctx2.fillStyle="rgba("+r+","+g+","+b+",0.28)";
@@ -1140,23 +1182,26 @@ function bindScopeDrag(){
     const l=layers.find(x=>x.id===selL); if(!l||!l.ev.length) return;
     const r=wrap.getBoundingClientRect(), px=ev.clientX-r.left, py=ev.clientY-r.top;
     const w=r.width, h=r.height, span=Math.max(trimWindow(l).raw,1);
-    let best=-1, bd=1e9, edge=false;
+    let best=-1, bd=1e9;
     l.ev.forEach((e,i)=>{ const x0=(e.start/span)*w, x1=x0+Math.max(6,(e.dur/span)*w);
       const hz=e.pad?(e.midi<40?70:e.midi<46?4000:180):mFreq(e.midi), y=yHz(hz,h);
       if(px<x0-10||px>x1+10||Math.abs(py-y)>14) return;
-      const d=Math.abs(py-y)+(px<x0?x0-px:px>x1?px-x1:0); if(d<bd){ bd=d; best=i; edge=px>x1-14; } });
+      const d=Math.abs(py-y)+(px<x0?x0-px:px>x1?px-x1:0); if(d<bd){ bd=d; best=i; } });
     if(best<0) return;
-    selN=best; const note=l.ev[best], t0=note.start, d0=note.dur, x0=ev.clientX, resize=edge;
+    setPick(best, pickMore);
+    const moving=picked(l), starts=moving.map(n=>n.start), x0=ev.clientX;
     paint();
     const move=e=>{
-      const dx=e.clientX-x0, dt=dx/w*span;
-      if(resize){ note.dur=Math.max(40,Math.round(d0+dt)); note.rawDur=note.dur; }
-      else { note.start=Math.max(0,Math.round(t0+dt)); }
+      const dt=(e.clientX-x0)/w*span;
+      moving.forEach((n,i)=>{ n.start=Math.max(0,Math.round(starts[i]+dt)); });
       drawScope();
     };
     const up=()=>{ window.removeEventListener("pointermove",move); window.removeEventListener("pointerup",up);
-      l.ev.sort((a,b)=>a.start-b.start); selN=l.ev.indexOf(note);
-      paint(); save(); hearNote(l,note); };
+      snap();
+      const keep=moving.slice();
+      l.ev.sort((a,b)=>a.start-b.start);
+      selNs=keep.map(n=>l.ev.indexOf(n)).filter(i=>i>=0); selN=selNs[0]??-1;
+      paint(); save(); if(moving[0]) hearNote(l,moving[0]); };
     window.addEventListener("pointermove",move); window.addEventListener("pointerup",up);
     ev.preventDefault();
   };
@@ -1213,7 +1258,7 @@ function renderStrip(){
 }
 $("strip").onclick=e=>{
   if(e.target.closest("#addLay")){ addEmptyLayer(); return; }
-  selN=-1;
+  selN=-1; selNs=[];
   const p=e.target.closest("[data-playlay]");
   if(p){ e.stopPropagation(); playLayer(p.dataset.playlay); return; }
   const m=e.target.closest("[data-mutelay]");
@@ -1339,6 +1384,8 @@ function paintSong(){
   const pos=b?'bar '+(Math.floor(b.bar)+1)+(b.bar%1?' beat '+(Math.round((b.bar%1)*4)+1):''):'';
   return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">'+
     '<span class="lbl" style="flex:1">Song \u00b7 '+songLenBars()+' bars \u00b7 '+song.length+' blocks</span>'+
+    '<button class="btn sm" data-act="undo">walk back</button>'+
+    '<button class="btn sm" data-act="resetsong">reset song</button>'+
     '<button class="qm" data-sz="-1" aria-label="Zoom out">&minus;</button><button class="qm" data-sz="1" aria-label="Zoom in">+</button>'+
     '<button class="qm" data-help="song" aria-label="What the song is">?</button></div>'+
     (b?'<div class="row" style="margin-bottom:8px">'+
@@ -1363,7 +1410,7 @@ function bindSong(){
       const move=e=>{ const dx=e.clientX-x0; if(Math.abs(dx)>5) songDragged=true;
         bar=Math.max(0,Math.min(999,Math.round((bar0*songBW+dx)/songBW*4)/4)); el.style.left=(bar*songBW)+"px"; };
       const up=()=>{ el.removeEventListener("pointermove",move); el.removeEventListener("pointerup",up); el.removeEventListener("pointercancel",up);
-        if(songDragged&&bar!==bar0){ b.bar=bar; selB=b.id; paint(); save(); } };
+        if(songDragged&&bar!==bar0){ snap(); b.bar=bar; selB=b.id; paint(); save(); } };
       el.addEventListener("pointermove",move); el.addEventListener("pointerup",up); el.addEventListener("pointercancel",up);
     };
   });
@@ -1384,7 +1431,7 @@ $("panel").addEventListener("click",e=>{
   const sz=e.target.closest("[data-sz]");
   if(sz){ const Z=[24,36,48,72,96], k=Math.max(0,Math.min(Z.length-1,Z.indexOf(songBW)+(+sz.dataset.sz))); songBW=Z[k]; setLS(LS.zoom,String(songBW)); paint(); return; }
   const sb=e.target.closest("[data-sb]");
-  if(sb){ const b=song.find(x=>x.id===selB); if(!b) return; const a=sb.dataset.sb;
+  if(sb){ const b=song.find(x=>x.id===selB); if(!b) return; snap(); const a=sb.dataset.sb;
     if(a==="reps") b.reps={1:2,2:4,4:8,8:1}[b.reps]||1;
     else if(a==="left") b.bar=Math.max(0,b.bar-.25);
     else if(a==="right") b.bar=Math.min(999,b.bar+.25);
@@ -1396,22 +1443,26 @@ $("panel").addEventListener("click",e=>{
   const ln=e.target.closest("[data-lane]");
   if(ln){ const l=layers.find(x=>x.id===ln.dataset.lane); if(!l||!l.ev.length){ toast("that layer is empty"); return; }
     const r=ln.getBoundingClientRect(), bar=Math.max(0,Math.floor((e.clientX-r.left)/songBW*4)/4);
-    const c={id:newId(),lay:l.id,bar,reps:1}; song.push(c); selB=c.id; paint(); save(); return; }
+    snap(); const c={id:newId(),lay:l.id,bar,reps:1}; song.push(c); selB=c.id; paint(); save(); return; }
 });
 function paintLayers(){
   const l=layers.find(x=>x.id===selL);
-  if(!layers.length) return '<p style="font-size:14px;line-height:1.6;color:var(--dim);margin:6px 2px">'+
+  if(!layers.length) return '<div class="panel-rest"><p style="font-size:14px;line-height:1.6;color:var(--dim);margin:6px 2px">'+
     'Nothing yet. <b style="color:var(--gold)">+</b> opens an empty layer so you can pick the sound first. '+
-    'The <b style="color:var(--rec)">red button</b> is what records. The take starts at your first note.</p>';
-  if(!l) return '<p style="font-size:14px;color:var(--dim);margin:6px 2px">Tap a layer above to work on it.</p>';
+    'The <b style="color:var(--rec)">red button</b> is what records. The take starts at your first note.</p></div>';
+  if(!l) return '<div class="panel-rest"><p style="font-size:14px;color:var(--dim);margin:6px 2px">Tap a layer above to work on it.</p></div>';
   const I=IN(l.inst), an=anchorLayer(), mx=layLen(l), tw=trimWindow(l), soloOn=playing&&soloId===l.id;
   const max=Math.max(tw.raw,40);
   let ticks="";
   const step=tw.raw/1000>4?1:.5;
   for(let t=0;t<=tw.raw/1000+.01;t+=step) ticks+='<span style="left:'+(t*1000/Math.max(tw.raw,1)*100)+'%">'+t.toFixed(t%1?1:0)+'s</span>';
-  return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">'+
+  const others=layers.filter(x=>x.id!==l.id);
+  const hand=joins.find(j=>j.from===l.id);
+  return '<div class="sticky-scope">'+
+    '<div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">'+
     '<span class="lbl" style="flex:1;color:'+I.c+'">'+esc(I.n)+' \u00b7 '+l.ev.length+' notes \u00b7 '+
-    (mx/1000).toFixed(2)+'s sounding</span></div>'+
+    (mx/1000).toFixed(2)+'s</span>'+
+    '<button class="btn sm" data-act="undo">walk back</button></div>'+
     '<div class="scope-wrap"><div class="scope" id="scope">'+
       '<canvas id="scopeCv"></canvas>'+
       '<div class="scope-handle in" data-h="in" style="left:'+(tw.tIn/Math.max(tw.raw,1)*100)+'%"></div>'+
@@ -1419,8 +1470,13 @@ function paintLayers(){
       '<div class="scope-play" id="scopePlay"></div>'+
       '<div class="scope-ylab" aria-hidden><span>2k</span><span>500</span><span>100</span></div>'+
     '</div><div class="scope-x">'+ticks+'</div></div>'+
-    '<p class="note" style="margin:4px 2px 8px">Drag a note to slide it. Drag the right end to change how long it rings.'+
-    ' <button class="qm" data-help="dragNote" aria-label="How to move a note" style="vertical-align:middle">?</button></p>'+
+    '<div class="row" style="margin-top:6px">'+
+    '<button class="btn sm'+(pickMore?" on":"")+'" data-act="pickmore">pick several'+(selNs.length>1?" \u00b7 "+selNs.length:"")+'</button>'+
+    '<button class="qm" data-help="pickMore" aria-label="How to pick several notes">?</button>'+
+    '<button class="btn sm" data-act="clearpick">clear pick</button></div>'+
+    '</div><div class="panel-rest">'+
+    noteTools(l)+
+    '<div class="sl"><div class="st"><span>Layer volume</span>'+
     '<div class="sl" style="margin-top:8px"><div class="st"><span>Layer volume</span>'+
       '<span class="sv" id="svLayVol">'+Math.round(layVol(l)*100)+'%</span>'+
       '<button class="qm" data-help="layVol" aria-label="What layer volume does">?</button></div>'+
@@ -1437,14 +1493,10 @@ function paintLayers(){
     '<button class="qm" data-help="playLayer" aria-label="What play this does">?</button>'+
     '<button class="btn sm" data-act="trimsilence">trim silence</button></div>'+
     '<div class="row" style="margin-bottom:6px">'+
-    '<button class="btn sm" data-act="tempofrom">find the beat</button>'+
-    '<button class="qm" data-help="tempofrom" aria-label="What find the beat does">?</button>'+
+    '<button class="btn sm" data-act="tempofrom">fit to the beat</button>'+
+    '<button class="qm" data-help="tempofrom" aria-label="What fit to the beat does">?</button>'+
     '<button class="btn sm" data-act="tighten">sit on the beat</button>'+
     '<button class="qm" data-help="tighten" aria-label="What sit on the beat does">?</button></div>'+
-    '<div class="row" style="margin-bottom:6px">'+
-    '<button class="btn sm" data-act="nudgeL">a little earlier</button>'+
-    '<button class="btn sm" data-act="nudgeR">a little later</button>'+
-    '<button class="qm" data-help="nudge" aria-label="What nudge does">?</button></div>'+
     '<div class="sl"><div class="st"><span>Even the holds</span>'+
       '<span class="sv" id="svEven">'+Math.round((l.even||0)*100)+'%</span>'+
       '<button class="qm" data-help="evenHolds" aria-label="What even the holds does">?</button></div>'+
@@ -1466,7 +1518,35 @@ function paintLayers(){
     '<button class="qm" data-help="empty" aria-label="What empty does">?</button>'+
     '<button class="btn sm dan" data-act="del">delete</button></div>'+
     '<div class="row" style="margin-top:6px"><button class="btn sm" data-act="dup">duplicate layer</button>'+
-    '<button class="qm" data-help="dup" aria-label="What duplicate does">?</button></div>';
+    '<button class="qm" data-help="dup" aria-label="What duplicate does">?</button>'+
+    '<button class="btn sm" data-act="resetlay">reset shape</button>'+
+    '<button class="qm" data-help="resetLay" aria-label="What reset shape does">?</button></div>'+
+    (others.length?
+      '<div class="lbl mh" style="margin-top:12px">Hand the ending to</div>'+
+      '<div class="row" style="margin-bottom:6px">'+
+      '<button class="btn sm'+(hand?"":" on")+'" data-hand="">none</button>'+
+      others.map(o=>'<button class="btn sm'+(hand&&hand.to===o.id?" on":"")+'" data-hand="'+o.id+'">'+esc(IN(o.inst).n)+'</button>').join("")+
+      '<button class="qm" data-help="handTo" aria-label="What handing off does">?</button></div>'+
+      (hand?'<div class="chips">'+
+        [["hand","fade into"],["echo","leave an echo"],["hall","leave a hall"]].map(p=>
+          '<button class="btn sm'+(hand.kind===p[0]?" on":"")+'" data-handkind="'+p[0]+'">'+p[1]+'</button>').join("")+
+      '</div>':''):'')+
+    '</div>';
+}
+function noteTools(l){
+  const notes=picked(l);
+  if(!notes.length) return '<p class="note" style="margin:2px 0 10px">Tap a note in the picture to move it. Drag slides it. Buttons below are for the picked notes, not the whole take.'+
+    ' <button class="qm" data-help="dragNote" aria-label="How to move a note" style="vertical-align:middle">?</button></p>';
+  const label=notes.length>1?(notes.length+" notes picked"):noteLabel(l,notes[0]);
+  return '<div class="touch" style="margin-bottom:10px"><div class="lbl" style="margin-bottom:6px;color:var(--blue)">'+esc(label)+'</div>'+
+    '<div class="row" style="margin-bottom:6px">'+
+    '<button class="btn sm" data-act="nudgeL">earlier</button>'+
+    '<button class="btn sm" data-act="nudgeR">later</button>'+
+    '<button class="btn sm" data-act="shorten">shorter</button>'+
+    '<button class="btn sm" data-act="lengthen">longer</button>'+
+    '<button class="qm" data-help="nudge" aria-label="What these buttons do">?</button></div>'+
+    touchStrip(l)+
+    '</div>';
 }
 /* the selected note's touches. selN is an index into l.ev; -1 = none */
 function noteLabel(l,e){
@@ -1475,9 +1555,8 @@ function noteLabel(l,e){
   return name+" \u00b7 bar "+(Math.floor(bars)+1)+"."+(Math.floor((bars%1)*4)+1)+" \u00b7 "+(e.dur/1000).toFixed(2)+"s";
 }
 function touchStrip(l){
-  const e=l.ev[selN];
-  if(!e) return '<p class="note" style="margin:6px 2px 8px">Tap a note in the picture above to give just that note a touch: vibrato, swell, fade, bend, trill. The sliders above are the whole layer; this is one note.'+
-    ' <button class="qm" data-help="touches" aria-label="What touches are" style="vertical-align:middle">?</button></p>';
+  const notes=picked(l), e=notes[0];
+  if(!e) return '';
   const fx=e.fx||{};
   const on=k=>k==="bu"?fx.b>0:k==="bd"?fx.b<0:!!fx[k];
   return '<div class="touch"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'+
@@ -1521,7 +1600,7 @@ function hearNote(l,e){ boot(); if(ctx.resume) ctx.resume();
 function paintShape(){
   const l=layers.find(x=>x.id===selL);
   const target=l?("Layer: "+IN(l.inst).n):("Keyboard: "+IN(inst).n);
-  return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">'+
+  return '<div class="panel-rest"><div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">'+
     '<span class="lbl" style="flex:1">'+esc(target)+'</span>'+
     '<button class="qm" data-help="preset" aria-label="What presets are">?</button></div>'+
     (l?'<div class="sl"><div class="st"><span>Layer volume</span><span class="sv" id="svLayVol">'+Math.round(layVol(l)*100)+'%</span>'+
@@ -1540,18 +1619,15 @@ function paintShape(){
           '<input type="range" min="0" max="100" step="1" id="sk_'+s.k+'" data-k="'+s.k+'" '+
           'aria-label="'+esc(s.n)+'"></div>').join("")+'</div>';
     }).join("")+
-    '<button class="btn sm" data-act="hearit" style="margin-top:4px">'+(l&&l.ev.length?"Hear the layer like this":"Hear it")+'</button>'+
-    (l&&l.ev.length?'<div class="lbl mh" style="margin-top:16px">Just one note</div>'+
-      '<div class="scope-wrap"><div class="scope pick" id="scope"><canvas id="scopeCv"></canvas><div class="scope-play" id="scopePlay"></div>'+
-      '<div class="scope-ylab" aria-hidden><span>2k</span><span>500</span><span>100</span></div></div></div>'+touchStrip(l):'');
+    '<button class="btn sm" data-act="hearit" style="margin-top:4px">'+(l&&l.ev.length?"Hear the layer like this":"Hear it")+'</button></div>';
 }
 function paintNotes(){
-  return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">'+
+  return '<div class="panel-rest"><div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">'+
     '<span class="lbl" style="flex:1">Notepad</span>'+
     '<button class="qm" data-help="notes" aria-label="What the notepad is">?</button></div>'+
     '<textarea id="np" spellcheck="false" autocapitalize="off" autocorrect="off" '+
     'aria-label="Notepad" placeholder="TaTaTaTaTaTaTaTa&#10;M&mdash; M-m-m- &mdash;&#10;M&ndash;M&ndash; M^&mdash;M^__&#10;. .. .. ...."></textarea>'+
-    '<p style="font-size:13px;color:var(--dim);margin:8px 2px 0">Your own shorthand. Saved with everything else, and it rides along in the track code.</p>';
+    '<p style="font-size:13px;color:var(--dim);margin:8px 2px 0">Your own shorthand. Saved with everything else, and it rides along in the track code.</p></div>';
 }
 function curShape(){ const l=layers.find(x=>x.id===selL); return l?l.sh:shape; }
 function setShape(k,v){
@@ -1582,10 +1658,12 @@ $("panel").addEventListener("input",e=>{
     const sv=$("svLayVol"); if(sv) sv.textContent=Math.round(l.vol*100)+"%";
     renderStrip(); save(); return; }
   if(e.target.id==="evenHolds"){ const l=layers.find(x=>x.id===selL); if(!l) return;
+    if(!l._evenSnap){ snap(); l._evenSnap=1; }
     l.even=Math.max(0,Math.min(1,(+e.target.value||0)/100));
     applyEven(l); const sv=$("svEven"); if(sv) sv.textContent=Math.round(l.even*100)+"%";
     drawScope(); save(); return; }
   if(e.target.id==="holdLen"){ const l=layers.find(x=>x.id===selL); if(!l) return;
+    if(!l._evenSnap){ snap(); l._evenSnap=1; }
     l.holdMs=Math.max(80,Math.min(1600,+e.target.value||240));
     applyEven(l); const sv=$("svHold"); if(sv) sv.textContent=(l.holdMs/1000).toFixed(2)+"s";
     drawScope(); save(); return; }
@@ -1617,29 +1695,45 @@ $("panel").addEventListener("click",e=>{
   if(vp){ const l=layers.find(x=>x.id===selL), ev=l&&l.ev[selN]; if(!ev||!ev.fx) return;
     const P=VIB[+vp.dataset.vp]; ev.fx.vr=P.vr; ev.fx.v=P.v; paint(); save(); hearNote(l,ev); return; }
   const tk=e.target.closest("[data-tk]");
-  if(tk){ const l=layers.find(x=>x.id===selL), ev=l&&l.ev[selN]; if(!ev) return;
-    setTouch(ev,tk.dataset.tk,!tk.classList.contains("on")); paint(); save(); hearNote(l,ev); return; }
+  if(tk){ const l=layers.find(x=>x.id===selL), notes=picked(l); if(!notes.length) return;
+    snap(); notes.forEach(ev=>setTouch(ev,tk.dataset.tk,!tk.classList.contains("on"))); paint(); save(); hearNote(l,notes[0]); return; }
+  const hd=e.target.closest("[data-hand]");
+  if(hd){ const l=layers.find(x=>x.id===selL); if(!l) return;
+    snap(); joins=joins.filter(j=>j.from!==l.id);
+    if(hd.dataset.hand) joins.push({from:l.id,to:hd.dataset.hand,kind:"hand"});
+    paint(); save(); return; }
+  const hk=e.target.closest("[data-handkind]");
+  if(hk){ const l=layers.find(x=>x.id===selL); if(!l) return;
+    const j=joins.find(x=>x.from===l.id); if(!j) return;
+    snap(); j.kind=hk.dataset.handkind; paint(); save(); return; }
   const a=e.target.closest("[data-act]");
   if(!a) return;
   const act=a.dataset.act, l=layers.find(x=>x.id===selL);
   if(act==="hearit"){ hearIt(); return; }
   if(!l) return;
   if(act==="hearnote"){ const ev=l.ev[selN]; if(ev) hearNote(l,ev); return; }
-  if(act==="tempofrom"){ const b=detectTempo(l); if(!b){ toast("needs at least three hits"); return; }
-    setBpm(b); tighten(l); renderStrip(); paint(); save(); toast("beat is "+b+" · hits sat down on it"); return; }
-  if(act==="tighten"){ if(!l.ev.length) return; tighten(l); renderStrip(); paint(); save(); toast("hits sat on the beat"); return; }
-  if(act==="nudgeL"){ slideLayer(l,-unitMs()); renderStrip(); paint(); save(); return; }
-  if(act==="nudgeR"){ slideLayer(l,unitMs()); renderStrip(); paint(); save(); return; }
-  if(act==="fxall"){ const ev=l.ev[selN]; if(!ev) return; l.ev.forEach(x=>{ x.fx=ev.fx?{...ev.fx}:undefined; }); save(); toast("every note in this layer"); return; }
-  if(act==="fxclear"){ const ev=l.ev[selN]; if(ev) ev.fx=undefined; paint(); save(); return; }
-  if(act==="dup"){ const c={...l,id:newId(),sh:{...l.sh},vol:layVol(l),ev:l.ev.map(x=>({...x,fx:x.fx?{...x.fx}:undefined}))};
+  if(act==="tempofrom"){ if(!l.ev.length) return; snap(); fitToBeat(l); renderStrip(); paint(); save(); toast("fitted to the beat"); return; }
+  if(act==="tighten"){ if(!l.ev.length) return; snap(); tighten(l); renderStrip(); paint(); save(); toast("hits sat on the beat"); return; }
+  if(act==="nudgeL"){ snap(); if(nudgePicked(l,-unitMs())){ renderStrip(); paint(); save(); } return; }
+  if(act==="nudgeR"){ snap(); if(nudgePicked(l,unitMs())){ renderStrip(); paint(); save(); } return; }
+  if(act==="shorten"){ snap(); if(stretchPicked(l,-unitMs())){ paint(); save(); } return; }
+  if(act==="lengthen"){ snap(); if(stretchPicked(l,unitMs())){ paint(); save(); } return; }
+  if(act==="pickmore"){ pickMore=!pickMore; paint(); return; }
+  if(act==="clearpick"){ selNs=[]; selN=-1; paint(); return; }
+  if(act==="undo"){ undo(); return; }
+  if(act==="redo"){ redo(); return; }
+  if(act==="resetlay"){ snap(); l.sh={...DB.SHAPE0}; l.even=0; l.holdMs=undefined; paint(); save(); toast("shape put back"); return; }
+  if(act==="resetsong"){ snap(); song=[]; selB=null; paint(); save(); toast("song line cleared"); return; }
+  if(act==="fxall"){ const ev=l.ev[selN]; if(!ev) return; snap(); l.ev.forEach(x=>{ x.fx=ev.fx?{...ev.fx}:undefined; }); save(); toast("every note in this layer"); return; }
+  if(act==="fxclear"){ snap(); picked(l).forEach(ev=>{ ev.fx=undefined; }); paint(); save(); return; }
+  if(act==="dup"){ snap(); const c={...l,id:newId(),sh:{...l.sh},vol:layVol(l),ev:l.ev.map(x=>({...x,fx:x.fx?{...x.fx}:undefined}))};
     const at=layers.indexOf(l); layers.splice(at+1,0,c); selL=c.id; selN=-1; renderStrip(); paint(); save(); toast("copied"); return; }
-  if(act==="loop"){ l.loop=!l.loop; if(l.loop&&!anchorId) anchorId=l.id; }
-  else if(act==="anchor"){ if(l.loop) anchorId=l.id; }
-  else if(act==="mute"){ l.mute=!l.mute; }
-  else if(act==="del"){ layers=layers.filter(x=>x.id!==l.id); song=song.filter(b=>b.lay!==l.id);
-    selL=layers.length?layers[0].id:null; if(anchorId===l.id) anchorId=null; selN=-1; }
-  else if(act==="empty"){ l.ev=[]; l.trimIn=0; l.trimOut=null; selN=-1; }
+  if(act==="loop"){ snap(); l.loop=!l.loop; if(l.loop&&!anchorId) anchorId=l.id; }
+  else if(act==="anchor"){ snap(); if(l.loop) anchorId=l.id; }
+  else if(act==="mute"){ snap(); l.mute=!l.mute; }
+  else if(act==="del"){ snap(); layers=layers.filter(x=>x.id!==l.id); song=song.filter(b=>b.lay!==l.id); joins=joins.filter(j=>j.from!==l.id&&j.to!==l.id);
+    selL=layers.length?layers[0].id:null; if(anchorId===l.id) anchorId=null; selN=-1; selNs=[]; }
+  else if(act==="empty"){ snap(); l.ev=[]; l.trimIn=0; l.trimOut=null; selN=-1; selNs=[]; }
   else if(act==="playlay"){ playLayer(l.id); return; }
   else if(act==="trimsilence"){
     const first=firstAttack(l);
@@ -1689,6 +1783,42 @@ function applyEven(l){
   const target=Math.max(40,l.holdMs||medianHold(l));
   l.ev.forEach(e=>{ e.dur=Math.max(40,Math.round(rawDur(e)+(target-rawDur(e))*amt)); });
 }
+function picked(l){ return selNs.map(i=>l&&l.ev[i]).filter(Boolean); }
+function setPick(i,add){
+  if(i==null||i<0){ selNs=[]; selN=-1; return; }
+  if(add||pickMore){ const k=selNs.indexOf(i); if(k>=0) selNs.splice(k,1); else selNs.push(i); }
+  else selNs=[i];
+  selN=selNs.length?selNs[0]:-1;
+}
+function nudgePicked(l,ms){
+  const notes=picked(l); if(!notes.length){ toast("tap a note in the picture first"); return false; }
+  notes.forEach(e=>{ e.start=Math.max(0,Math.round(e.start+ms)); });
+  return true;
+}
+function stretchPicked(l,ms){
+  const notes=picked(l); if(!notes.length){ toast("tap a note in the picture first"); return false; }
+  notes.forEach(e=>{ e.dur=Math.max(40,Math.round(e.dur+ms)); e.rawDur=e.dur; });
+  return true;
+}
+function fitToBeat(l){
+  const b=detectTempo(l); if(b) setBpm(b);
+  const u=unitMs();
+  l.ev.forEach(e=>{
+    e.start=Math.max(0,Math.round(e.start/u)*u);
+    e.dur=Math.max(u,Math.round(e.dur/u)*u);
+    e.rawDur=e.dur;
+  });
+  if(l.ev.length>=3){
+    const ev=l.ev.slice().sort((a,b)=>a.start-b.start);
+    const gaps=[]; for(let i=1;i<ev.length;i++) gaps.push(ev[i].start-ev[i-1].start);
+    const mean=gaps.reduce((a,c)=>a+c,0)/gaps.length;
+    const sd=Math.sqrt(gaps.reduce((s,g)=>s+(g-mean)*(g-mean),0)/gaps.length);
+    if(mean>0&&sd/mean<0.38){
+      const step=Math.max(u,Math.round(mean/u)*u), t0=ev[0].start;
+      ev.forEach((e,i)=>{ e.start=t0+i*step; });
+    }
+  }
+}
 
 /* =========================== SONG ====================================== */
 /* a block is one appearance of a layer at a bar. its cycle is the layer's
@@ -1708,9 +1838,29 @@ const useSong=()=>song.length>0&&songMix().length>0;
 const activeMix=()=>useSong()?songMix():mix();
 
 /* =========================== TRANSPORT ================================= */
+function applyJoins(list){
+  if(!joins.length) return list;
+  const out=list.map(e=>({...e,fx:e.fx?{...e.fx}:undefined,sh:e.sh?{...e.sh}:e.sh}));
+  joins.forEach(j=>{
+    const A=out.filter(e=>e.lay===j.from), B=out.filter(e=>e.lay===j.to);
+    if(!A.length||!B.length) return;
+    const last=A.reduce((m,e)=>e.start+e.dur>m.start+m.dur?e:m);
+    const first=B.reduce((m,e)=>e.start<m.start?e:m);
+    if(j.kind==="hand"||j.kind==="hall"){
+      last.fx={...(last.fx||{}),f:Math.max((last.fx&&last.fx.f)||0,.75)};
+      first.fx={...(first.fx||{}),s:Math.max((first.fx&&first.fx.s)||0,.7)};
+    }
+    if(j.kind==="echo"||j.kind==="hall"){
+      last.sh={...(last.sh||{}),echo:Math.max((last.sh&&last.sh.echo)||0,.55)};
+      first.sh={...(first.sh||{}),room:Math.max((first.sh&&first.sh.room)||0,.5)};
+    }
+  });
+  return out;
+}
 function play(list,isGuide,sid){
   if(playing&&!isGuide){ stop(); return; }
   if(!list.length){ toast("nothing to play yet"); return; }
+  list=applyJoins(list);
   boot(); if(ctx.resume) ctx.resume();
   if(!isGuide){
     playing=true; soloId=sid||null; playOrigin=performance.now();
@@ -1746,6 +1896,7 @@ function playLayer(id){
   play(ev.map(e=>({...e,inst:l.inst,sh:l.sh,lay:l.id,vol:layVol(l)})),false,l.id);
 }
 $("bPlay").onclick=togglePlay;
+$("bUndo").onclick=undo;
 function blankLayer(){
   return {id:newId(),inst:inst,sh:{...shape},ev:[],loop:false,mute:false,trimIn:0,trimOut:null,vol:1,even:0};
 }
@@ -1925,7 +2076,8 @@ function pack(){
       ti:l.trimIn||0, to:l.trimOut==null?-1:l.trimOut,
       e:l.ev.map(e=>{ const a=[e.pad?DB.PADS.findIndex(p=>p.id===e.pad):e.midi,e.start,e.dur,e.pad?1:0];
         if(fxAny(e.fx)) a.push([e.fx.v||0,e.fx.s||0,e.fx.f||0,e.fx.b||0,e.fx.t?1:0,e.fx.vr==null?.5:e.fx.vr].map(x=>Math.round(x*100)/100)); return a; })})),
-    song:song.map(b=>[b.lay,b.bar,b.reps])};
+    song:song.map(b=>[b.lay,b.bar,b.reps]),
+    joins:joins.map(j=>[j.from,j.to,j.kind])};
   return DB.code+"|"+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 }
 function unpack(code){
@@ -1980,7 +2132,15 @@ function unpack(code){
   return {name:String(o.name||"sketch").slice(0,60),notes:String(o.notes||"").slice(0,8000),
     anchor:typeof o.anchor==="string"?o.anchor.slice(0,24):null,
     shape:{...DB.SHAPE0,...(o.shape&&typeof o.shape==="object"?o.shape:{})},layers:L,
-    bpm:clampBpm(o.bpm),song:readSong(o.song,L)};
+    bpm:clampBpm(o.bpm),song:readSong(o.song,L),joins:readJoins(o.joins,L)};
+}
+function readJoins(raw,L){
+  const ids=new Set(L.map(l=>l.id)), out=[], kinds={hand:1,echo:1,hall:1};
+  (Array.isArray(raw)?raw:[]).forEach(j=>{
+    if(!Array.isArray(j)||!ids.has(j[0])||!ids.has(j[1])||j[0]===j[1]||!kinds[j[2]]) return;
+    out.push({from:j[0],to:j[1],kind:j[2]});
+  });
+  return out;
 }
 function readSong(raw,L){ const S=[], ids=new Set(L.map(l=>l.id));
   (Array.isArray(raw)?raw:[]).slice(0,400).forEach(b=>{ if(!Array.isArray(b)||!ids.has(b[0])) return;
@@ -1991,7 +2151,7 @@ function readFx(a){ const fx={v:c01(a[0]),s:c01(a[1]),f:c01(a[2]),b:Math.max(-1,
 const clampBpm=v=>{ v=Math.round(+v); return isFinite(v)&&v>0?Math.min(DB.BPM_MAX,Math.max(DB.BPM_MIN,v)):DB.BPM0; };
 function adopt(o,label){
   fragName=o.name; notepad=o.notes; layers=o.layers; anchorId=o.anchor; shape=o.shape; bpm=o.bpm||DB.BPM0;
-  song=o.song||[]; selB=null; selN=-1;
+  song=o.song||[]; joins=o.joins||[]; selB=null; selN=-1; selNs=[];
   selL=layers.length?layers[0].id:null;
   renderStrip(); paint(); save();
   toast((label||"loaded")+" \u00b7 "+layers.length+" layers");
