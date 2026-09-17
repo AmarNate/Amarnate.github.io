@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#07060b">
-<title>The Scribe v0.10.1</title>
+<title>The Scribe v0.12.1</title>
 <style>
 /* ---- UI FREQUENCY REALISM ---------------------------------------------------
    The screen is a dark field, not a page. Mist in uneven pockets, grain like a
@@ -64,10 +64,11 @@ button,input,textarea{font-family:inherit;font-size:16px}
 .card:not(#panel)::after{content:"";position:absolute;inset:3px;border-radius:11px;pointer-events:none;
   border:1px solid rgba(143,214,255,.09);box-shadow:inset 0 0 18px rgba(0,0,0,.35)}
 .card.zone::before,#head::before,#dock::before{content:"";position:absolute;pointer-events:none;z-index:2;
-  width:230px;height:36px;top:-18px;left:14px;
+  width:230px;height:36px;top:-6px;left:14px;opacity:.85;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 86%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 86%,transparent);
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='230' height='36' viewBox='0 0 230 36'%3E%3Cg fill='none' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M0 18h24l9-9 11 15 8-4 12 1 7 11 10-16 9 6 13-3 8 8 11-11 12 2 9 9h16l10 7 14-12h17' stroke='%2302040a' stroke-width='6'/%3E%3Cpath d='M0 18h24l9-9 11 15 8-4 12 1 7 11 10-16 9 6 13-3 8 8 11-11 12 2 9 9h16l10 7 14-12h17' stroke='%238fd6ff' stroke-opacity='.55' stroke-width='3.2'/%3E%3Cpath d='M0 18h24l9-9 11 15 8-4 12 1 7 11 10-16 9 6 13-3 8 8 11-11 12 2 9 9h16l10 7 14-12h17' stroke='%23b6ff3c' stroke-width='1.2'/%3E%3Cpath d='M44 24l-6 9M83 22l7 7M132 14l4-10M176 24l5 9' stroke='%2302040a' stroke-width='3.5'/%3E%3Cpath d='M44 24l-6 9M83 22l7 7M132 14l4-10M176 24l5 9' stroke='%238fd6ff' stroke-opacity='.5' stroke-width='1.6'/%3E%3Cpath d='M44 24l-6 9M83 22l7 7M132 14l4-10M176 24l5 9' stroke='%23b6ff3c' stroke-width='.8'/%3E%3C/g%3E%3Cg fill='%23e6ffb0'%3E%3Ccircle cx='33' cy='9' r='1.9'/%3E%3Ccircle cx='101' cy='9' r='1.9'/%3E%3Ccircle cx='151' cy='4' r='1.6'/%3E%3Ccircle cx='206' cy='29' r='1.6'/%3E%3C/g%3E%3Cg fill='%238fd6ff'%3E%3Ccircle cx='71' cy='22' r='1.3'/%3E%3Ccircle cx='172' cy='24' r='1.3'/%3E%3C/g%3E%3C/svg%3E") no-repeat;
-  filter:drop-shadow(0 0 4px rgba(143,214,255,.55)) drop-shadow(0 0 2px rgba(182,255,60,.6))}
-#dock::before{top:auto;bottom:-18px;left:auto;right:12px;transform:scaleX(-1)}
+  filter:drop-shadow(0 0 3px rgba(143,214,255,.35))}
+#dock::before{top:auto;bottom:-6px;left:auto;right:12px;transform:scaleX(-1)}
 #zKb::before{left:auto;right:18px;transform:scaleX(-1)}
 .pad{padding:9px}
 
@@ -178,6 +179,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;heigh
 .dpad.hit{background:#ff6b8a;color:#04070b;border-color:transparent;box-shadow:0 0 24px #ff6b8a}
 
 #dock{flex:none;display:flex;gap:6px;align-items:stretch;padding:7px}
+.seg button{font-size:11px}
 .seg{flex:1;display:flex;border:1px solid var(--edge);border-radius:11px;overflow:hidden}
 .seg{box-shadow:var(--lift)}
 .seg button{flex:1;border:none;background:var(--face);color:var(--dim);font-size:12px;font-weight:900;
@@ -244,8 +246,47 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
 .xp .xt{flex:1;min-width:0}
 .xp .xt b{display:block;font-size:13px;color:var(--ink)}
 .xp .xt span{display:block;font-size:12px;color:var(--dim);line-height:1.4;margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chips .btn{flex:1 1 30%;padding:10px 4px;min-height:40px;font-size:12px}
+.touch{border:1px solid rgba(143,214,255,.2);border-radius:12px;padding:9px;margin-bottom:8px;background:rgba(6,12,20,.6);box-shadow:inset 0 0 18px rgba(0,0,0,.4)}
+.tl{position:relative;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;border:1px solid var(--edge);border-radius:10px;background:#03050a;
+  box-shadow:inset 0 3px 10px rgba(0,0,0,.8);padding-bottom:6px}
+.tl-in{position:relative;min-height:60px}
+.ruler{height:18px;margin-left:92px;position:relative}
+.ruler-in{position:relative;height:100%;background:repeating-linear-gradient(90deg,rgba(143,214,255,.12) 0 1px,transparent 1px 48px)}
+.ruler-in span{position:absolute;top:2px;font-size:9px;font-weight:800;color:var(--dim);padding-left:3px;font-variant-numeric:tabular-nums}
+.lane{display:flex;align-items:stretch;min-height:40px;border-top:1px solid rgba(143,214,255,.07)}
+.lane-l{flex:0 0 92px;position:sticky;left:0;z-index:2;background:linear-gradient(90deg,#070c14 80%,transparent);padding:5px 6px;font-size:11px;font-weight:900;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:currentColor}
+.lane-l small{display:block;font-size:9px;color:var(--dim);font-weight:800}
+.lane-t{position:relative;flex:none;min-height:40px;background:repeating-linear-gradient(90deg,rgba(143,214,255,.07) 0 1px,transparent 1px 48px)}
+.blk{position:absolute;top:5px;height:30px;border-radius:7px;padding:0 6px;font-size:11px;font-weight:900;line-height:30px;overflow:hidden;white-space:nowrap;
+  color:#04070b;background:linear-gradient(180deg,color-mix(in srgb,currentColor 92%,#fff),color-mix(in srgb,currentColor 70%,#000));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 5px rgba(0,0,0,.6);border:1px solid rgba(0,0,0,.4)}
+.blk b{color:#04070b;opacity:.75}
+.blk.sel{box-shadow:0 0 0 1.5px rgba(143,214,255,.9),0 0 14px var(--shine),0 2px 5px rgba(0,0,0,.6);border-color:transparent}
+.tl-play{position:absolute;top:0;bottom:0;width:20px;margin-left:-20px;pointer-events:none;z-index:3;opacity:0;border-right:1.5px solid var(--grn);
+  background:linear-gradient(90deg,transparent,rgba(143,214,255,.2));box-shadow:2px 0 10px var(--shine)}
 @media(min-width:820px){ body{max-width:760px;margin:0 auto;padding:12px 12px 18px} }
 @media(prefers-reduced-motion:reduce){ .tbtn.live{animation:none} }
+
+/* ---- PHONE LANDSCAPE -------------------------------------------------------
+   Turned sideways, the point is width: the scope and the layers get the room.
+   Left: the note readout, the layers. Right: the control panel (scope, shape,
+   notes), full height. Keyboard and dock span the bottom. Needs BOTH a short
+   screen and landscape, so tablets and desktops keep their own rules. */
+@media (orientation:landscape) and (max-height:520px) and (max-width:959px){
+  body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:auto minmax(0,1fr) auto auto;
+    gap:6px;column-gap:8px;padding:calc(4px + var(--sT)) calc(8px + env(safe-area-inset-right,0px)) calc(4px + var(--sB)) calc(8px + env(safe-area-inset-left,0px))}
+  #head{grid-column:1;grid-row:1;padding:6px 10px}
+  #nBig{font-size:26px;min-width:60px} #nHz{font-size:16px} .freq-meter{max-width:220px}
+  #zLay{grid-column:1;grid-row:2;min-height:0;display:flex;flex-direction:column}
+  #zLay #bLay{min-height:0;overflow-y:auto}
+  #panel{grid-column:2;grid-row:1 / 3;min-height:0}
+  .scope{height:150px}
+  #zKb{grid-column:1 / -1;grid-row:3}
+  #dock{grid-column:1 / -1;grid-row:4;padding:5px 7px}
+  .seg button{min-height:40px} .tbtn{min-height:40px}
+}
 
 /* ---- DESKTOP 16:9 ----------------------------------------------------------
    The phone layout is one column, thumb-first. That is correct on a phone and
@@ -325,6 +366,7 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
     <button data-v="layers" class="on">Layers</button>
     <button data-v="shape">Shape</button>
     <button data-v="notes">Notes</button>
+    <button data-v="song">Song</button>
   </div>
   <button class="tbtn pl" id="bPlay" aria-label="Play everything">&#9654;</button>
   <button class="tbtn" id="bRec" aria-label="Record a new layer">&#9679;</button>
@@ -353,9 +395,18 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
         down as sub-sheets. Help (?) works everywhere. Bright + electric pianos,
         acoustic + nylon guitars. Sound picker explains each family.
    0.10.1: Hear it on a layer plays the layer as laid out, in its shape, not a demo arpeggio.
+   0.11: repeats follow the beat: a loop's cycle is whole bars at the tempo (nearest
+        bar, min 1), so the first beat waits for the bar line instead of the last
+        note's tail. All loops share the anchor's cycle, so they stay in phase.
+        Phone landscape layout. Cracks embedded in the plate edge, not on top.
+   0.12: touches: one note at a time can get vibrato, swell, fade, bend up/down,
+        trill (tap a note in the scope). Song view: blocks of layers on a bar
+        timeline, same layer as many times as you like, repeats x1/2/4/8.
+        Duplicate layer. Track code SCR8 (adds per-note fx + song). Reads SCR1-7.
+   0.12.1: vibrato has its own speed and width (vibrate / viBRate / viBRRRate).
    =========================================================================== */
 const DB=Object.freeze({
-  version:"0.10.1", code:"SCR7", oldCodes:Object.freeze(["SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
+  version:"0.12.1", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
   SF:"https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
   A4:440, A4_MIDI:69, PPQ:480, OCT_MIN:1, OCT_MAX:6,
   BPM0:128, BPM_MIN:40, BPM_MAX:240, GRID:4,   /* 128 is the count-in that was already there (470ms a tick) */
@@ -424,6 +475,16 @@ const DB=Object.freeze({
     "Mythic brass":"Trumpet bright, Horn round, Trombone low, Brass is the whole section.",
     "Big hits":"Timpani and Taiko are big drums with pitch. Drums is a kit: pads instead of keys."
   }),
+  /* touches: things one note can do. k = key in the note's fx object */
+  TOUCHES:Object.freeze([
+    Object.freeze({k:"v",n:"vibrato",h:"vibrato"}),
+    Object.freeze({k:"s",n:"swell",h:"swell"}),
+    Object.freeze({k:"f",n:"fade",h:"fadeout"}),
+    Object.freeze({k:"bu",n:"bend up",h:"bend"}),
+    Object.freeze({k:"bd",n:"bend down",h:"bend"}),
+    Object.freeze({k:"t",n:"trill",h:"trill"})
+  ]),
+  SONG_BW:48,   /* px per bar on the song timeline */
   PADS:Object.freeze([
     Object.freeze({id:"kick", n:"Kick", m:36}), Object.freeze({id:"snare",n:"Snare",m:38}),
     Object.freeze({id:"hhc",  n:"Hat",  m:42}), Object.freeze({id:"hho",  n:"Open hat",m:46}),
@@ -484,7 +545,17 @@ const DB=Object.freeze({
     clickVol:"How loud the tick is in your ears. It never changes what gets recorded or exported.",
     vol:"How loud the whole app is. Every instrument, the click, the count-in.",
     settings:"Everything that is a switch or a system-wide setting lives here, so there is one place to look.",
-    guitars:"They are not effects: each is a real recording of a guitar played a different way. See the note under Guitars in the sound picker."
+    guitars:"They are not effects: each is a real recording of a guitar played a different way. See the note under Guitars in the sound picker.",
+    touches:"Tap a note in the picture above to pick it. Then give just that note something: vibrato, a swell, a fade, a bend, a trill. Nothing else in the layer changes. 'All notes' copies this note's touches to every note in the layer.",
+    vibrato:"The wobble a singer or a violin puts on a held note. Speed is how fast it shakes: slow is 'vibrate', medium 'viBRate', fast 'viBRRRate'. Width is how far the pitch moves. Fast vibrato also sets in sooner.",
+    swell:"Crescendo: the note starts quiet and grows. Amount is how much of the note it spends growing.",
+    fadeout:"The note dies away before its end instead of stopping. Amount is how early it starts going.",
+    bend:"Slides into the note from below (bend up) or from above (bend down), like a guitar string being pushed. Amount is how far it slides from.",
+    trill:"Flutters quickly between the note and the one just above it, the whole time it sounds.",
+    song:"The Song is your layers arranged on a bar line. Tap an empty spot on a layer's lane to put that layer there; tap a block to move it, repeat it, or take it away. The same layer can appear as many times as you like, and fixing the layer fixes every copy. When the Song has anything in it, play and Write it down use the Song.",
+    block:"One appearance of a layer in the Song. Its length is the layer's whole-bar cycle. Repeats stretch it: x2 plays the cycle twice in a row.",
+    dup:"Makes an independent copy of this layer: same notes, same shape, its own life from here on. Use it when you want a variation without losing the original.",
+    barsnap:"A repeating layer normally cycles every whole bar at the tempo: a take that runs 3.9 bars repeats every 4, so the first beat waits for the bar line instead of jumping in after the last note. Every repeating layer follows the anchor's cycle, so they stay lined up. Off: repeats use the exact recorded length, like before."
   })
 });
 const mFreq=m=>DB.A4*Math.pow(2,(m-DB.A4_MIDI)/12);
@@ -557,8 +628,9 @@ let shape={...DB.SHAPE0}, notepad="", fragName="sketch";
 let collapsed={Lay:false,Kb:false};
 let pf=null;
 const LS={auto:"scribe.v6.auto",slots:"scribe.v6.slots",seen:"scribe.v6.seen",col:"scribe.v6.col",click:"scribe.v6.click",
-  clickVol:"scribe.v6.clickvol",vol:"scribe.v6.vol"};
-let clickOn=true, clickT=0, clickAt=0, clickN=0, clickVol=.3, vol=.7;
+  clickVol:"scribe.v6.clickvol",vol:"scribe.v6.vol",bars:"scribe.v6.bars"};
+let clickOn=true, clickT=0, clickAt=0, clickN=0, clickVol=.3, vol=.7, barSnap=true;
+let song=[], selB=null, selN=-1, touchAmt=.6;
 const $=id=>document.getElementById(id);
 const setLS=(k,v)=>{ try{ localStorage.setItem(k,v); return true }catch(e){ return false } };
 const getLS=k=>{ try{ return localStorage.getItem(k) }catch(e){ return null } };
@@ -632,18 +704,18 @@ function nearest(id,midi){
   if(best==null||bd>7) return null;
   return {buf:m[best],rate:Math.pow(2,(midi-best)/12)};
 }
-function fallback(id,midi,sh){
-  const t=ctx.currentTime, f=mFreq(midi), I=IN(id);
+function fallback(id,midi,sh,fx,dur){
+  const t=ctx.currentTime, f=mFreq(midi), I=IN(id); dur=dur||1;
   const out=ctx.createGain(); out.gain.value=0;
   const nodes=[];
   const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.Q.value=3;
   lp.frequency.value=Math.min(f*8,7000);
   ["sawtooth","triangle"].forEach((ty,k)=>{ const o=ctx.createOscillator(); o.type=ty;
     o.frequency.value=f; const g=ctx.createGain(); g.gain.value=k?.25:.35;
-    o.connect(g); g.connect(lp); o.start(t); nodes.push(o); });
+    o.connect(g); g.connect(lp); o.start(t); nodes.push(o); fxPitch(o.detune,0,fx,t,dur,nodes,true); });
   lp.connect(out);
   wire(out,sh);
-  env(out,sh,t,.55,I.hold);
+  env(out,sh,t,.55,I.hold); fxGain(out,t,.55,fx,dur);
   return {out,nodes,sh};
 }
 function wire(out,sh){
@@ -660,16 +732,43 @@ function env(out,sh,t,amp,hold){
     out.gain.exponentialRampToValueAtTime(.0008,t+atk+d); }
   else if(!hold) out.gain.exponentialRampToValueAtTime(.0009,t+atk+2.4);
 }
-function voice(id,midi,sh){
+/* touches on one note. fx = {v,s,f,b,t} each 0..1 (b is -1..1). dur in seconds.
+   pitch things ride on the source's playbackRate (sample) or detune (fallback);
+   loudness things re-shape the gain after the normal envelope. */
+function fxPitch(param,base,fx,t,dur,nodes,cents){
+  if(!fx) return;
+  const at=c=>cents?base+c:base*Math.pow(2,c/1200);
+  let free=t+.02;
+  if(fx.b){ const from=-fx.b*(60+140*Math.abs(fx.b)), len=.1+.3*Math.abs(fx.b);
+    param.setValueAtTime(at(from),t); param.linearRampToValueAtTime(at(0),t+len); free=t+len; }
+  if(fx.t){ const step=.072; let k=0;
+    for(let tt=Math.max(free,t+.06); tt<t+dur-.03&&k<80; tt+=step,k++) param.setValueAtTime(at(k%2?200:0),tt); }
+  if(fx.v){ const vr=fx.vr==null?.5:fx.vr, c=8+92*fx.v;      /* width in cents, speed in Hz */
+    const lfo=ctx.createOscillator(); lfo.type="sine"; lfo.frequency.value=3.2+vr*6.5;
+    const lg=ctx.createGain(), depth=cents?c:base*(Math.pow(2,c/1200)-1);
+    lg.gain.setValueAtTime(0,t); lg.gain.linearRampToValueAtTime(depth,Math.max(free,t+.06)+.05+(1-vr)*.35);
+    lfo.connect(lg); lg.connect(param); lfo.start(t); nodes.push(lfo); }
+}
+function fxGain(out,t,amp,fx,dur){
+  if(!fx||!(fx.s||fx.f)) return;
+  const g=out.gain; g.cancelScheduledValues(t); g.setValueAtTime(0,t);
+  const rise=fx.s?Math.max(.12,dur*(.3+.6*fx.s)):.02;
+  g.linearRampToValueAtTime(fx.s?amp*.05:amp,t+.012); g.linearRampToValueAtTime(amp,t+rise);
+  if(fx.f){ const hold=Math.max(rise+.03,dur*(1-.75*fx.f)); g.setValueAtTime(amp,t+hold);
+    g.exponentialRampToValueAtTime(.0008,t+Math.max(hold+.05,dur)); }
+}
+const fxAny=fx=>!!(fx&&(fx.v||fx.s||fx.f||fx.b||fx.t));
+function voice(id,midi,sh,fx,dur){
   boot(); meterOn();
-  sh=sh||shape;
+  sh=sh||shape; dur=dur||1;
   const I=IN(id);
-  if(packState(id)!=="ready") return fallback(id,midi,sh);
+  if(packState(id)!=="ready") return fallback(id,midi,sh,fx,dur);
   const hit=nearest(id,midi);
-  if(!hit) return fallback(id,midi,sh);
+  if(!hit) return fallback(id,midi,sh,fx,dur);
   const t=ctx.currentTime;
   const src=ctx.createBufferSource(); src.buffer=hit.buf; src.playbackRate.value=hit.rate;
   const out=ctx.createGain(); out.gain.value=0;
+  const nodes=[src]; fxPitch(src.playbackRate,hit.rate,fx,t,dur,nodes,false);
   let node=src;
   if(sh.dark>.02){
     const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.Q.value=2+sh.dark*4;
@@ -679,9 +778,9 @@ function voice(id,midi,sh){
   }
   node.connect(out);
   wire(out,sh);
-  env(out,sh,t,.95,I.hold);
+  env(out,sh,t,.95,I.hold); fxGain(out,t,.95,fx,dur);
   src.start(t);
-  return {out,nodes:[src],sh};
+  return {out,nodes,sh};
 }
 function release(v){
   const t=ctx.currentTime, sh=v.sh||shape;
@@ -760,13 +859,19 @@ function eventsOf(l){
   return out;
 }
 function layLen(l){ return trimWindow(l).span; }
+/* the repeat cycle. with bar snapping on (default) it is whole bars at the
+   tempo: a 3.9-bar take repeats every 4 bars, a 1.6-bar take every 2. off,
+   it is the exact recorded length, as before. */
+const barMs=()=>4*60000/bpm;
+function loopBars(l){ return Math.max(1,Math.round(layLen(l)/barMs())); }
+function loopStep(l){ return Math.max(80,barSnap?loopBars(l)*barMs():layLen(l)); }
 function firstAttack(l){ return l.ev.length?Math.min(...l.ev.map(e=>e.start)):0; }
 function anchorLayer(){
   return layers.find(l=>l.id===anchorId&&l.loop&&!l.mute)
       || layers.find(l=>l.loop&&!l.mute) || null;
 }
 function mix(){
-  const out=[], an=anchorLayer(), aL=an?Math.max(80,layLen(an)):0;
+  const out=[], an=anchorLayer(), aL=an?loopStep(an):0;
   const solid=layers.filter(l=>!l.loop&&!l.mute).map(layLen);
   let total=solid.length?Math.max(...solid,0):0;
   if(total<=0&&aL>0) total=aL*4;
@@ -775,7 +880,7 @@ function mix(){
     if(l.mute||!l.ev.length) return;
     const ev=eventsOf(l);
     if(!l.loop){ ev.forEach(e=>out.push({...e,inst:l.inst,sh:l.sh,lay:l.id})); return; }
-    const step=Math.max(80,aL||layLen(l));
+    const step=aL||loopStep(l);
     const reps=Math.max(1,Math.ceil(Math.max(total,step)/step));
     for(let k=0;k<reps;k++) ev.forEach(e=>
       out.push({...e,inst:l.inst,sh:l.sh,start:e.start+k*step,lay:l.id}));
@@ -861,6 +966,10 @@ function meterTick(){
 function scopeOn(){ if(!scopeRaf) scopeRaf=requestAnimationFrame(scopeTick); }
 function scopeTick(){
   scopeRaf=0;
+  const tp=$("tlPlay");
+  if(tp){ if(!playing||playOrigin==null){ tp.style.opacity=0; return; }
+    const t=performance.now()-playOrigin; tp.style.opacity=1; tp.style.left=(92+(t/barMs())*DB.SONG_BW)+"px";
+    scopeRaf=requestAnimationFrame(scopeTick); return; }
   const ph=$("scopePlay"); if(!ph) return;
   if(!playing||playOrigin==null){ ph.style.opacity=0; return; }
   const l=layers.find(x=>x.id===selL); if(!l){ ph.style.opacity=0; return; }
@@ -868,7 +977,7 @@ function scopeTick(){
   let pos=-1;
   if(soloId){ if(soloId===l.id&&t<=tw.span) pos=tw.tIn+t; }
   else if(!l.mute&&l.ev.length){
-    if(l.loop){ const an=anchorLayer(), aL=an?Math.max(80,layLen(an)):0, step=Math.max(80,aL||layLen(l));
+    if(l.loop){ const an=anchorLayer(), aL=an?loopStep(an):0, step=aL||loopStep(l);
       pos=tw.tIn+(t%step); if(pos>tw.tOut) pos=-1; }
     else if(t<=tw.span) pos=tw.tIn+t;
   }
@@ -897,8 +1006,10 @@ function drawScope(){
   [100,250,500,1000,2000].forEach(hz=>{ const y=Math.round(yHz(hz,h));
     for(let x=2;x<w;x+=6) ctx2.fillRect(x,y,1.2,1); });
   /* beat ticks along the floor: the grid the sheet will be written on */
-  const beat=60000/bpm; ctx2.fillStyle="rgba(143,214,255,.22)";
-  for(let t=0,k=0;t<=span;t+=beat,k++){ const x=(t/span)*w, th=k%4?3:7; ctx2.fillRect(x,h-th,1,th); }
+  const beat=60000/bpm;
+  for(let t=0,k=0;t<=span;t+=beat,k++){ const x=(t/span)*w, bar=k%4===0;
+    ctx2.fillStyle=bar?"rgba(182,255,60,.34)":"rgba(143,214,255,.22)"; ctx2.fillRect(x,h-(bar?9:4),1,bar?9:4);
+    if(bar&&k>0){ ctx2.fillStyle="rgba(143,214,255,.07)"; ctx2.fillRect(x,0,1,h-9); } }
   const c=I.c.replace("#",""); const n=parseInt(c,16);
   const r=(n>>16)&255,g=(n>>8)&255,b=n&255;
   l.ev.forEach(e=>{
@@ -909,6 +1020,9 @@ function drawScope(){
     ctx2.fillRect(x-2,y-hh,tw+4,hh*2);
     ctx2.fillStyle="rgba("+r+","+g+","+b+",0.92)";      /* the emitter itself */
     ctx2.fillRect(x,y-hh/2,tw,hh);
+    if(fxAny(e.fx)){ ctx2.fillStyle="#b6ff3c"; ctx2.fillRect(x,y-hh/2-3,Math.max(2,tw),1.5); }
+    if(l.ev.indexOf(e)===selN){ ctx2.strokeStyle="rgba(143,214,255,.95)"; ctx2.lineWidth=1.5;
+      ctx2.strokeRect(x-2.5,y-hh/2-2.5,tw+5,hh+5); ctx2.fillStyle="rgba(143,214,255,.18)"; ctx2.fillRect(x-6,y-hh-4,tw+12,hh*2+8); }
     if(!e.pad){
       ctx2.fillStyle="rgba("+r+","+g+","+b+",0.28)";
       ctx2.fillRect(x,yHz(hz*2,h)-2,tw,4);
@@ -922,6 +1036,18 @@ function drawScope(){
 }
 function bindScopeDrag(){
   const wrap=$("scope"); if(!wrap) return;
+  const cv=$("scopeCv");
+  if(cv) cv.onpointerdown=ev=>{
+    const l=layers.find(x=>x.id===selL); if(!l||!l.ev.length) return;
+    const r=wrap.getBoundingClientRect(), px=ev.clientX-r.left, py=ev.clientY-r.top;
+    const w=r.width, h=r.height, span=Math.max(trimWindow(l).raw,1);
+    let best=-1, bd=1e9;
+    l.ev.forEach((e,i)=>{ const x0=(e.start/span)*w, x1=x0+Math.max(2,(e.dur/span)*w);
+      const hz=e.pad?(e.midi<40?70:e.midi<46?4000:180):mFreq(e.midi), y=yHz(hz,h);
+      if(px<x0-7||px>x1+7||Math.abs(py-y)>11) return;
+      const d=Math.abs(py-y)+(px<x0?x0-px:px>x1?px-x1:0); if(d<bd){ bd=d; best=i; } });
+    if(best===selN) return; selN=best; paint(); if(best>=0) hearNote(l,l.ev[best]);
+  };
   wrap.querySelectorAll(".scope-handle").forEach(h=>{
     h.onpointerdown=ev=>{
       ev.preventDefault(); ev.stopPropagation();
@@ -965,7 +1091,7 @@ function renderStrip(){
     return '<button class="lay'+(l.id===selL?" sel":"")+(l.mute?" off":"")+
       '" data-lay="'+l.id+'" style="color:'+I.c+'">'+
       '<div class="ln">'+esc(I.n)+'</div>'+
-      '<div class="lm">'+l.ev.length+' notes</div>'+
+      '<div class="lm">'+l.ev.length+' notes'+(l.loop&&l.ev.length?' \u00b7 '+(barSnap?loopBars(l)+(loopBars(l)===1?' bar':' bars'):(layLen(l)/1000).toFixed(1)+'s'):'')+'</div>'+
       '<div class="lr">'+(l.loop?(an&&an.id===l.id?"anchor":"loop"):"once")+'</div>'+
       '<span class="lay-play'+(on?" on":"")+'" data-playlay="'+l.id+'" role="button" aria-label="Play this layer">'+(on?"&#9632;":"&#9654;")+'</span>'+
       '</button>';
@@ -973,6 +1099,7 @@ function renderStrip(){
 }
 $("strip").onclick=e=>{
   if(e.target.closest("#addLay")){ startOrStop(); return; }
+  selN=-1;
   const p=e.target.closest("[data-playlay]");
   if(p){ e.stopPropagation(); playLayer(p.dataset.playlay); return; }
   const b=e.target.closest("[data-lay]"); if(!b) return;
@@ -1080,15 +1207,57 @@ function setView(v){
 }
 $("seg").onclick=e=>{ const b=e.target.closest("[data-v]"); if(b) setView(b.dataset.v); };
 
+function paintSong(){
+  const BW=DB.SONG_BW, total=Math.max(8,songLenBars()+4), b=song.find(x=>x.id===selB);
+  if(!layers.length) return '<p style="font-size:14px;line-height:1.6;color:var(--dim);margin:6px 2px">Record a layer first. Then this is where you lay layers out along the bars into a whole track.</p>';
+  let ruler=""; for(let i=0;i<total;i++) ruler+='<span style="left:'+(i*BW)+'px">'+(i+1)+'</span>';
+  const lanes=layers.map(l=>{ const I=IN(l.inst), cyc=l.ev.length?loopBars(l):1;
+    const blocks=song.filter(x=>x.lay===l.id).map(x=>'<div class="blk'+(x.id===selB?" sel":"")+'" data-blk="'+x.id+'" style="left:'+(x.bar*BW)+'px;width:'+(x.reps*cyc*BW-3)+'px">'+
+      esc(I.n)+(x.reps>1?' <b>&times;'+x.reps+'</b>':'')+'</div>').join("");
+    return '<div class="lane" style="color:'+I.c+'"><div class="lane-l">'+esc(I.n)+'<small>'+(l.ev.length?cyc+(cyc===1?" bar":" bars"):"empty")+'</small></div>'+
+      '<div class="lane-t" data-lane="'+l.id+'" style="width:'+(total*BW)+'px">'+blocks+'</div></div>'; }).join("");
+  return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">'+
+    '<span class="lbl" style="flex:1">Song \u00b7 '+songLenBars()+' bars \u00b7 '+song.length+' blocks</span>'+
+    '<button class="qm" data-help="song" aria-label="What the song is">?</button></div>'+
+    (b?'<div class="row" style="margin-bottom:8px">'+
+      '<button class="btn sm" data-sb="reps">&times;'+b.reps+'</button>'+
+      '<button class="btn sm" data-sb="left" aria-label="Earlier">&#9664;</button>'+
+      '<button class="btn sm" data-sb="right" aria-label="Later">&#9654;</button>'+
+      '<button class="btn sm" data-sb="dup">again</button>'+
+      '<button class="btn sm dan" data-sb="del">remove</button>'+
+      '<button class="qm" data-help="block" aria-label="What a block is">?</button></div>'
+     :'<p class="note">Tap an empty spot on a lane to place that layer there. Tap a block to change it.</p>')+
+    '<div class="tl" id="tl"><div class="tl-in" style="width:'+(total*BW+92)+'px"><div class="ruler"><div class="ruler-in">'+ruler+'</div></div>'+lanes+
+    '<div class="tl-play" id="tlPlay"></div></div></div>';
+}
 function paint(){
   const el=$("panel");
   if(view==="layers") el.innerHTML=paintLayers();
   else if(view==="shape") el.innerHTML=paintShape();
+  else if(view==="song") el.innerHTML=paintSong();
   else el.innerHTML=paintNotes();
   if(view==="notes"){ const t=$("np"); if(t) t.value=notepad; }
   if(view==="shape") syncSliders();
   if(view==="layers"){ drawScope(); bindScopeDrag(); if(playing) scopeOn(); }
+  if(view==="song"&&playing) scopeOn();
 }
+$("panel").addEventListener("click",e=>{
+  if(view!=="song") return;
+  const sb=e.target.closest("[data-sb]");
+  if(sb){ const b=song.find(x=>x.id===selB); if(!b) return; const a=sb.dataset.sb;
+    if(a==="reps") b.reps={1:2,2:4,4:8,8:1}[b.reps]||1;
+    else if(a==="left") b.bar=Math.max(0,b.bar-1);
+    else if(a==="right") b.bar=Math.min(999,b.bar+1);
+    else if(a==="dup"){ const l=layers.find(x=>x.id===b.lay); const c={id:newId(),lay:b.lay,bar:b.bar+b.reps*(l?loopBars(l):1),reps:b.reps}; song.push(c); selB=c.id; }
+    else if(a==="del"){ song=song.filter(x=>x.id!==b.id); selB=null; }
+    paint(); save(); return; }
+  const bk=e.target.closest("[data-blk]");
+  if(bk){ selB=selB===bk.dataset.blk?null:bk.dataset.blk; paint(); return; }
+  const ln=e.target.closest("[data-lane]");
+  if(ln){ const l=layers.find(x=>x.id===ln.dataset.lane); if(!l||!l.ev.length){ toast("that layer is empty"); return; }
+    const r=ln.getBoundingClientRect(), bar=Math.max(0,Math.floor((e.clientX-r.left)/DB.SONG_BW));
+    const c={id:newId(),lay:l.id,bar,reps:1}; song.push(c); selB=c.id; paint(); save(); return; }
+});
 function paintLayers(){
   const l=layers.find(x=>x.id===selL);
   if(!layers.length) return '<p style="font-size:14px;line-height:1.6;color:var(--dim);margin:6px 2px">'+
@@ -1117,6 +1286,7 @@ function paintLayers(){
     '<div class="sl"><div class="st"><span>Cut after</span>'+
       '<span class="sv" id="svOut">'+(tw.tOut/1000).toFixed(2)+'s</span></div>'+
       '<input type="range" id="trOut" min="0" max="'+max+'" step="10" value="'+tw.tOut+'" data-trim="out" aria-label="Cut after"></div>'+
+    touchStrip(l)+
     '<div class="row" style="margin-bottom:6px">'+
     '<button class="btn sm'+(soloOn?" on":"")+'" data-act="playlay">'+(soloOn?"stop this":"play this layer")+'</button>'+
     '<button class="qm" data-help="playLayer" aria-label="What play this does">?</button>'+
@@ -1132,8 +1302,60 @@ function paintLayers(){
     '<button class="qm" data-help="onoff" aria-label="What silencing does">?</button>'+
     '<button class="btn sm" data-act="empty">empty it</button>'+
     '<button class="qm" data-help="empty" aria-label="What empty does">?</button>'+
-    '<button class="btn sm dan" data-act="del">delete</button></div>';
+    '<button class="btn sm dan" data-act="del">delete</button></div>'+
+    '<div class="row" style="margin-top:6px"><button class="btn sm" data-act="dup">duplicate layer</button>'+
+    '<button class="qm" data-help="dup" aria-label="What duplicate does">?</button></div>';
 }
+/* the selected note's touches. selN is an index into l.ev; -1 = none */
+function noteLabel(l,e){
+  if(!e) return "";
+  const bars=(e.start/barMs()); const name=e.pad?(DB.PADS.find(p=>p.id===e.pad)||{}).n:mName(e.midi);
+  return name+" \u00b7 bar "+(Math.floor(bars)+1)+"."+(Math.floor((bars%1)*4)+1)+" \u00b7 "+(e.dur/1000).toFixed(2)+"s";
+}
+function touchStrip(l){
+  const e=l.ev[selN];
+  if(!e) return '<p class="note" style="margin:2px 2px 8px">Tap a note in the picture to give just that note a touch: vibrato, swell, fade, bend, trill.'+
+    ' <button class="qm" data-help="touches" aria-label="What touches are" style="vertical-align:middle">?</button></p>';
+  const fx=e.fx||{};
+  const on=k=>k==="bu"?fx.b>0:k==="bd"?fx.b<0:!!fx[k];
+  return '<div class="touch"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'+
+    '<button class="qm" data-nn="-1" aria-label="Previous note">&#9664;</button>'+
+    '<span class="lbl" style="flex:1;color:var(--blue)">'+esc(noteLabel(l,e))+'</span>'+
+    '<button class="qm" data-nn="1" aria-label="Next note">&#9654;</button>'+
+    '<button class="qm" data-help="touches" aria-label="What touches are">?</button></div>'+
+    '<div class="chips">'+DB.TOUCHES.filter(t=>!(e.pad&&t.k!=="f"&&t.k!=="s")).map(t=>'<button class="btn sm'+(on(t.k)?" on":"")+'" data-tk="'+t.k+'">'+t.n+'</button>').join("")+'</div>'+
+    (fx.v?vibStrip(fx):'')+
+    '<div class="sl" style="margin:8px 0"><div class="st"><span>Amount'+(fx.v?' (swell, fade, bend)':'')+'</span><span class="sv" id="svAmt">'+Math.round(touchAmt*100)+'%</span></div>'+
+    '<input type="range" min="5" max="100" step="1" id="amt" value="'+Math.round(touchAmt*100)+'" aria-label="Amount"></div>'+
+    '<div class="row"><button class="btn sm" data-act="hearnote">hear this note</button>'+
+    '<button class="btn sm" data-act="fxall">all notes</button>'+
+    '<button class="btn sm" data-act="fxclear">clear</button></div></div>';
+}
+function setTouch(e,k,onOff){
+  const fx={...(e.fx||{})};
+  if(k==="bu") fx.b=onOff?touchAmt:0; else if(k==="bd") fx.b=onOff?-touchAmt:0;
+  else if(k==="t") fx.t=onOff?1:0;
+  else if(k==="v"){ fx.v=onOff?.45:0; if(onOff&&fx.vr==null) fx.vr=.5; }
+  else fx[k]=onOff?touchAmt:0;
+  e.fx=fxAny(fx)?fx:undefined;
+}
+function scaleTouch(e){ const fx=e.fx; if(!fx) return;
+  ["s","f"].forEach(k=>{ if(fx[k]) fx[k]=touchAmt; }); if(fx.b) fx.b=Math.sign(fx.b)*touchAmt; }
+/* the three words. speed is the thing that changes the word; width follows a little */
+const VIB=[{n:"vibrate",vr:.12,v:.6},{n:"viBRate",vr:.5,v:.45},{n:"viBRRRate",vr:.92,v:.3}];
+const vibWord=vr=>vr<.33?"vibrate":vr<.67?"viBRate":"viBRRRate";
+function vibStrip(fx){
+  const vr=fx.vr==null?.5:fx.vr;
+  return '<div class="vib"><div class="lbl" style="margin:8px 0 5px;color:var(--blue)">Vibrato</div>'+
+    '<div class="row" style="margin-bottom:6px">'+VIB.map((p,i)=>'<button class="btn sm'+(Math.abs(vr-p.vr)<.12?" on":"")+'" data-vp="'+i+'">'+p.n+'</button>').join("")+'</div>'+
+    '<div class="sl" style="margin:6px 0"><div class="st"><span>Speed</span><span class="sv" id="svFxvr">'+vibWord(vr)+' \u00b7 '+(3.2+vr*6.5).toFixed(1)+'/s</span></div>'+
+    '<input type="range" min="0" max="100" step="1" data-fx="vr" value="'+Math.round(vr*100)+'" aria-label="Vibrato speed"></div>'+
+    '<div class="sl" style="margin:6px 0"><div class="st"><span>Width</span><span class="sv" id="svFxv">'+Math.round(fx.v*100)+'%</span></div>'+
+    '<input type="range" min="5" max="100" step="1" data-fx="v" value="'+Math.round(fx.v*100)+'" aria-label="Vibrato width"></div></div>';
+}
+function hearNote(l,e){ boot(); if(ctx.resume) ctx.resume();
+  if(e.pad){ drum(e.pad,l.sh); return; }
+  const v=voice(l.inst,e.midi,l.sh,e.fx,e.dur/1000); timers.push(setTimeout(()=>release(v),e.dur)); }
 function paintShape(){
   const l=layers.find(x=>x.id===selL);
   const target=l?("Layer: "+IN(l.inst).n):("Keyboard: "+IN(inst).n);
@@ -1174,6 +1396,13 @@ function syncSliders(){
   });
 }
 $("panel").addEventListener("input",e=>{
+  const fxr=e.target.closest("[data-fx]");
+  if(fxr){ const l=layers.find(x=>x.id===selL), ev=l&&l.ev[selN]; if(!ev||!ev.fx) return;
+    const k=fxr.dataset.fx, v=Math.max(0,Math.min(1,(+fxr.value||0)/100)); ev.fx[k]=k==="v"?Math.max(.05,v):v;
+    $("svFx"+k).textContent=k==="vr"?vibWord(v)+" \u00b7 "+(3.2+v*6.5).toFixed(1)+"/s":Math.round(ev.fx.v*100)+"%";
+    document.querySelectorAll("[data-vp]").forEach((b,i)=>b.classList.toggle("on",k==="vr"&&Math.abs(v-VIB[i].vr)<.12)); save(); return; }
+  if(e.target.id==="amt"){ touchAmt=Math.max(.05,Math.min(1,(+e.target.value||60)/100)); $("svAmt").textContent=Math.round(touchAmt*100)+"%";
+    const l=layers.find(x=>x.id===selL), ev=l&&l.ev[selN]; if(ev){ scaleTouch(ev); save(); } return; }
   const r=e.target.closest("[data-k]");
   if(r){ setShape(r.dataset.k,(+r.value||0)/100); syncSliders(); save(); return; }
   if(e.target.id==="np"){ notepad=e.target.value; save(); }
@@ -1185,7 +1414,8 @@ $("panel").addEventListener("input",e=>{
     else setTrim(tw.tIn, +tr.value, true);
   }
 });
-$("panel").addEventListener("change",e=>{ if(e.target.closest("[data-trim]")){ paint(); save(); } });
+$("panel").addEventListener("change",e=>{ if(e.target.closest("[data-trim]")){ paint(); save(); }
+  if(e.target.id==="amt"||e.target.closest("[data-fx]")){ const l=layers.find(x=>x.id===selL), ev=l&&l.ev[selN]; if(ev) hearNote(l,ev); } });
 $("panel").addEventListener("click",e=>{
   const h=e.target.closest("[data-help]");
   if(h){ openHelp(h.dataset.help); return; }
@@ -1194,17 +1424,33 @@ $("panel").addEventListener("click",e=>{
     const l=layers.find(x=>x.id===selL);
     if(l) l.sh={...p.s}; else shape={...p.s};
     syncSliders(); save(); toast(p.n); hearIt(); return; }
+  const nn=e.target.closest("[data-nn]");
+  if(nn){ const l=layers.find(x=>x.id===selL); if(!l||!l.ev.length) return;
+    const order=l.ev.map((x,i)=>i).sort((a,b)=>l.ev[a].start-l.ev[b].start);
+    let k=order.indexOf(selN); k=(k+(+nn.dataset.nn)+order.length)%order.length; selN=order[k];
+    paint(); hearNote(l,l.ev[selN]); return; }
+  const vp=e.target.closest("[data-vp]");
+  if(vp){ const l=layers.find(x=>x.id===selL), ev=l&&l.ev[selN]; if(!ev||!ev.fx) return;
+    const P=VIB[+vp.dataset.vp]; ev.fx.vr=P.vr; ev.fx.v=P.v; paint(); save(); hearNote(l,ev); return; }
+  const tk=e.target.closest("[data-tk]");
+  if(tk){ const l=layers.find(x=>x.id===selL), ev=l&&l.ev[selN]; if(!ev) return;
+    setTouch(ev,tk.dataset.tk,!tk.classList.contains("on")); paint(); save(); hearNote(l,ev); return; }
   const a=e.target.closest("[data-act]");
   if(!a) return;
   const act=a.dataset.act, l=layers.find(x=>x.id===selL);
   if(act==="hearit"){ hearIt(); return; }
   if(!l) return;
+  if(act==="hearnote"){ const ev=l.ev[selN]; if(ev) hearNote(l,ev); return; }
+  if(act==="fxall"){ const ev=l.ev[selN]; if(!ev) return; l.ev.forEach(x=>{ x.fx=ev.fx?{...ev.fx}:undefined; }); save(); toast("every note in this layer"); return; }
+  if(act==="fxclear"){ const ev=l.ev[selN]; if(ev) ev.fx=undefined; paint(); save(); return; }
+  if(act==="dup"){ const c={...l,id:newId(),sh:{...l.sh},ev:l.ev.map(x=>({...x,fx:x.fx?{...x.fx}:undefined}))};
+    const at=layers.indexOf(l); layers.splice(at+1,0,c); selL=c.id; selN=-1; renderStrip(); paint(); save(); toast("copied"); return; }
   if(act==="loop"){ l.loop=!l.loop; if(l.loop&&!anchorId) anchorId=l.id; }
   else if(act==="anchor"){ if(l.loop) anchorId=l.id; }
   else if(act==="mute"){ l.mute=!l.mute; }
-  else if(act==="empty"){ l.ev=[]; l.trimIn=0; l.trimOut=null; }
-  else if(act==="del"){ layers=layers.filter(x=>x.id!==l.id);
-    selL=layers.length?layers[0].id:null; if(anchorId===l.id) anchorId=null; }
+  else if(act==="del"){ layers=layers.filter(x=>x.id!==l.id); song=song.filter(b=>b.lay!==l.id);
+    selL=layers.length?layers[0].id:null; if(anchorId===l.id) anchorId=null; selN=-1; }
+  else if(act==="empty"){ l.ev=[]; l.trimIn=0; l.trimOut=null; selN=-1; }
   else if(act==="playlay"){ playLayer(l.id); return; }
   else if(act==="trimsilence"){
     const first=firstAttack(l);
@@ -1227,6 +1473,23 @@ function hearIt(){
     const v=voice(id,base+(i===3?5:0),sh); timers.push(setTimeout(()=>release(v),200)); },d)));
 }
 
+/* =========================== SONG ====================================== */
+/* a block is one appearance of a layer at a bar. its cycle is the layer's
+   whole-bar length; reps plays that cycle back to back. the layer is the
+   source: nothing is copied into the block. */
+const cycleMs=l=>loopBars(l)*barMs();
+function songMix(){
+  const out=[];
+  song.forEach(b=>{ const l=layers.find(x=>x.id===b.lay); if(!l||!l.ev.length||l.mute) return;
+    const ev=eventsOf(l), cyc=cycleMs(l), t0=b.bar*barMs();
+    for(let k=0;k<b.reps;k++) ev.forEach(e=>out.push({...e,inst:l.inst,sh:l.sh,start:t0+k*cyc+e.start,lay:l.id,blk:b.id})); });
+  return out;
+}
+const songLenBars=()=>song.reduce((m,b)=>{ const l=layers.find(x=>x.id===b.lay); return l?Math.max(m,b.bar+b.reps*loopBars(l)):m; },0);
+/* what "play" and "write it down" mean right now */
+const useSong=()=>song.length>0&&songMix().length>0;
+const activeMix=()=>useSong()?songMix():mix();
+
 /* =========================== TRANSPORT ================================= */
 function play(list,isGuide,sid){
   if(playing&&!isGuide){ stop(); return; }
@@ -1242,7 +1505,7 @@ function play(list,isGuide,sid){
   const end=Math.max(...list.map(e=>e.start+e.dur));
   list.forEach(ev=>timers.push(setTimeout(()=>{
     if(ev.inst==="drums"){ drum(ev.pad||"kick",ev.sh); return; }
-    const v=voice(ev.inst,ev.midi,ev.sh);
+    const v=voice(ev.inst,ev.midi,ev.sh,ev.fx,ev.dur/1000);
     timers.push(setTimeout(()=>release(v),ev.dur));
   },ev.start)));
   timers.push(setTimeout(stop,end+1100));
@@ -1253,8 +1516,8 @@ function stop(){ playing=false; soloId=null; playOrigin=null;
   $("countVeil").classList.add("hidden");
   renderStrip(); if(view==="layers") paint(); }
 function togglePlay(){
-  if(playing&&soloId){ stop(); play(mix(),false,null); return; }
-  play(mix(),false,null);
+  if(playing&&soloId){ stop(); play(activeMix(),false,null); return; }
+  play(activeMix(),false,null);
 }
 function playLayer(id){
   const l=layers.find(x=>x.id===id);
@@ -1428,10 +1691,12 @@ function loadAll(){
 
 /* =========================== SAVE / SHARE ============================== */
 function pack(){
-  const o={v:7,name:fragName,notes:notepad,anchor:anchorId,shape:shape,bpm:bpm,
+  const o={v:8,name:fragName,notes:notepad,anchor:anchorId,shape:shape,bpm:bpm,
     layers:layers.map(l=>({i:l.inst,l:l.loop?1:0,m:l.mute?1:0,id:l.id,s:l.sh,
       ti:l.trimIn||0, to:l.trimOut==null?-1:l.trimOut,
-      e:l.ev.map(e=>[e.pad?DB.PADS.findIndex(p=>p.id===e.pad):e.midi,e.start,e.dur,e.pad?1:0])}))};
+      e:l.ev.map(e=>{ const a=[e.pad?DB.PADS.findIndex(p=>p.id===e.pad):e.midi,e.start,e.dur,e.pad?1:0];
+        if(fxAny(e.fx)) a.push([e.fx.v||0,e.fx.s||0,e.fx.f||0,e.fx.b||0,e.fx.t?1:0,e.fx.vr==null?.5:e.fx.vr].map(x=>Math.round(x*100)/100)); return a; })})),
+    song:song.map(b=>[b.lay,b.bar,b.reps])};
   return DB.code+"|"+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 }
 function unpack(code){
@@ -1463,7 +1728,8 @@ function unpack(code){
       ev:(l.e||[]).slice(0,4000).map(f=>({
         midi:f[3]||id==="drums"?padAt(f[0]).m:clampM(f[0]),
         pad:(f[3]||id==="drums")?padAt(f[0]).id:null,
-        start:Math.max(0,f[1]|0),dur:Math.max(40,f[2]|0)}))});
+        start:Math.max(0,f[1]|0),dur:Math.max(40,f[2]|0),
+        fx:Array.isArray(f[4])?readFx(f[4]):undefined}))});
   });
   (o.takes||[]).slice(0,32).forEach(t=>{
     const id=fixId(t.i);
@@ -1483,11 +1749,18 @@ function unpack(code){
   return {name:String(o.name||"sketch").slice(0,60),notes:String(o.notes||"").slice(0,8000),
     anchor:typeof o.anchor==="string"?o.anchor.slice(0,24):null,
     shape:{...DB.SHAPE0,...(o.shape&&typeof o.shape==="object"?o.shape:{})},layers:L,
-    bpm:clampBpm(o.bpm)};
+    bpm:clampBpm(o.bpm),song:readSong(o.song,L)};
 }
+function readSong(raw,L){ const S=[], ids=new Set(L.map(l=>l.id));
+  (Array.isArray(raw)?raw:[]).slice(0,400).forEach(b=>{ if(!Array.isArray(b)||!ids.has(b[0])) return;
+    S.push({id:newId(),lay:b[0],bar:Math.max(0,Math.min(999,b[1]|0)),reps:[1,2,4,8].includes(b[2]|0)?b[2]|0:1}); });
+  return S; }
+const c01=x=>Math.max(0,Math.min(1,+x||0));
+function readFx(a){ const fx={v:c01(a[0]),s:c01(a[1]),f:c01(a[2]),b:Math.max(-1,Math.min(1,+a[3]||0)),t:a[4]?1:0,vr:a[5]==null?.5:c01(a[5])}; return fxAny(fx)?fx:undefined; }
 const clampBpm=v=>{ v=Math.round(+v); return isFinite(v)&&v>0?Math.min(DB.BPM_MAX,Math.max(DB.BPM_MIN,v)):DB.BPM0; };
 function adopt(o,label){
   fragName=o.name; notepad=o.notes; layers=o.layers; anchorId=o.anchor; shape=o.shape; bpm=o.bpm||DB.BPM0;
+  song=o.song||[]; selB=null; selN=-1;
   selL=layers.length?layers[0].id:null;
   renderStrip(); paint(); save();
   toast((label||"loaded")+" \u00b7 "+layers.length+" layers");
@@ -1503,7 +1776,7 @@ function chanMap(list){
 }
 function layerTracks(){
   /* one track per layer that has sound. loops arrive already unrolled by mix(). */
-  const mx=mix(), out=[];
+  const mx=activeMix(), out=[];
   layers.forEach((l,i)=>{ const ev=mx.filter(e=>e.lay===l.id); if(!ev.length) return;
     out.push({l,i,name:IN(l.inst).n+" "+(i+1),ev}); });
   return out;
@@ -1516,7 +1789,7 @@ function midiBytes(){
   const chunk=trk=>{ trk.push(...vlq(0),0xff,0x2f,0x00); const L=trk.length;
     const o=[0x4d,0x54,0x72,0x6b,(L>>24)&255,(L>>16)&255,(L>>8)&255,L&255];
     for(let i=0;i<L;i++) o.push(trk[i]); return o; };
-  const CH=chanMap(mix()), tr=layerTracks(), us=Math.round(60000000/bpm);
+  const CH=chanMap(activeMix()), tr=layerTracks(), us=Math.round(60000000/bpm);
   const t0=[...text(fragName),...vlq(0),0xff,0x51,0x03,(us>>16)&255,(us>>8)&255,us&255,
             ...vlq(0),0xff,0x58,0x04,4,2,24,8];
   const tracks=[chunk(t0)];
@@ -1544,7 +1817,7 @@ const unitMs=()=>60000/bpm/grid;
 const PC_STEP=["C","C","D","D","E","F","F","G","G","A","A","B"], PC_ALT=[0,1,0,1,0,0,1,0,1,0,1,0];
 function quantize(ev){
   const u=unitMs();
-  const q=ev.map(e=>({s:Math.round(e.start/u),d:Math.max(1,Math.round(e.dur/u)),midi:e.midi,pad:e.pad}))
+  const q=ev.map(e=>({s:Math.round(e.start/u),d:Math.max(1,Math.round(e.dur/u)),midi:e.midi,pad:e.pad,fx:e.fx}))
     .sort((a,b)=>a.s-b.s||a.midi-b.midi);
   const g=[];
   q.forEach(n=>{ const L=g[g.length-1];
@@ -1585,7 +1858,7 @@ function detectKey(midis){
   const SH=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"], FL=["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
   return {fifths:f,name:(f<0?FL:SH)[best.pc]+(best.minor?" minor":" major")};
 }
-function pitchedMidis(){ return mix().filter(e=>!e.pad).map(e=>e.midi); }
+function pitchedMidis(){ return activeMix().filter(e=>!e.pad).map(e=>e.midi); }
 function musicXml(){
   const tr=layerTracks(), key=detectKey(pitchedMidis()), barU=4*grid, x=esc;
   let list="", parts="";
@@ -1622,8 +1895,12 @@ function musicXml(){
           if(n.pad){ const P=DB.PADS.find(q=>q.id===n.pad)||DB.PADS[0]; s+='<instrument id="'+pid+'-I'+P.m+'"/>'; }
           s+='<type>'+pc.type+'</type>'+(pc.dot?'<dot/>':'');
           if(n.pad) s+='<notehead>'+(/hh|crash/.test(n.pad)?'x':'normal')+'</notehead>';
-          if(tieE||tieS) s+='<notations>'+(tieE?'<tied type="stop"/>':'')+(tieS?'<tied type="start"/>':'')+'</notations>';
+          const fx=n.fx||{}, orn=(fx.t?'<trill-mark/>':'')+(fx.v?'<wavy-line type="start"/>':'');
+          if(tieE||tieS||orn) s+='<notations>'+(tieE?'<tied type="stop"/>':'')+(tieS?'<tied type="start"/>':'')+(orn?'<ornaments>'+orn+'</ornaments>':'')+'</notations>';
+          if(fx.s&&!ni&&k===0) cur+='<direction placement="below"><direction-type><wedge type="crescendo"/></direction-type></direction>';
+          if(fx.f&&!ni&&k===0) cur+='<direction placement="below"><direction-type><wedge type="diminuendo"/></direction-type></direction>';
           cur+=s+'</note>';
+          if((fx.s||fx.f)&&ni===tok.n.length-1&&k===pieces.length-1) cur+='<direction placement="below"><direction-type><wedge type="stop"/></direction-type></direction>';
         });
         pos+=pc.units; if(pos%barU===0){ close(); open(); }
       });
@@ -1656,8 +1933,9 @@ function abcOut(){
     let pos=0, bar={}, line="", bars=0;
     tokens(quantize(t.ev)).forEach(tok=>{
       if(tok.rest) line+="z"+tok.units;
-      else { const ns=tok.n.map(n=>n.pad?drumPitch(n.pad):abcPitch(n.midi,bar));
-        line+=(ns.length>1?"["+ns.join("")+"]":ns[0])+tok.units+(tok.tieS?"-":""); }
+      else { const ns=tok.n.map(n=>n.pad?drumPitch(n.pad):abcPitch(n.midi,bar)), fx=tok.n[0].fx||{};
+        line+=(fx.t?"!trill!":"")+(fx.v?"!vibrato!":"")+(fx.s?"!<(!":"")+(fx.f?"!>(!":"")+
+          (ns.length>1?"["+ns.join("")+"]":ns[0])+tok.units+(tok.tieS?"-":"")+(fx.s?"!<)!":"")+(fx.f?"!>)!":""); }
       line+=" "; pos+=tok.units;
       if(pos%barU===0){ line+="| "; bar={}; bars++; if(bars%4===0) line+="\n"; }
     });
@@ -1671,7 +1949,7 @@ function openExport(){
   sheet('<h2>Write it down</h2>'+
     '<div class="lbl mh">The beat it is written on</div>'+tempoBlock()+
     '<div class="row" style="margin-bottom:10px"><button class="btn sm" data-x="grid" id="gridB">'+(grid===4?"detail: fine (16ths)":"detail: coarse (8ths)")+'</button></div>'+
-    '<p>Feels like <b style="color:var(--blue)">'+esc(key.name)+'</b>. Nothing you played changes; this only decides how it is written down.</p>'+
+    '<p>'+(useSong()?'Writing the <b style="color:var(--blue)">Song</b> ('+songLenBars()+' bars). ':'Writing the sketch as it plays now. ')+'Feels like <b style="color:var(--blue)">'+esc(key.name)+'</b>. Nothing you played changes; this only decides how it is written down.</p>'+
     '<div class="xp"><div class="xt"><b>Sheet music</b><span>Opens in MuseScore (free) or any notation app and prints as a real score. For a human.</span></div><button class="mini" data-x="xml">save</button></div>'+
     '<div class="xp"><div class="xt"><b>MIDI</b><span>For a music app: GarageBand, Logic, Ableton. One track per layer, with the tempo.</span></div><button class="mini" data-x="midi">save</button></div>'+
     '<div class="xp"><div class="xt"><b>Text score</b><span>Plain text an AI can read. Paste it straight into a prompt, or into abcjs.net to see it as notes.</span></div><button class="mini" data-x="abc">save</button></div>'+
@@ -1679,7 +1957,7 @@ function openExport(){
     '<div class="row" style="margin-top:6px"><button class="qm" data-help="sheet" aria-label="Which one do I want">?</button>'+
     '<button class="big ghost" data-m="menu" style="margin:0">Back to menu</button></div>');
 }
-function setBpm(v){ bpm=clampBpm(v); const t=$("tv"); if(t) t.textContent=bpm; if(view==="layers") drawScope(); save(); }
+function setBpm(v){ bpm=clampBpm(v); const t=$("tv"); if(t) t.textContent=bpm; renderStrip(); if(view==="layers") drawScope(); save(); }
 $("sheetIn").addEventListener("click",e=>{
   const b=e.target.closest("[data-x]"); if(!b) return;
   const a=b.dataset.x;
@@ -1687,13 +1965,16 @@ $("sheetIn").addEventListener("click",e=>{
   if(a==="tup"){ setBpm(bpm+1); return; }
   if(a==="click"){ clickOn=!clickOn; setLS(LS.click,clickOn?"1":"0");
     const b=$("clickB"); b.classList.toggle("on",clickOn); b.textContent=clickOn?"click while recording: on":"click while recording: off"; return; }
+  if(a==="bars"){ barSnap=!barSnap; setLS(LS.bars,barSnap?"1":"0");
+    const b=$("barsB"); b.classList.toggle("on",barSnap); b.textContent=barSnap?"repeats on whole bars: on":"repeats on whole bars: off";
+    renderStrip(); if(view==="layers") drawScope(); return; }
   if(a==="grid"){ grid=grid===4?2:4; $("gridB").textContent=grid===4?"detail: fine (16ths)":"detail: coarse (8ths)"; return; }
   if(a==="tap"){ const now=performance.now(); taps=taps.filter(t=>now-t<3000); taps.push(now);
     if(taps.length>=3){ let d=0; for(let i=1;i<taps.length;i++) d+=taps[i]-taps[i-1];
       setBpm(60000/(d/(taps.length-1))); toast(bpm+" a minute"); } else toast("keep tapping"); return; }
-  if(!mix().length){ toast("nothing to write down yet"); return; }
+  if(!activeMix().length){ toast("nothing to write down yet"); return; }
   if(a==="xml"){ dl(fragName+".musicxml",musicXml(),"application/vnd.recordare.musicxml+xml"); toast("sheet music saved"); return; }
-  if(a==="midi"){ const CH=chanMap(mix()); if(CH._over>0) toast("more than 15 instruments, some will share a sound");
+  if(a==="midi"){ const CH=chanMap(activeMix()); if(CH._over>0) toast("more than 15 instruments, some will share a sound");
     dl(fragName+".mid",midiBytes(),"audio/midi"); toast("MIDI saved"); return; }
   if(a==="abc"){ dl(fragName+".abc",abcOut()); toast("text score saved"); return; }
   if(a==="text"){ dl(fragName+".txt",textOut()); toast("note list saved"); return; }
@@ -1765,6 +2046,8 @@ function openSettings(){
     '<div class="lbl mh">Recording</div>'+
     '<div class="row" style="margin-bottom:10px"><button class="btn sm'+(clickOn?" on":"")+'" data-x="click" id="clickB">'+(clickOn?"click while recording: on":"click while recording: off")+'</button>'+
     '<button class="qm" data-help="click" aria-label="What the click is">?</button></div>'+
+    '<div class="row" style="margin-bottom:10px"><button class="btn sm'+(barSnap?" on":"")+'" data-x="bars" id="barsB">'+(barSnap?"repeats on whole bars: on":"repeats on whole bars: off")+'</button>'+
+    '<button class="qm" data-help="barsnap" aria-label="What bar repeats are">?</button></div>'+
     '<div class="lbl mh">The beat</div>'+tempoBlock()+
     '<p class="note">The tempo belongs to the sketch and rides in the track code. It never changes what you played, only the count-in, the click, and how it is written down.</p>'+
     '<div class="lbl mh">Sounds</div>'+
@@ -1813,7 +2096,7 @@ $("sheetIn").addEventListener("click",e=>{
   if(a==="guide"){ openGuide(); return; }
   if(a==="share"){ doShare(); return; }
   if(a==="sounds"){ closeSheet(); loadAll(); return; }
-  if(a==="wipe"){ if(confirm("Start a new sketch? Every layer is deleted.")){ layers=[]; selL=null; anchorId=null;
+  if(a==="wipe"){ if(confirm("Start a new sketch? Every layer is deleted.")){ layers=[]; song=[]; selB=null; selN=-1; selL=null; anchorId=null;
     renderStrip(); paint(); save(); closeSheet(); toast("new sketch"); } return; }
 });
 $("sheetIn").addEventListener("click",e=>{
@@ -1855,11 +2138,12 @@ function openGuide(){
   sheet('<h2>The whole thing in seven lines</h2>'+
     '<p class="gl"><b>1.</b> Tap <b>Sound</b> and pick an instrument. Real recordings, so the first tap downloads it.</p>'+
     '<p class="gl"><b>2.</b> Hit the <b>red button</b>. Four ticks count you in, then play; a quiet click keeps the beat while you do. That is one layer.</p>'+
-    '<p class="gl"><b>3.</b> Hit red again for a second layer. What you already did plays along, so parts stack.</p>'+
+    '<p class="gl"><b>3.</b> Hit red again for a second layer. What you already did plays along, so parts stack. A layer set to <b>repeat</b> cycles on whole bars at the tempo, so play to the click and it lands.</p>'+
     '<p class="gl"><b>4.</b> Tap a layer in the strip to work on it: trim the start, play only that layer, make it <b>repeat</b>, silence it, empty it.</p>'+
     '<p class="gl"><b>5.</b> <b>Shape</b> changes how a sound behaves. Try a preset first, nudge sliders after.</p>'+
     '<p class="gl"><b>6.</b> The <b>&#9678;</b> up top finds a note by ear. Higher or lower until it matches, then it names it.</p>'+
     '<p class="gl"><b>7.</b> Menu, then <b>Write it down</b>: your layers become sheet music, a MIDI file for a music app, or text to paste into an AI.</p>'+
+    '<p class="gl"><b>8.</b> <b>Song</b> tab: lay layers out along the bars into a whole track. Same layer as many times as you like. Tap a note in a layer\'s picture to give just that note vibrato, a swell, a bend.</p>'+
     '<p>Every <b>?</b> in the app explains only the control next to it. Anything that is a switch or a loudness lives in <b>Menu, then Settings</b>.</p>'+
     '<p>If you hear nothing at all, check the silent switch. iOS mutes web audio with it on.</p>'+
     '<button class="big" data-close>Start</button>');
@@ -1874,7 +2158,7 @@ document.addEventListener("pointerdown",()=>{ if(ctx&&ctx.state==="suspended") c
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"&&ctx&&ctx.state==="suspended") ctx.resume(); });
 document.addEventListener("gesturestart",e=>e.preventDefault());
 try{ const c=JSON.parse(getLS(LS.col)||"null"); if(c&&typeof c==="object") collapsed={...collapsed,...c}; }catch(e){}
-if(getLS(LS.click)==="0") clickOn=false;
+if(getLS(LS.click)==="0") clickOn=false; if(getLS(LS.bars)==="0") barSnap=false;
 { const cv=parseFloat(getLS(LS.clickVol)), mv=parseFloat(getLS(LS.vol));
   if(isFinite(cv)) clickVol=Math.min(1,Math.max(0,cv)); if(isFinite(mv)) vol=Math.min(1,Math.max(0,mv)); }
 const saved=getLS(LS.auto);
