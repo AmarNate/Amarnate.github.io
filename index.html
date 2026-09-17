@@ -1596,7 +1596,8 @@ function paintLayers(){
         (hand?'<div class="chips">'+
           [["hand","fade into"],["echo","leave an echo"],["hall","leave a hall"]].map(p=>
             '<button class="btn sm'+(hand.kind===p[0]?" on":"")+'" data-handkind="'+p[0]+'">'+p[1]+'</button>').join("")+
-        '</div>'):'')
+        '</div>':'')
+      :'')
     )+
     '</div>';
 }
