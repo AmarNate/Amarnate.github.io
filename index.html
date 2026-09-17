@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#07060b">
-<title>The Scribe v0.10</title>
+<title>The Scribe v0.10.1</title>
 <style>
 /* ---- UI FREQUENCY REALISM ---------------------------------------------------
    The screen is a dark field, not a page. Mist in uneven pockets, grain like a
@@ -352,9 +352,10 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
         loudness. Menu reorganised: sketch / send / app, with Settings and Write it
         down as sub-sheets. Help (?) works everywhere. Bright + electric pianos,
         acoustic + nylon guitars. Sound picker explains each family.
+   0.10.1: Hear it on a layer plays the layer as laid out, in its shape, not a demo arpeggio.
    =========================================================================== */
 const DB=Object.freeze({
-  version:"0.10", code:"SCR7", oldCodes:Object.freeze(["SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
+  version:"0.10.1", code:"SCR7", oldCodes:Object.freeze(["SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
   SF:"https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
   A4:440, A4_MIDI:69, PPQ:480, OCT_MIN:1, OCT_MAX:6,
   BPM0:128, BPM_MIN:40, BPM_MAX:240, GRID:4,   /* 128 is the count-in that was already there (470ms a tick) */
@@ -1148,7 +1149,7 @@ function paintShape(){
       '<button class="qm" data-help="'+s.h+'" aria-label="What '+esc(s.n)+' does">?</button></div>'+
       '<input type="range" min="0" max="100" step="1" id="sk_'+s.k+'" data-k="'+s.k+'" '+
       'aria-label="'+esc(s.n)+'"></div>').join("")+
-    '<button class="btn sm" data-act="hearit" style="margin-top:4px">Hear it</button>';
+    '<button class="btn sm" data-act="hearit" style="margin-top:4px">'+(l&&l.ev.length?"Hear the layer like this":"Hear it")+'</button>';
 }
 function paintNotes(){
   return '<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">'+
@@ -1213,9 +1214,13 @@ $("panel").addEventListener("click",e=>{
   }
   renderStrip(); paint(); save();
 });
+/* hear it: with a layer selected, that is the layer, in its shape, exactly as
+   laid out (solo, trimmed, through playLayer). the four-note demo only remains
+   for the keyboard case, where there is nothing recorded to play yet. */
 function hearIt(){
   boot(); if(ctx.resume) ctx.resume();
   const l=layers.find(x=>x.id===selL), id=l?l.inst:inst, sh=curShape();
+  if(l&&l.ev.length){ if(playing) stop(); playLayer(l.id); return; }
   if(id==="drums"){ drum("kick",sh); setTimeout(()=>drum("snare",sh),260); return; }
   const base=(IN(id).o+1)*12+7;
   [0,260,520,780].forEach((d,i)=>timers.push(setTimeout(()=>{
