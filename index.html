@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#07060b">
-<title>The Scribe v0.21</title>
+<title>The Scribe v0.22</title>
 <style>
 /* ---- UI FREQUENCY REALISM ---------------------------------------------------
    The screen is a dark field, not a page. Mist in uneven pockets, grain like a
@@ -376,7 +376,7 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
   body.song-view #panel{min-height:200px}
 }
 @media (orientation:landscape) and (max-height:560px) and (max-width:959px){
-  :root{ --scopeH:42px }
+  :root{ --scopeH:64px }
   /* phone on its side: layers + the panel (song / layer edit) own the width.
      keyboard and the note readout shrink. dock stays reachable at the bottom. */
   body{display:grid;grid-template-columns:minmax(132px,.38fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto;
@@ -406,7 +406,7 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
 /* iPhone 16 Pro on its side: 874 × 402 after rotation, island + home on the
    left/right (62px), home bar 21px. Height is the scarce thing. */
 @media (orientation:landscape) and (max-height:430px){
-  :root{ --scopeH:36px }
+  :root{ --scopeH:60px }
   #head{padding:3px 6px}
   #head .ico{width:30px;height:30px}
   #zLay .zhead{padding:4px 6px}
@@ -579,13 +579,25 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
         (tremolo). Five more voices from the same server: Synth choir, Lead
         voice, Choir pad, Halo, Whistle (34 sounds). Presets: Mythic, Hide and
         seek, Robot, Auto-tuned. Track code still SCR8 (new shape keys default 0).
+   0.21.1: Bite and Fade given a real range on every sound (slow swell in, a
+        smack at the top, a squared fade so the middle already shortens). Pitch:
+        picked notes or the whole layer move up or down by a step or an octave.
+   0.22: picking, found while recording a real bass line. "pick all" / "pick
+        none" join "pick many" on the rail (pick none is the old clear, renamed:
+        it never deleted anything). The trim handles no longer swallow the note
+        under them: a tap on a note wins, a tap on the line away from a note
+        still trims. Sideways, the picture is taller (64 / 60px instead of
+        42 / 36) so a bass note is not sitting on the beat ticks with three
+        labels stacked on top of it; the last time label no longer runs off the
+        right edge. Nothing else touched: DB, SCR8, recording, exports, Shape,
+        Song, portrait.
    =========================================================================== */
 /* every knob on a sound, all at rest. new keys default to 0 so old codes read the same. */
 const SHAPE0=Object.freeze({fade:0,bite:.5,dark:0,tail:.12,room:0,echo:0,len:.5,warp:0,chrome:0,tune:0,
   harm:0,swirl:0,dbl:0,pulse:0,breath:0,grit:0});
 const P=o=>Object.freeze({...SHAPE0,...o});
 const DB=Object.freeze({
-  version:"0.21", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
+  version:"0.22", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
   SF:"https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
   A4:440, A4_MIDI:69, PPQ:480, OCT_MIN:1, OCT_MAX:6,
   BPM0:128, BPM_MIN:40, BPM_MAX:240, GRID:4,   /* 128 is the count-in that was already there (470ms a tick) */
@@ -737,8 +749,8 @@ const DB=Object.freeze({
     anchor:"The layer that sets the repeat cycle. Every other repeating layer follows it, so nothing drifts out of time.",
     onoff:"Silences this layer without deleting it.",
     empty:"Removes the notes but keeps the layer, so you can record into it again.",
-    shapeBite:"How the note starts. Soft eases in, hard smacks in straight away.",
-    shapeFade:"How fast a note dies on its own. All the way up and it collapses the instant you hit it.",
+    shapeBite:"How the note starts, on every sound but drums. Low is a slow swell in (nearly a second). The middle eases. High smacks: the note comes in over its own loudness for a moment, so even a recording with a soft start hits.",
+    shapeFade:"How fast a note dies on its own, on every sound but drums. Halfway already cuts a long note to half a second; all the way up and it collapses the instant you hit it.",
     shapeLen:"How long a note carries on after you let go of the key.",
     shapeTail:"A tiny bit of room right after the note, so silence never fully lands before the next one.",
     shapeRoom:"How big the room is. Low is the note sitting next to you. High is the note in a big stone hall, hanging in the air after.",
@@ -762,6 +774,7 @@ const DB=Object.freeze({
     evenHolds:"Some notes you held longer than others. This slides every hold toward one length so the layer speaks more evenly. 0 keeps what you played. 100 makes every note the length below.",
     holdLen:"The length every hold walks toward. Short is a tap, long is a sung note. Moving it evens the holds all the way if they were not evened yet.",
     nudge:"Moves only the picked notes, one step of the beat at a time. Earlier / later slide them. Shorter / longer change how long they ring. The rest of the layer stays put. If a note goes past the trim, the trim opens to keep it.",
+    pitch:"Moves the picked notes (or the whole layer) up or down in pitch. A step is the next key on the keyboard, black keys included. An octave is the same note higher or lower: twelve steps. Drums have no pitch, so they stay.",
     dragNote:"Tap a note in the picture to pick it. Drag it to slide it in time. The buttons below move only the picked notes, so pick several if three of six should move together.",
     notes:"A notepad for writing a line down when you have no time to play it. Your own shorthand, nothing to learn.",
     preset:"A whole shape in one tap. Start here, then nudge the sliders if it is not quite right.",
@@ -1091,13 +1104,19 @@ function wire(out,sh){
     out.connect(g); g.connect(bus); };
   send(tailB,sh.tail); send(revB,sh.room*.9); send(echoB,sh.echo*.8);
 }
+/* the envelope. bite: 0 is a slow swell in (0.7s), the middle eases, 1 smacks
+   with a short overshoot so even a recording that has its own soft start hits.
+   fade: squared, so the middle of the slider already shortens the note clearly. */
 function env(out,sh,t,amp,hold){
-  const atk=.002+(1-sh.bite)*.22;
+  const b=Math.max(0,Math.min(1,sh.bite)), atk=.002+(1-b)*(1-b)*.7;
   out.gain.setValueAtTime(0,t);
-  out.gain.linearRampToValueAtTime(amp,t+atk);
-  if(sh.fade>.02){ const d=.08+(1-sh.fade)*1.9;
-    out.gain.exponentialRampToValueAtTime(.0008,t+atk+d); }
-  else if(!hold) out.gain.exponentialRampToValueAtTime(.0009,t+atk+2.4);
+  if(b>.6){ const over=1+(b-.6)*1.4;
+    out.gain.linearRampToValueAtTime(amp*over,t+atk); out.gain.linearRampToValueAtTime(amp,t+atk+.07); }
+  else out.gain.linearRampToValueAtTime(amp,t+atk);
+  const settled=t+atk+(b>.6?.07:0);
+  if(sh.fade>.02){ const f=Math.min(1,sh.fade), d=.06+(1-f)*(1-f)*2.2;
+    out.gain.setValueAtTime(amp,settled); out.gain.exponentialRampToValueAtTime(.0008,settled+d); }
+  else if(!hold) out.gain.exponentialRampToValueAtTime(.0009,settled+2.4);
   return atk;
 }
 /* touches on one note. fx = {v,s,f,b,t} each 0..1 (b is -1..1). dur in seconds.
@@ -1437,19 +1456,23 @@ function drawScope(){
   ctx2.fillRect(0,0,(tIn/span)*w,h);
   ctx2.fillRect((tOut/span)*w,0,w,h);
 }
+/* which note is under the finger, or -1. shared by the picture and the trim
+   handles, so a note sitting under a handle can still be picked. */
+function scopeHit(l,wrap,ev){
+  const r=wrap.getBoundingClientRect(), px=ev.clientX-r.left, py=ev.clientY-r.top;
+  const w=r.width, h=r.height, span=Math.max(trimWindow(l).raw,1);
+  let best=-1, bd=1e9;
+  l.ev.forEach((e,i)=>{ const x0=(e.start/span)*w, x1=x0+Math.max(6,(e.dur/span)*w);
+    const hz=e.pad?(e.midi<40?70:e.midi<46?4000:180):mFreq(e.midi), y=yHz(hz,h);
+    if(px<x0-10||px>x1+10||Math.abs(py-y)>14) return;
+    const d=Math.abs(py-y)+(px<x0?x0-px:px>x1?px-x1:0); if(d<bd){ bd=d; best=i; } });
+  return best;
+}
 function bindScopeDrag(){
   const wrap=$("scope"); if(!wrap) return;
   const cv=$("scopeCv");
-  if(cv) cv.onpointerdown=ev=>{
-    const l=layers.find(x=>x.id===selL); if(!l||!l.ev.length) return;
-    const r=wrap.getBoundingClientRect(), px=ev.clientX-r.left, py=ev.clientY-r.top;
-    const w=r.width, h=r.height, span=Math.max(trimWindow(l).raw,1);
-    let best=-1, bd=1e9;
-    l.ev.forEach((e,i)=>{ const x0=(e.start/span)*w, x1=x0+Math.max(6,(e.dur/span)*w);
-      const hz=e.pad?(e.midi<40?70:e.midi<46?4000:180):mFreq(e.midi), y=yHz(hz,h);
-      if(px<x0-10||px>x1+10||Math.abs(py-y)>14) return;
-      const d=Math.abs(py-y)+(px<x0?x0-px:px>x1?px-x1:0); if(d<bd){ bd=d; best=i; } });
-    if(best<0) return;
+  const noteDown=(ev,l,best)=>{
+    const r=wrap.getBoundingClientRect(), w=r.width, span=Math.max(trimWindow(l).raw,1);
     setPick(best, pickMore);
     const moving=picked(l), starts=moving.map(n=>n.start), x0=ev.clientX;
     const tw0=trimWindow(l), was=moving.filter(n=>n.start+n.dur>tw0.tIn&&n.start<tw0.tOut);
@@ -1468,10 +1491,17 @@ function bindScopeDrag(){
     window.addEventListener("pointermove",move); window.addEventListener("pointerup",up);
     ev.preventDefault();
   };
+  if(cv) cv.onpointerdown=ev=>{
+    const l=layers.find(x=>x.id===selL); if(!l||!l.ev.length) return;
+    const best=scopeHit(l,wrap,ev); if(best<0) return;
+    noteDown(ev,l,best);
+  };
   wrap.querySelectorAll(".scope-handle").forEach(h=>{
     h.onpointerdown=ev=>{
       ev.preventDefault(); ev.stopPropagation();
       const which=h.dataset.h, l=layers.find(x=>x.id===selL); if(!l) return;
+      /* a note under the handle wins the tap; the line away from a note still trims */
+      if(l.ev.length){ const best=scopeHit(l,wrap,ev); if(best>=0){ noteDown(ev,l,best); return; } }
       const move=e=>{
         const r=wrap.getBoundingClientRect();
         const t=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*trimWindow(l).raw;
@@ -1732,7 +1762,8 @@ function scopeRail(l){
   if(!l) return '';
   const tw=trimWindow(l), I=IN(l.inst), nPick=selNs.length;
   let ticks=""; const step=tw.raw/1000>4?1:.5;
-  for(let t=0;t<=tw.raw/1000+.01;t+=step) ticks+='<span style="left:'+(t*1000/Math.max(tw.raw,1)*100)+'%">'+t.toFixed(t%1?1:0)+'s</span>';
+  for(let t=0;t<=tw.raw/1000+.01;t+=step){ const pc=t*1000/Math.max(tw.raw,1)*100;
+    ticks+='<span style="left:'+pc+'%'+(pc>94?';transform:translateX(-100%)':'')+'">'+t.toFixed(t%1?1:0)+'s</span>'; }
   return '<div class="sticky-scope">'+
     '<div class="scope-wrap"><div class="scope" id="scope">'+
       '<canvas id="scopeCv"></canvas>'+
@@ -1744,7 +1775,8 @@ function scopeRail(l){
     '<div class="rail-bar">'+
     '<span class="name" style="color:'+I.c+'">'+esc(I.n)+(nPick?(' ·'+nPick):'')+'</span>'+
     '<button class="btn sm zap'+(pickMore?" on":"")+'" data-act="pickmore">pick many</button>'+
-    '<button class="btn sm" data-act="clearpick">clear</button>'+
+    '<button class="btn sm zap" data-act="pickall">pick all</button>'+
+    '<button class="btn sm" data-act="clearpick">pick none</button>'+
     '<button class="btn sm zap" data-act="undo">↩</button></div></div>';
 }
 function paintLayers(){
@@ -1794,6 +1826,12 @@ function paintLayers(){
       '<div class="row" style="margin-bottom:6px">'+
       '<button class="btn sm'+(l.mute?" on":"")+'" data-act="mute">'+(l.mute?"silenced":"sounding")+'</button>'+
       '<button class="btn sm" data-act="dup">duplicate</button></div>'+
+      (l.inst!=="drums"?'<div class="lbl mh" style="display:flex;align-items:center;gap:6px"><span style="flex:1">Whole layer up or down</span><button class="qm" data-help="pitch" aria-label="What a step and an octave are">?</button></div>'+
+      '<div class="row" style="margin-bottom:6px">'+
+      '<button class="btn sm zap" data-pitch="-1" data-all="1">&#9660; a step</button>'+
+      '<button class="btn sm zap" data-pitch="1" data-all="1">&#9650; a step</button>'+
+      '<button class="btn sm zap" data-pitch="-12" data-all="1">&#9660; an octave</button>'+
+      '<button class="btn sm zap" data-pitch="12" data-all="1">&#9650; an octave</button></div>':'')+
       '<div class="row" style="margin-bottom:6px">'+
       '<button class="btn sm" data-act="resetlay">reset shape</button>'+
       '<button class="btn sm" data-act="empty">empty it</button>'+
@@ -1826,6 +1864,12 @@ function noteTools(l){
     '<button class="btn sm zap" data-act="shorten">shorter</button>'+
     '<button class="btn sm zap" data-act="lengthen">longer</button>'+
     '<button class="qm" data-help="nudge" aria-label="What these buttons do">?</button></div>'+
+    '<div class="row" style="margin-bottom:6px">'+
+    '<button class="btn sm zap" data-pitch="-1">&#9660; a step</button>'+
+    '<button class="btn sm zap" data-pitch="1">&#9650; a step</button>'+
+    '<button class="btn sm zap" data-pitch="-12">&#9660; an octave</button>'+
+    '<button class="btn sm zap" data-pitch="12">&#9650; an octave</button>'+
+    '<button class="qm" data-help="pitch" aria-label="What a step and an octave are">?</button></div>'+
     '<div class="row"><button class="btn sm" data-act="hearnote">hear this note</button>'+
     '<button class="btn sm zap" data-act="toshape">touch it in Shape &#9654;</button></div>'+
     '</div>';
@@ -2006,6 +2050,13 @@ $("panel").addEventListener("click",e=>{
   if(hk){ const l=layers.find(x=>x.id===selL); if(!l) return;
     const j=joins.find(x=>x.from===l.id); if(!j) return;
     snap(); j.kind=hk.dataset.handkind; paint(); save(); return; }
+  const pt=e.target.closest("[data-pitch]");
+  if(pt){ const l=layers.find(x=>x.id===selL); if(!l) return;
+    if(l.inst==="drums"){ toast("drums have no pitch"); return; }
+    const notes=pt.dataset.all?l.ev:picked(l);
+    if(!notes.length){ toast("tap a note in the picture first"); return; }
+    snap(); transpose(notes,+pt.dataset.pitch); renderStrip(); paint(); save();
+    const first=notes.slice().sort((a,b)=>a.start-b.start)[0]; if(first) hearNote(l,first); return; }
   const fd=e.target.closest("[data-fold]");
   if(fd){ folds[fd.dataset.fold]=!folds[fd.dataset.fold]; paint(); return; }
   const a=e.target.closest("[data-act]");
@@ -2023,6 +2074,7 @@ $("panel").addEventListener("click",e=>{
   if(act==="shorten"){ snap(); if(stretchPicked(l,-unitMs())){ paint(); save(); } return; }
   if(act==="lengthen"){ snap(); if(stretchPicked(l,unitMs())){ paint(); save(); } return; }
   if(act==="pickmore"){ pickMore=!pickMore; paint(); return; }
+  if(act==="pickall"){ if(!l.ev.length){ toast("nothing to pick yet"); return; } selNs=l.ev.map((x,i)=>i); selN=selNs[0]; paint(); toast(selNs.length+(selNs.length===1?" note picked":" notes picked")); return; }
   if(act==="clearpick"){ selNs=[]; selN=-1; paint(); return; }
   if(act==="undo"){ undo(); return; }
   if(act==="redo"){ redo(); return; }
@@ -2096,6 +2148,8 @@ function applyEven(l){
   keepInside(l,was);
 }
 function picked(l){ return selNs.map(i=>l&&l.ev[i]).filter(Boolean); }
+/* move notes up or down. a step is one key, an octave is twelve. drums are skipped. */
+function transpose(notes,semis){ notes.forEach(e=>{ if(e.pad) return; e.midi=clampM(e.midi+semis); }); }
 function setPick(i,add){
   if(i==null||i<0){ selNs=[]; selN=-1; return; }
   if(add||pickMore){ const k=selNs.indexOf(i); if(k>=0) selNs.splice(k,1); else selNs.push(i); }
