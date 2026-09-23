@@ -499,6 +499,60 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
   #strip .addlay.hum{padding:8px 0}
 }
 @media (orientation:landscape) and (max-height:430px){ .tbtn.slow{width:34px;min-height:32px} }
+
+/* ---- 0.24 ------------------------------------------------------------------
+   Projects above the strip, a tick on every card, the Song as its own page,
+   and the keys that show where a sound's real recordings stop. */
+.projb{flex:0 1 auto;min-width:0;max-width:46%;display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:9px;
+  border:1px solid rgba(143,214,255,.3);background:var(--face);box-shadow:var(--lift);color:var(--blue);
+  font-size:12px;font-weight:900;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.projb span{overflow:hidden;text-overflow:ellipsis}
+.projb:active{box-shadow:var(--press);transform:translateY(1px)}
+#zLay .zhead #playAll{flex:none;min-height:28px;padding:3px 10px;font-size:11px}
+.lay-pick{display:inline-grid;place-items:center;width:15px;height:15px;margin:0 6px -2px 0;border-radius:4px;vertical-align:baseline;
+  border:1px solid color-mix(in srgb,currentColor 55%,transparent);background:#03050a;box-shadow:inset 0 1px 3px rgba(0,0,0,.8);
+  font-size:10px;font-weight:900;line-height:1;color:#04070b}
+.lay-pick.on{background:var(--grn);border-color:transparent;box-shadow:0 0 6px rgba(182,255,60,.7),0 0 10px var(--shine)}
+.lay .ln{position:relative}
+/* the song page: everything else steps aside */
+body.song-view #head,body.song-view #zLay,body.song-view #zKb,body.song-view #dock{display:none!important}
+body.song-view #panel{flex:1 1 auto;min-height:0;grid-column:1 / -1;grid-row:1 / -1}
+.songpage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:7px;padding:8px}
+.sp-top{display:flex;align-items:center;gap:6px;flex:none}
+.sp-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-play{width:54px;min-height:40px;flex:none}
+.songpage .tl{flex:1 1 auto;min-height:0;overflow:auto;padding-bottom:0;overscroll-behavior:contain}
+.songpage .ruler{position:sticky;top:0;z-index:4;display:flex;height:20px;margin-left:0;background:#060a11;border-bottom:1px solid rgba(143,214,255,.1)}
+.songpage .ruler-c{flex:0 0 92px;position:sticky;left:0;z-index:5;background:#060a11}
+.songpage .ruler-in{flex:none;height:100%}
+.songpage .lane-l{z-index:3}
+.blk{--c:#8fd6ff;color:#04070b;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 92%,#fff),color-mix(in srgb,var(--c) 68%,#000))}
+.blk.sel{box-shadow:0 0 0 2px var(--grn),0 0 14px var(--shine),0 2px 5px rgba(0,0,0,.6)}
+.sp-tools{flex:none;display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:12px;border:1px solid rgba(143,214,255,.18);
+  background:rgba(6,12,20,.7);box-shadow:inset 0 0 18px rgba(0,0,0,.4)}
+.sp-tools .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sp-tools .row .btn{flex:1 1 auto;min-height:40px}
+.sp-pos{font-size:13px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.reps{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.reps .btn{flex:0 0 44px!important}
+.reps span{min-width:44px;text-align:center;font-weight:900;color:var(--grn);font-variant-numeric:tabular-nums}
+.sp-add{max-height:92px;overflow-y:auto}
+.sp-add .btn{flex:0 1 auto;padding:8px 12px}
+/* range: far = a stretched neighbour covers it, none = nothing within an octave */
+.wk.far{background:linear-gradient(180deg,#b9c6d2 0%,#98a9b8 70%,#76889a 100%)}
+.bk.far{filter:brightness(.8)}
+.wk.none{background:linear-gradient(180deg,#5a6874 0%,#48545f 100%);color:#2a333c}
+.bk.none{filter:brightness(.55)}
+.wk.none.hit,.wk.far.hit{background:linear-gradient(var(--hi),#dbe7f0)}
+@media (orientation:landscape) and (max-height:560px) and (max-width:959px){
+  body.song-view{grid-template-columns:minmax(0,1fr)}
+  /* the narrow left column: the project name takes the room, the count steps aside */
+  #zLay .zhead .lbl{display:none}
+  #zLay .zhead .projb{flex:1 1 auto;max-width:none}
+  #zLay .zhead .qm{display:none}
+}
+/* on the song page a toast sits under the top bar, clear of the block tools */
+body.song-view .toast{top:calc(64px + var(--sT,0px));bottom:auto}
 </style>
 </head>
 <body>
@@ -573,7 +627,9 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
 
 <div class="card zone" id="zLay">
   <div class="zhead" data-z="Lay">
-    <span class="lbl">Layers &middot; <span id="layN">0</span></span>
+    <button class="projb" id="projBtn" aria-label="Projects"><span id="projName">Project 1</span> &#9662;</button>
+    <span class="lbl"><span id="layN">0</span> layers</span>
+    <button class="btn sm zap" id="playAll" aria-label="Play every layer in this project">&#9654; all</button>
     <button class="qm" data-help="layers" aria-label="What layers are">?</button>
     <button class="chev" data-z="Lay" aria-label="Collapse layers">&#9662;</button>
   </div>
@@ -719,13 +775,26 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
         red or hum is live, undo, half speed and play wait. A new take always goes
         at the end, so take 1 stays take 1; a take with nothing played is dropped.
         The half-speed tile has its own class. Track code unchanged (SCR9).
+   0.24: projects. The layer strip belongs to one project at a time (its own
+        layers, song, tempo); switch, add, rename, copy, delete from the project
+        name above the strip, and a layer can move to another project. Each layer
+        card has a tick: play plays the ticked layers, "play all" plays the whole
+        project, the red button's guide is the ticked layers. The Song is its own
+        page: lanes scroll both ways, blocks show their colour, every move is a
+        sixteenth (arrows, drag, placing), repeats are any number, "put after the
+        one before" and "add at the end" chain blocks without guessing, and the
+        page has its own play. Range: every note of a sound is measured when it
+        loads; a silent recording is dropped, the nearest real note (up to an
+        octave) is stretched to cover it, and the keys show where the real
+        recordings stop. Phone landscape: the keys fit their card. Track code
+        SCR10 (projects, ticks, sixteenth song positions, free repeats). Reads SCR1-9.
    =========================================================================== */
 /* every knob on a sound, all at rest. new keys default to 0 so old codes read the same. */
 const SHAPE0=Object.freeze({fade:0,bite:.5,dark:0,tail:.12,room:0,echo:0,len:.5,warp:0,chrome:0,tune:0,
   harm:0,swirl:0,dbl:0,pulse:0,breath:0,grit:0});
 const P=o=>Object.freeze({...SHAPE0,...o});
 const DB=Object.freeze({
-  version:"0.23.1", code:"SCR9", oldCodes:Object.freeze(["SCR8","SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
+  version:"0.24", code:"SCR10", oldCodes:Object.freeze(["SCR9","SCR8","SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
   SF:"https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
   A4:440, A4_MIDI:69, PPQ:480, OCT_MIN:1, OCT_MAX:6,
   BPM0:128, BPM_MIN:40, BPM_MAX:240, GRID:4,   /* 128 is the count-in that was already there (470ms a tick) */
@@ -866,15 +935,19 @@ const DB=Object.freeze({
     Object.freeze({k:"pulse", n:"Pulse",    lo:"steady",     hi:"beating",       h:"shapePulse"})
   ]),
   HELP:Object.freeze({
-    layers:"A layer is one pass. + opens an empty one so you can pick the sound and shape it first; the red button is what records. Layers stack, so a second part plays on top of the first.",
+    layers:"A layer is one pass. + opens an empty one so you can pick the sound and shape it first; the red button is what records. Layers stack, so a second part plays on top of the first. The tick on a card says whether play includes that layer.",
+    proj:"A project is its own set of layers, with its own song and tempo. The name above the layers switches between them, makes a new one, renames, copies or deletes. Play and the red button only ever work inside the project you are in. The whole sketch, every project, rides in one track code.",
+    pick:"Ticked layers are what play plays, and what you hear under the red button while you record. Untick a layer to leave it out without silencing it. Play all ignores the ticks and plays the whole project.",
+    playall:"Plays every layer in this project together, ticked or not. Silenced layers stay quiet.",
+    moveproj:"Moves this layer, with its takes and its hum, into another project. It leaves this project's song.",
     find:"Plays a note and asks higher or lower until it matches what you hear, then tells you which note it was.",
     sound:"Which instrument the keyboard plays. Real recordings, so each one downloads the first time you use it.",
     range:"Moves the keyboard up or down. The note names on the keys always tell you where you are.",
     rec:"Records into the selected empty layer, or starts a new one. Whatever you already recorded plays back so you can play along with it. + is not record: + only opens a blank layer.",
-    play:"Plays everything at once. Layers that are sounding light up. A silenced layer stays dark.",
+    play:"Plays the ticked layers of this project. Layers that are sounding light up. Play all, next to the project name, plays every layer; the Song has its own play on its page.",
     layVol:"How loud this layer is against the others. It does not touch the loudness of the whole app; that lives in Settings.",
     loop:"This layer repeats instead of playing once.",
-    anchor:"The layer that sets the repeat cycle. Every other repeating layer follows it, so nothing drifts out of time.",
+    anchor:"Every repeating layer loops in whole bars at the tempo: a take that lasts 3.9 bars repeats every 4, so the next round waits for the bar line. That wait is the gap you hear after a take that ends early. The anchor is the one repeating layer whose cycle every other repeat follows, so they stay lined up. An empty layer never sets the cycle.",
     onoff:"Silences this layer without deleting it.",
     empty:"Removes the notes but keeps the layer, so you can record into it again.",
     shapeBite:"How the note starts, on every sound but drums. Low is a slow swell in (nearly a second). The middle eases. High smacks: the note comes in over its own loudness for a moment, so even a recording with a soft start hits.",
@@ -921,8 +994,8 @@ const DB=Object.freeze({
     fadeout:"The note dies away before its end instead of stopping. Amount is how early it starts going.",
     bend:"Slides into the note from below (bend up) or from above (bend down), like a guitar string being pushed. Amount is how far it slides from.",
     trill:"Flutters quickly between the note and the one just above it, the whole time it sounds.",
-    song:"Numbers along the top are bars; the thin lines inside are beats. The Song is your layers arranged on that line. Tap an empty spot on a layer's lane to put that layer there; tap a block to move it, repeat it, or take it away. The same layer can appear as many times as you like, and fixing the layer fixes every copy. When the Song has anything in it, play and Write it down use the Song.",
-    block:"One appearance of a layer in the Song. Its length is the layer's whole-bar cycle. Repeats stretch it: x2 plays the cycle twice in a row.",
+    song:"Numbers along the top are bars; the lines inside are beats. The Song is your layers laid out on that line. Tap an empty spot on a lane to put that layer there, or use Add at the end. Tap a block to work on it: the arrows move it one sixteenth, repeats are any number, and Put after the one before starts it exactly where the block before it ends, so layers chain with no gap and no guessing. Everything snaps to sixteenths. The same layer can appear as many times as you like, and fixing the layer fixes every copy. Write it down uses the Song whenever it has blocks.",
+    block:"One appearance of a layer in the Song. Its length is the layer's whole-bar cycle times its repeats: a 2-bar layer at x3 is 6 bars long. A layer that lasts 3.9 bars counts as 4, so the next block waits for the bar line (switch whole-bar repeats off in Settings to use the exact length).",
     dup:"Makes an independent copy of this layer: same notes, same shape, its own life from here on. Use it when you want a variation without losing the original.",
     tempofrom:"Listens to how the hits were punched, finds the speed hiding in them, sets the tempo to it, then sits every note on that beat. The layer's start moves onto the beat too, so a repeat lands on the bar line. Only a run that was already dead even gets spaced out evenly.",
     tighten:"Slides every note onto the nearest step of the beat you already have, and the start of the layer with them. Does not change the speed. Use it once the tempo is right.",
@@ -1020,6 +1093,11 @@ let clickOn=true, clickT=0, clickAt=0, clickN=0, clickVol=.3, vol=.7, barSnap=tr
 let rate=1, fitKeys=true, recMode=null, recTarget=null, soundFor=null, hum=null, lastBackup="";
 let song=[], selB=null, selN=-1, selNs=[], pickMore=false, touchAmt=.6, songBW=DB.SONG_BW, songDragged=false;
 let joins=[], hist=[], future=[], hushHist=false;
+/* 0.24: projects. the one you are in lives in the globals (layers, song, bpm,
+   anchorId, joins, notepad); every other project keeps the same shape in .data.
+   playMode: what play is playing right now (ticked / all / song / solo). */
+let projects=[{id:"P1",name:"Project 1",data:null}], projIdx=0, playMode=null;
+const PICK=l=>l.pk!==false;
 let folds={fit:true,notes:false,layer:false,touch:true,start:true,stay:false,space:false,colour:false,machine:false};
 let panelScroll={}, paintedView=null, auxVoices=[];
 const $=id=>document.getElementById(id);
@@ -1121,12 +1199,12 @@ function loadPack(id,prog){
   if(PACKS[id]&&PACKS[id].state==="ready") return Promise.resolve(true);
   if(PACKS[id]&&PACKS[id].p) return PACKS[id].p;
   boot();
-  const r=PACKS[id]={state:"loading",map:{},n:0,total:0,kept:false};
+  const r=PACKS[id]={state:"loading",map:{},n:0,total:0,kept:false,silent:[]};
   const decode=b=>new Promise((ok,no)=>{ const q=ctx.decodeAudioData(b,ok,no); if(q&&q.then) q.then(ok,no); });
   const finish=ok=>{ r.state=ok?"ready":"failed"; r.p=null; if(prog) prog(r); return ok; };
   /* the shelf first: decode what is kept, no network at all */
   const fromShelf=kept=>{ const keys=Object.keys(kept.map); r.total=keys.length; r.kept=true;
-    return pool(keys,6,k=>decode(kept.map[k].slice(0)).then(buf=>{ r.map[+k]=buf; }).catch(()=>{}).then(()=>{ r.n++; if(prog) prog(r); }))
+    return pool(keys,6,k=>decode(kept.map[k].slice(0)).then(buf=>{ if(isSilent(buf)) r.silent.push(+k); else r.map[+k]=buf; }).catch(()=>{}).then(()=>{ r.n++; if(prog) prog(r); }))
       .then(()=>finish(Object.keys(r.map).length>0)); };
   /* the network: fetch the raw bytes onto the shelf, then decode from there */
   const fromNet=()=>fetchRaw(I,pr=>{ r.total=pr.total; r.n=pr.n; if(prog) prog(r); }).then(raw=>{
@@ -1167,12 +1245,18 @@ function ensureLayers(quiet){
   if(!ids.length) return Promise.resolve(true);
   return Promise.all(ids.map(id=>ensure(id,quiet!==false))).then(rs=>rs.every(Boolean));
 }
+/* 0.24: the recordings only cover the range the real instrument plays; past
+   that the file exists but is silent. every note is measured as it is decoded
+   and a silent one is dropped, so the nearest real note (up to an octave) is
+   stretched to cover it instead of playing nothing. */
+function isSilent(buf){ let pk=0; for(let c=0;c<buf.numberOfChannels;c++){ const d=buf.getChannelData(c);
+    for(let i=0;i<d.length;i+=8){ const v=d[i]<0?-d[i]:d[i]; if(v>pk) pk=v; } } return pk<.002; }
 function nearest(id,midi){
   const m=PACKS[id]&&PACKS[id].map; if(!m) return null;
   if(m[midi]) return {buf:m[midi],rate:1};
   let best=null,bd=99;
   for(const k in m){ const d=Math.abs(+k-midi); if(d<bd){ bd=d; best=+k; } }
-  if(best==null||bd>7) return null;
+  if(best==null||bd>12) return null;
   return {buf:m[best],rate:Math.pow(2,(midi-best)/12)};
 }
 /* ---- the shape, as audio -------------------------------------------------
@@ -1490,7 +1574,8 @@ function noteSh(l,e){ return {...(l&&l.sh?l.sh:shape),...((e&&e.sh)||{})}; }
 function layerAudible(l){
   if(!playing||!l||l.mute||!l.ev.length) return false;
   if(soloId) return soloId===l.id;
-  if(useSong()) return song.some(b=>b.lay===l.id);
+  if(playMode==="song") return song.some(b=>b.lay===l.id);
+  if(playMode==="ticked") return PICK(l);
   return true;
 }
 /* 0.23.1: an empty layer cannot set the cycle. while the anchor is being
@@ -1500,15 +1585,16 @@ function anchorLayer(){
   return layers.find(l=>l.id===anchorId&&l.loop&&!l.mute&&l.ev.length)
       || layers.find(l=>l.loop&&!l.mute&&l.ev.length) || null;
 }
-function mix(minTotal){
+function mix(minTotal,keep){
   const out=[], an=anchorLayer(), aL=an?loopStep(an):0;
-  const solid=layers.filter(l=>!l.loop&&!l.mute).map(layLen);
+  const solid=layers.filter(l=>!l.loop&&!l.mute&&(!keep||keep(l))).map(layLen);
   let total=solid.length?Math.max(...solid,0):0;
   if(total<=0&&aL>0) total=aL*4;
   if(aL>0) total=Math.max(total,aL*2);
   if(minTotal>0) total=Math.max(total,minTotal);   /* 0.23: keep adding wants the loop to run on */
   layers.forEach(l=>{
     if(l.mute||!l.ev.length) return;
+    if(keep&&!keep(l)) return;   /* 0.24: only the layers asked for (the ticked ones, usually) */
     const ev=eventsOf(l);
     if(!l.loop){ ev.forEach(e=>out.push({...e,inst:l.inst,sh:noteSh(l,e),lay:l.id,vol:layVol(l)})); return; }
     const step=aL||loopStep(l);
@@ -1744,6 +1830,8 @@ function trimLight(l){
 }
 function renderStrip(){
   $("layN").textContent=layers.length;
+  $("projName").textContent=(projects[projIdx]||{}).name||"Project";
+  $("playAll").classList.toggle("on",playing&&playMode==="all");
   const st=$("strip"), sx=st.scrollLeft, sy=st.scrollTop;
   const an=anchorLayer();
   $("strip").innerHTML=layers.map(l=>{
@@ -1751,7 +1839,7 @@ function renderStrip(){
     const empty=!l.ev.length;
     return '<button class="lay'+(l.id===selL?" sel":"")+(l.mute?" off":"")+(live?" live":"")+(empty?" empty":"")+
       '" data-lay="'+l.id+'" style="color:'+I.c+'">'+
-      '<div class="ln">'+esc(I.n)+'</div>'+
+      '<div class="ln"><span class="lay-pick'+(PICK(l)?' on':'')+'" data-picklay="'+l.id+'" role="checkbox" aria-checked="'+PICK(l)+'" aria-label="Play this layer with play">'+(PICK(l)?'&#10003;':'')+'</span>'+esc(I.n)+'</div>'+
       '<div class="lm">'+(empty?'empty \u00b7 ready':(l.ev.length+(l.ev.length===1?' note':' notes')+(l.loop?' \u00b7 '+(barSnap?loopBars(l)+(loopBars(l)===1?' bar':' bars'):(layLen(l)/1000).toFixed(1)+'s'):'')))+'</div>'+
       '<div class="lr">'+(empty?"red records here":(l.loop?(an&&an.id===l.id?"anchor":"loop"):"once")+(layVol(l)<.99?' \u00b7 '+Math.round(layVol(l)*100)+'%':''))+'</div>'+
       ((l.hum||(l.takes&&l.takes.length))?'<div class="lt">'+(l.hum?'<b>hum</b>':'')+(l.hum&&l.takes&&l.takes.length?' \u00b7 ':'')+
@@ -1766,6 +1854,8 @@ function renderStrip(){
 $("strip").onclick=e=>{
   if(e.target.closest("#addLay")){ addEmptyLayer(); return; }
   if(e.target.closest("#humLay")){ openHum(); return; }
+  const pk=e.target.closest("[data-picklay]");
+  if(pk){ e.stopPropagation(); const l=layers.find(x=>x.id===pk.dataset.picklay); if(l){ l.pk=!PICK(l); renderStrip(); save(); } return; }
   const p=e.target.closest("[data-playlay]");
   if(p){ e.stopPropagation(); playLayer(p.dataset.playlay); return; }
   const m=e.target.closest("[data-mutelay]");
@@ -1793,6 +1883,8 @@ function buildKB(){
     avail=Math.max(300,Math.floor(box.width)-32);
     H=Math.max(180,Math.min(320,Math.floor(box.height*0.62)));
   }
+  /* 0.24: sideways, the card may be capped shorter than the keys; the keys follow the cap, so the note names stay in view */
+  if(phoneLand){ const mh=parseFloat(getComputedStyle($("bKb")).maxHeight); if(isFinite(mh)) H=Math.max(40,Math.min(H,Math.floor(mh)-6)); }
   const W=Math.max(44,Math.floor(avail/(octs*7))), BW=Math.round(W*.62);
   const base=(octave+1)*12, col=IN(inst).c;
   let h="";
@@ -1802,7 +1894,7 @@ function buildKB(){
     h+='<div class="bk" data-m="'+m+'" style="left:'+((o*7+wi)*W-BW/2)+'px;width:'+BW+'px;height:'+Math.round(H*.62)+'px;--hi:'+col+'">'+mName(m)+'</div>'; });
   kb.style.height=H+"px"; kb.style.width=(octs*7*W)+"px"; kb.innerHTML=h;
   $("kbLbl").textContent=mName(base)+" \u2013 "+mName(base+octs*12-1);
-  markFitKeys();
+  markFitKeys(); markRange();
   $("bSound").textContent=IN(inst).n;
   $("bSound").style.borderColor=IN(inst).c;
   $("bSound").style.color=IN(inst).c;
@@ -1835,6 +1927,14 @@ function lampSvg(feather){
      one would shift the drawing by the symbol's origin */
   return '<svg class="lamp" aria-hidden="true">'+(feather?'<use href="#feather"></use>':'')+'<use href="#mdiv"></use></svg>';
 }
+/* 0.24: where a sound's real recordings stop. far = covered by a stretched
+   neighbour; none = nothing within an octave, the rough stand-in plays. */
+function markRange(){ const kb=$("kb"); if(!kb) return; const P=PACKS[inst], ok=!!(P&&P.state==="ready");
+  kb.querySelectorAll("[data-m]").forEach(el=>{ const m=+el.dataset.m, has=ok&&!!P.map[m], nb=ok&&!has&&!!nearest(inst,m);
+    el.classList.toggle("far",ok&&!has&&nb); el.classList.toggle("none",ok&&!has&&!nb); }); }
+const rangeTold={};
+function rangeNote(el){ if(!el||rangeTold[inst]) return; const far=el.classList.contains("far"), none=el.classList.contains("none"); if(!far&&!none) return;
+  rangeTold[inst]=1; toast(far?IN(inst).n+" has no real recording here: the nearest real note is stretched":IN(inst).n+" has no recording this far: a rough stand-in plays"); }
 function lampOn(el){ if(!el||el.querySelector(".lamp")) return; el.insertAdjacentHTML("beforeend",lampSvg(true)); }
 function lampOff(el){ if(!el) return; el.querySelectorAll(".lamp").forEach(x=>x.remove()); }
 /* what the keyboard sounds like: the selected layer's shape when there is one,
@@ -1883,7 +1983,7 @@ function bindKeys(root,mk){
   root.addEventListener("pointerdown",e=>{
     const el=e.target.closest("[data-m],[data-p]"); if(!el) return;
     e.preventDefault(); try{ el.setPointerCapture(e.pointerId) }catch(_){}
-    el.classList.add("hit"); lampOn(el); const k=mk(el,e.pointerId);
+    el.classList.add("hit"); lampOn(el); rangeNote(el); const k=mk(el,e.pointerId);
     el.dataset.live=k; noteOn(k,+el.dataset.m||0,el.dataset.p||null);
   },{passive:false});
   const up=e=>{ const el=e.target.closest("[data-m],[data-p]");
@@ -1924,37 +2024,54 @@ function setView(v){
   view=v;
   [...$("seg").children].forEach(b=>b.classList.toggle("on",b.dataset.v===v));
   paint();
+  if(window.matchMedia("(orientation:landscape) and (max-height:560px) and (max-width:959px)").matches) buildKB();
 }
 $("seg").onclick=e=>{ const b=e.target.closest("[data-v]"); if(b) setView(b.dataset.v); };
 
+/* 0.24: the Song is its own page. the keyboard, the strip and the dock step
+   aside; the lanes scroll both ways under a ruler that stays on top; every move
+   is a sixteenth of a bar. a block is its layer's whole-bar cycle x repeats. */
+const blkLen=b=>{ const l=layers.find(x=>x.id===b.lay); return b.reps*(l?loopBars(l):1); };
+const songEnd=()=>song.reduce((m,b)=>Math.max(m,b.bar+blkLen(b)),0);
+const snap16=v=>Math.max(0,Math.min(999,Math.round(v*16)/16));
+function laneName(l){ const n=IN(l.inst).n, same=layers.filter(x=>x.inst===l.inst);
+  return same.length>1?n+" "+(same.indexOf(l)+1):n; }
+function posText(bar){ const s16=Math.round(bar*16), B=Math.floor(s16/16)+1, beat=Math.floor((s16%16)/4)+1, six=s16%4;
+  return "bar "+B+" \u00b7 beat "+beat+(six?" + "+six+"/16":""); }
 function paintSong(){
-  const BW=songBW, total=Math.max(8,songLenBars()+8), b=song.find(x=>x.id===selB);
-  if(!layers.length) return '<p style="font-size:14px;line-height:1.6;color:var(--dim);margin:6px 2px">Record a layer first. Then this is where you lay layers out along the bars into a whole track.</p>';
-  let ruler=""; for(let i=0;i<total;i++) ruler+='<span style="left:'+(i*BW)+'px">'+(i+1)+'</span>';
-  const grid='background:repeating-linear-gradient(90deg,rgba(143,214,255,.05) 0 1px,transparent 1px '+(BW/4)+'px),repeating-linear-gradient(90deg,rgba(143,214,255,.16) 0 1px,transparent 1px '+BW+'px)';
-  const lanes=layers.map(l=>{ const I=IN(l.inst), cyc=l.ev.length?loopBars(l):1;
-    const blocks=song.filter(x=>x.lay===l.id).map(x=>'<div class="blk'+(x.id===selB?" sel":"")+'" data-blk="'+x.id+'" style="left:'+(x.bar*BW)+'px;width:'+(x.reps*cyc*BW-3)+'px">'+
-      esc(I.n)+(x.reps>1?' <b>&times;'+x.reps+'</b>':'')+'</div>').join("");
-    return '<div class="lane" style="color:'+I.c+'"><div class="lane-l">'+esc(I.n)+'<small>'+(l.ev.length?cyc+(cyc===1?" bar":" bars"):"empty")+'</small></div>'+
-      '<div class="lane-t" data-lane="'+l.id+'" style="width:'+(total*BW)+'px;'+grid+'">'+blocks+'</div></div>'; }).join("");
-  const pos=b?'bar '+(Math.floor(b.bar)+1)+(b.bar%1?' beat '+(Math.round((b.bar%1)*4)+1):''):'';
-  return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">'+
-    '<span class="lbl" style="flex:1">Song \u00b7 '+songLenBars()+' bars \u00b7 '+song.length+' blocks</span>'+
-    '<button class="btn sm" data-act="undo">undo</button>'+
-    '<button class="btn sm" data-act="resetsong">clear song</button>'+
+  const BW=songBW, b=song.find(x=>x.id===selB), sp=playing&&playMode==="song";
+  const top='<div class="sp-top"><button class="btn sm" data-sg="back" aria-label="Back to the layers">&#8592; back</button>'+
+    '<span class="lbl sp-title">Song &middot; '+songLenBars()+(songLenBars()===1?' bar':' bars')+' &middot; '+song.length+(song.length===1?' block':' blocks')+'</span>'+
     '<button class="qm" data-sz="-1" aria-label="Zoom out">&minus;</button><button class="qm" data-sz="1" aria-label="Zoom in">+</button>'+
-    '<button class="qm" data-help="song" aria-label="What the song is">?</button></div>'+
-    (b?'<div class="row" style="margin-bottom:8px">'+
-      '<button class="btn sm" data-sb="reps">&times;'+b.reps+'</button>'+
-      '<button class="btn sm" data-sb="left" aria-label="A beat earlier">&#9664;</button>'+
-      '<button class="btn sm" data-sb="right" aria-label="A beat later">&#9654;</button>'+
-      '<button class="btn sm" data-sb="dup">again</button>'+
-      '<button class="btn sm dan" data-sb="del">remove</button>'+
-      '<button class="qm" data-help="block" aria-label="What a block is">?</button></div>'+
-      '<p class="note">'+pos+' \u00b7 drag the block to move it; arrows move one beat.</p>'
-     :'<p class="note">Numbers are bars, thin lines are beats. Tap an empty spot on a lane to place that layer there; tap a block to change it, or drag it.</p>')+
-    '<div class="tl" id="tl"><div class="tl-in" style="width:'+(total*BW+92)+'px"><div class="ruler"><div class="ruler-in" style="background:repeating-linear-gradient(90deg,rgba(143,214,255,.12) 0 1px,transparent 1px '+BW+'px)">'+ruler+'</div></div>'+lanes+
-    '<div class="tl-play" id="tlPlay">'+lampSvg(false)+'</div></div></div>';
+    '<button class="qm" data-help="song" aria-label="What the song is">?</button>'+
+    '<button class="tbtn pl sp-play'+(sp?' on':'')+'" data-sg="play" aria-label="'+(sp?'Stop the song':'Play the song')+'">'+(sp?'&#9632;':'&#9654;')+'</button></div>';
+  if(!layers.length) return '<div class="songpage">'+top+'<p class="note" style="margin:6px 2px">Record a layer first. Then this is where you lay layers out along the bars into a whole track.</p></div>';
+  const total=Math.max(12,Math.ceil(songEnd())+8,Math.ceil((window.innerWidth-100)/BW)+2);
+  let ruler=""; for(let i=0;i<total;i++) ruler+='<span style="left:'+(i*BW)+'px">'+(i+1)+'</span>';
+  const fine=BW>=96?',repeating-linear-gradient(90deg,rgba(143,214,255,.035) 0 1px,transparent 1px '+(BW/16)+'px)':'';
+  const grid='background:repeating-linear-gradient(90deg,rgba(143,214,255,.2) 0 1px,transparent 1px '+BW+'px),repeating-linear-gradient(90deg,rgba(143,214,255,.07) 0 1px,transparent 1px '+(BW/4)+'px)'+fine;
+  const lanes=layers.map(l=>{ const I=IN(l.inst), cyc=l.ev.length?loopBars(l):1;
+    const blocks=song.filter(x=>x.lay===l.id).map(x=>'<div class="blk'+(x.id===selB?" sel":"")+'" data-blk="'+x.id+'" style="--c:'+I.c+';left:'+(x.bar*BW)+'px;width:'+Math.max(10,x.reps*cyc*BW-3)+'px">'+
+      esc(laneName(l))+(x.reps>1?' <b>&times;'+x.reps+'</b>':'')+'</div>').join("");
+    return '<div class="lane" style="color:'+I.c+'"><div class="lane-l">'+esc(laneName(l))+'<small>'+(l.ev.length?cyc+(cyc===1?" bar":" bars"):"empty")+(l.mute?" \u00b7 silenced":"")+'</small></div>'+
+      '<div class="lane-t" data-lane="'+l.id+'" style="width:'+(total*BW)+'px;'+grid+'">'+blocks+'</div></div>'; }).join("");
+  let tools;
+  if(b){ const l=layers.find(x=>x.id===b.lay), I=l?IN(l.inst):IN("piano");
+    tools='<div class="sp-tools"><div class="sp-pos"><b style="color:'+I.c+'">'+esc(l?laneName(l):"")+'</b> &middot; '+posText(b.bar)+' &middot; '+blkLen(b)+(blkLen(b)===1?' bar long':' bars long')+'</div>'+
+      '<div class="row"><button class="btn sm zap" data-sb="left" aria-label="A sixteenth earlier">&#9664; 1/16</button><button class="btn sm zap" data-sb="right" aria-label="A sixteenth later">1/16 &#9654;</button>'+
+      '<span class="reps"><button class="btn sm" data-sb="rdn" aria-label="One repeat less">&minus;</button><span>&times;'+b.reps+'</span><button class="btn sm" data-sb="rup" aria-label="One repeat more">+</button></span></div>'+
+      '<div class="row"><button class="btn sm zap" data-sb="after">put after the one before</button><button class="btn sm" data-sb="dup">again</button>'+
+      '<button class="btn sm dan" data-sb="del">remove</button><button class="qm" data-help="block" aria-label="What a block is">?</button></div></div>';
+  } else {
+    const ok=layers.filter(l=>l.ev.length);
+    tools='<div class="sp-tools"><div class="lbl">Add at the end of the song</div><div class="chips sp-add">'+
+      (ok.length?ok.map(l=>'<button class="btn sm" data-addend="'+l.id+'" style="color:'+IN(l.inst).c+'">'+esc(laneName(l))+'</button>').join(""):'<p class="note">Record something first.</p>')+'</div>'+
+      '<div class="row"><button class="btn sm" data-act="undo">undo</button><button class="btn sm" data-act="resetsong">clear song</button></div>'+
+      '<p class="note">Tap a lane to put that layer there, tap a block to work on it, or drag it. Everything moves in sixteenths.</p></div>';
+  }
+  return '<div class="songpage">'+top+
+    '<div class="tl" id="tl"><div class="tl-in" style="width:'+(total*BW+92)+'px"><div class="ruler"><div class="ruler-c"></div><div class="ruler-in" style="width:'+(total*BW)+'px;background:repeating-linear-gradient(90deg,rgba(143,214,255,.14) 0 1px,transparent 1px '+BW+'px)">'+ruler+'</div></div>'+lanes+
+    '<div class="tl-play" id="tlPlay">'+lampSvg(false)+'</div></div></div>'+tools+'</div>';
 }
 function bindSong(){
   const tl=$("tl"); if(!tl) return;
@@ -1963,8 +2080,8 @@ function bindSong(){
       const b=song.find(x=>x.id===el.dataset.blk); if(!b) return;
       const x0=ev.clientX, bar0=b.bar; let bar=bar0; songDragged=false;
       try{ el.setPointerCapture(ev.pointerId); }catch(e){}
-      const move=e=>{ const dx=e.clientX-x0; if(Math.abs(dx)>5) songDragged=true;
-        bar=Math.max(0,Math.min(999,Math.round((bar0*songBW+dx)/songBW*4)/4)); el.style.left=(bar*songBW)+"px"; };
+      const move=e=>{ const dx=e.clientX-x0; if(Math.abs(dx)>4) songDragged=true;
+        bar=snap16(bar0+dx/songBW); el.style.left=(bar*songBW)+"px"; };
       const up=()=>{ el.removeEventListener("pointermove",move); el.removeEventListener("pointerup",up); el.removeEventListener("pointercancel",up);
         if(songDragged&&bar!==bar0){ snap(); b.bar=bar; selB=b.id; paint(); save(); } };
       el.addEventListener("pointermove",move); el.addEventListener("pointerup",up); el.addEventListener("pointercancel",up);
@@ -1974,7 +2091,7 @@ function bindSong(){
 function paint(){
   const el=$("panel");
   const old=el.querySelector(".panel-rest"); if(old&&paintedView) panelScroll[paintedView]=old.scrollTop;
-  const oldTl=$("tl"); if(oldTl) panelScroll.tlX=oldTl.scrollLeft;
+  const oldTl=$("tl"); if(oldTl){ panelScroll.tlX=oldTl.scrollLeft; panelScroll.tlY=oldTl.scrollTop; }
   if(view==="layers") el.innerHTML=paintLayers();
   else if(view==="shape") el.innerHTML=paintShape();
   else if(view==="song") el.innerHTML=paintSong();
@@ -1982,27 +2099,37 @@ function paint(){
   if(view==="notes"){ const t=$("np"); if(t) t.value=notepad; }
   if(view==="shape") syncSliders();
   if(view==="layers"||view==="shape"){ drawScope(); bindScopeDrag(); if(playing) scopeOn(); }
-  if(view==="song"){ bindSong(); if(playing) scopeOn(); const tl=$("tl"); if(tl&&panelScroll.tlX) tl.scrollLeft=panelScroll.tlX; }
+  if(view==="song"){ bindSong(); if(playing) scopeOn(); const tl=$("tl"); if(tl){ if(panelScroll.tlX) tl.scrollLeft=panelScroll.tlX; if(panelScroll.tlY) tl.scrollTop=panelScroll.tlY; } }
   const nu=el.querySelector(".panel-rest"); if(nu) nu.scrollTop=panelScroll[view]||0;
   paintedView=view;
 }
 $("panel").addEventListener("click",e=>{
   if(view!=="song") return;
+  const sg=e.target.closest("[data-sg]");
+  if(sg){ if(sg.dataset.sg==="back") setView("layers"); else playSong(); return; }
   const sz=e.target.closest("[data-sz]");
-  if(sz){ const Z=[24,36,48,72,96], k=Math.max(0,Math.min(Z.length-1,Z.indexOf(songBW)+(+sz.dataset.sz))); songBW=Z[k]; setLS(LS.zoom,String(songBW)); paint(); return; }
+  if(sz){ const Z=[24,36,48,72,96,144,192], k=Math.max(0,Math.min(Z.length-1,Z.indexOf(songBW)+(+sz.dataset.sz))); songBW=Z[k]; setLS(LS.zoom,String(songBW)); paint(); return; }
+  const ae=e.target.closest("[data-addend]");
+  if(ae){ const l=layers.find(x=>x.id===ae.dataset.addend); if(!l||!l.ev.length) return;
+    snap(); const c={id:newId(),lay:l.id,bar:snap16(songEnd()),reps:1}; song.push(c); selB=c.id; paint(); save();
+    const tl=$("tl"); if(tl) tl.scrollLeft=Math.max(0,c.bar*songBW-60); toast(laneName(l)+" at "+posText(c.bar)); return; }
   const sb=e.target.closest("[data-sb]");
   if(sb){ const b=song.find(x=>x.id===selB); if(!b) return; snap(); const a=sb.dataset.sb;
-    if(a==="reps") b.reps={1:2,2:4,4:8,8:1}[b.reps]||1;
-    else if(a==="left") b.bar=Math.max(0,b.bar-.25);
-    else if(a==="right") b.bar=Math.min(999,b.bar+.25);
-    else if(a==="dup"){ const l=layers.find(x=>x.id===b.lay); const c={id:newId(),lay:b.lay,bar:b.bar+b.reps*(l?loopBars(l):1),reps:b.reps}; song.push(c); selB=c.id; }
+    if(a==="rdn") b.reps=Math.max(1,b.reps-1);
+    else if(a==="rup") b.reps=Math.min(64,b.reps+1);
+    else if(a==="left") b.bar=snap16(b.bar-1/16);
+    else if(a==="right") b.bar=snap16(b.bar+1/16);
+    else if(a==="after"){ /* starts exactly where the latest-ending block before it ends */
+      const before=song.filter(o=>o!==b&&o.bar<=b.bar+1e-9);
+      const at=before.length?Math.max(...before.map(o=>o.bar+blkLen(o))):0; b.bar=snap16(at); toast(posText(b.bar)); }
+    else if(a==="dup"){ const c={id:newId(),lay:b.lay,bar:snap16(b.bar+blkLen(b)),reps:b.reps}; song.push(c); selB=c.id; }
     else if(a==="del"){ song=song.filter(x=>x.id!==b.id); selB=null; }
     paint(); save(); return; }
   const bk=e.target.closest("[data-blk]");
   if(bk){ if(songDragged){ songDragged=false; return; } selB=selB===bk.dataset.blk?null:bk.dataset.blk; paint(); return; }
   const ln=e.target.closest("[data-lane]");
   if(ln){ const l=layers.find(x=>x.id===ln.dataset.lane); if(!l||!l.ev.length){ toast("that layer is empty"); return; }
-    const r=ln.getBoundingClientRect(), bar=Math.max(0,Math.floor((e.clientX-r.left)/songBW*4)/4);
+    const r=ln.getBoundingClientRect(), bar=snap16(Math.floor((e.clientX-r.left)/songBW*16)/16);
     snap(); const c={id:newId(),lay:l.id,bar,reps:1}; song.push(c); selB=c.id; paint(); save(); return; }
 });
 function foldBox(id,title,inner){
@@ -2096,6 +2223,8 @@ function paintLayers(){
       '<div class="row" style="margin-bottom:6px">'+
       '<button class="btn sm zap" data-act="fitkey">fit to key'+(fitKeyOf(l)?' ('+esc(fitKeyOf(l).name)+')':'')+'</button>'+
       '<button class="qm" data-help="fitkey" aria-label="What fit to key does">?</button></div>':'')+
+      (projects.length>1?'<div class="lbl mh" style="display:flex;align-items:center;gap:6px"><span style="flex:1">Move to project</span><button class="qm" data-help="moveproj" aria-label="What moving does">?</button></div>'+
+        '<div class="row" style="margin-bottom:6px">'+projects.map((p,i)=>i===projIdx?'':'<button class="btn sm" data-movep="'+i+'">'+esc(p.name)+'</button>').join('')+'</div>':'')+
       '<div class="row" style="margin-bottom:6px">'+
       '<button class="btn sm" data-act="resetlay">reset shape</button>'+
       '<button class="btn sm" data-act="empty">empty it</button>'+
@@ -2323,6 +2452,8 @@ $("panel").addEventListener("click",e=>{
     const first=notes.slice().sort((a,b)=>a.start-b.start)[0]; if(first) hearNote(l,first); return; }
   const fd=e.target.closest("[data-fold]");
   if(fd){ folds[fd.dataset.fold]=!folds[fd.dataset.fold]; paint(); return; }
+  const mp=e.target.closest("[data-movep]");
+  if(mp){ const l=layers.find(x=>x.id===selL); if(l) moveLayerTo(l,+mp.dataset.movep); return; }
   const tk2=e.target.closest("[data-take]");
   if(tk2){ const l=layers.find(x=>x.id===selL); if(!l) return; snap(); switchTake(l,+tk2.dataset.take); renderStrip(); paint(); save(); toast("take "+((l.take|0)+1)); return; }
   const dt=e.target.closest("[data-droptake]");
@@ -2367,7 +2498,7 @@ $("panel").addEventListener("click",e=>{
     selL=layers.length?layers[0].id:null; if(anchorId===l.id) anchorId=null; selN=-1; selNs=[];
     /* the hums that only this layer knew go off the shelf */
     const keys=[l.hum,...(l.takes||[]).map(t=>t.hum)].filter(Boolean).map(h=>h.k);
-    const still=new Set(layers.flatMap(x=>[x.hum,...(x.takes||[]).map(t=>t.hum)]).filter(Boolean).map(h=>h.k));
+    const still=new Set(allLayers().flatMap(x=>[x.hum,...(x.takes||[]).map(t=>t.hum)]).filter(Boolean).map(h=>h.k));
     keys.forEach(k=>{ if(!still.has(k)){ delete HUMS[k]; kvDel("hums",k); } }); }
   else if(act==="empty"){ snap(); l.ev=[]; l.trimIn=0; l.trimOut=null; selN=-1; selNs=[]; }
   else if(act==="playlay"){ playLayer(l.id); return; }
@@ -2530,23 +2661,23 @@ function playInst(ev){ const L=ev.lay?layers.find(x=>x.id===ev.lay):null; return
 let playGate=0;
 /* 0.23.1: while red or hum is live, nothing but the take's own guide plays */
 const takeLive=()=>recording||!!(hum&&hum.live);
-function play(list,isGuide,sid){
+function play(list,isGuide,sid,mode){
   if(!isGuide&&takeLive()){ toast("stop the take first"); return; }
   if(playing&&!isGuide){ stop(); return; }
   if(!list.length){ toast("nothing to play yet"); return; }
   /* every layer's own sound first, so nothing plays through the stand-in */
   if(!isGuide&&layers.some(l=>IN(l.inst).sf&&(packState(l.inst)==="none"||packState(l.inst)==="loading")&&list.some(e=>e.lay===l.id))){
     const gate=++playGate; toast("getting the sounds first…");
-    ensureLayers(true).then(()=>{ if(gate===playGate&&!playing) play(list,isGuide,sid); });
+    ensureLayers(true).then(()=>{ if(gate===playGate&&!playing) play(list,isGuide,sid,mode); });
     return;
   }
   list=applyJoins(list);
   boot(); if(ctx.resume) ctx.resume();
   if(!isGuide){
-    playing=true; soloId=sid||null; playOrigin=performance.now();
-    $("bPlay").classList.toggle("on", !soloId);
+    playing=true; soloId=sid||null; playOrigin=performance.now(); playMode=sid?"solo":(mode||"ticked");
+    $("bPlay").classList.toggle("on", !soloId&&playMode==="ticked");
     renderStrip();
-    if(view==="layers") paint();
+    if(view==="layers"||view==="song") paint();
     scopeOn();
   }
   const k=1/rate, end=Math.max(...list.map(e=>e.start+e.dur))*k;
@@ -2566,26 +2697,44 @@ function play(list,isGuide,sid){
    cancel their "let go" timers without letting go, so a held note rang out its
    whole recording (seconds) and a stand-in never stopped at all. */
 const playVoices=new Set();
-function stop(){ playing=false; soloId=null; playOrigin=null; playGate++;
+function stop(){ playing=false; soloId=null; playOrigin=null; playGate++; playMode=null;
   timers.forEach(clearTimeout); timers=[];
   playVoices.forEach(v=>{ try{ release(v) }catch(e){} }); playVoices.clear();
   auxVoices.forEach(v=>{ try{ release(v) }catch(e){} }); auxVoices=[];
   humStop();
   $("bPlay").classList.remove("on");
   $("countVeil").classList.add("hidden");
-  renderStrip(); if(view==="layers") paint();
+  renderStrip(); if(view==="layers"||view==="song") paint();
   const tb=$("tryPlay"); if(tb){ tb.classList.remove("on"); tb.textContent="play while you try"; } }
+/* 0.24: play = the ticked layers of this project. play all = every layer. the song has its own play. */
 function togglePlay(){
-  if(playing&&soloId){ stop(); play(activeMix(),false,null); return; }
-  play(activeMix(),false,null);
+  if(playing&&!soloId){ stop(); return; }
+  if(playing) stop();
+  const list=mix(0,PICK);
+  if(!list.length){ toast(layers.some(l=>l.ev.length)?"nothing ticked: tick a layer, or play all":"nothing to play yet"); return; }
+  play(list,false,null,"ticked");
 }
+function playAll(){
+  if(playing&&playMode==="all"){ stop(); return; }
+  if(playing) stop();
+  const list=mix(0,null); if(!list.length){ toast("nothing to play yet"); return; }
+  play(list,false,null,"all");
+}
+function playSong(){
+  if(playing&&playMode==="song"){ stop(); return; }
+  if(playing) stop();
+  const list=songMix(); if(!list.length){ toast("put a layer on the song first"); return; }
+  play(list,false,null,"song");
+}
+$("playAll").onclick=e=>{ e.stopPropagation(); playAll(); };
+$("projBtn").onclick=e=>{ e.stopPropagation(); openProjects(); };
 $("bHalf").onclick=()=>{
   if(takeLive()){ toast("stop the take first"); return; }
-  const was=playing&&!soloId;
+  const was=playing&&!soloId?playMode:null;
   rate=rate===1?.5:1; $("bHalf").classList.toggle("on",rate<1);
   if(playing) stop();
   toast(rate<1?"half speed":"full speed");
-  if(was) play(activeMix(),false,null);
+  if(was==="ticked") togglePlay(); else if(was==="all") playAll(); else if(was==="song") playSong();
 };
 function playLayer(id){
   const l=layers.find(x=>x.id===id);
@@ -2599,7 +2748,7 @@ function playLayer(id){
 $("bPlay").onclick=togglePlay;
 $("bUndo").onclick=undo;
 function blankLayer(){
-  return {id:newId(),inst:inst,sh:{...kbShape()},ev:[],loop:false,mute:false,trimIn:0,trimOut:null,vol:1,even:0};
+  return {id:newId(),inst:inst,sh:{...kbShape()},ev:[],loop:false,mute:false,trimIn:0,trimOut:null,vol:1,even:0,pk:true};
 }
 function addEmptyLayer(){
   const l=blankLayer(); layers.push(l); selL=l.id; selN=-1;
@@ -2627,7 +2776,7 @@ function startRec(){
   $("bRec").classList.add("live"); $("bRec").innerHTML="&#9632;";
   $("countVeil").classList.add("hidden");
   /* keep adding: the layer itself is in the guide and the loop runs on for a good while */
-  const guide=recMode==="over"?mix(overStep*64):mix().filter(e=>e.lay!==recL.id);
+  const guide=recMode==="over"?mix(overStep*64,l=>PICK(l)||l.id===recL.id):mix(0,PICK).filter(e=>e.lay!==recL.id);
   if(guide.length) play(guide,true);
   renderStrip(); setView("layers");
   toast(recMode==="over"?"keep adding · stop when it is full":recMode==="take"?"recording take "+(recL.takes.length+1):"recording into this layer");
@@ -2653,7 +2802,7 @@ function stopRec(){
 function startOrStop(){
   if(recording){ stopRec(); return; }
   if(hum&&hum.live){ humStopRec(); return; }
-  if(!mix().length&&!clickOn){ startRec(); return; }   /* no click, no earlier layers: start straight away, as before */
+  if(!mix(0,PICK).length&&!clickOn){ startRec(); return; }   /* no click, no earlier layers: start straight away, as before */
   boot(); if(ctx.resume) ctx.resume();
   let n=0; toast("get ready");
   $("countVeil").classList.remove("hidden"); $("countNum").textContent="1";
@@ -2738,7 +2887,7 @@ function humStartRec(){
     const g=$("humGo"); if(g){ g.textContent="stop · I have it"; g.classList.add("live"); }
     $("bRec").classList.add("live"); $("bRec").innerHTML="&#9632;";
     clickStart();
-    if(hum.others){ const guide=mix(); if(guide.length) play(guide,true); }
+    if(hum.others){ const guide=mix(0,PICK); if(guide.length) play(guide,true); }
     const tick=()=>{ if(!hum||!hum.live) return; const el=$("humLvl"); if(el) el.style.width=Math.min(100,Math.round(hum.lvl*420))+"%"; requestAnimationFrame(tick); };
     tick();
     toast("humming… tap stop when you have it");
@@ -2905,7 +3054,7 @@ function setLayerSound(l,id){
 $("sheetIn").addEventListener("click",e=>{
   const tr=e.target.closest("[data-try]");
   if(tr){ const L=layers.find(x=>x.id===soundFor); if(!L) return;
-    if(tr.dataset.try==="play"){ if(playing) stop(); else { play(activeMix(),false,null);
+    if(tr.dataset.try==="play"){ if(playing) stop(); else { play(mix(0,l=>PICK(l)||l.id===soundFor),false,null,"ticked");
         const b=$("tryPlay"); if(b&&playing){ b.classList.add("on"); b.textContent="stop"; } } return; }
     if(tr.dataset.try==="back"){ if(soundWas&&setLayerSound(L,soundWas)) openSound(L.id); return; } }
   const i=e.target.closest("[data-ins]");
@@ -2977,7 +3126,7 @@ function ensure(id,quiet){
   $("nSub").textContent="getting "+I.n.toLowerCase()+"\u2026";
   return loadPack(id,r=>{ if(r.state==="loading"&&r.total)
       $("nSub").textContent="getting "+I.n.toLowerCase()+" "+Math.round(r.n/r.total*100)+"%"; })
-    .then(ok=>{ $("nSub").textContent=IN(inst).n;
+    .then(ok=>{ $("nSub").textContent=IN(inst).n; if(id===inst) markRange();
       if(!quiet) toast(ok?I.n.toLowerCase()+" ready":I.n.toLowerCase()+" failed, rough stand-in for now");
       return ok; });
 }
@@ -3009,23 +3158,29 @@ function packEv(ev){
     if(hasRd) a.push(Math.round(e.rawDur)); return a; });
 }
 const packHum=h=>h&&h.k?{k:h.k,sr:h.sr||HUM_SR,n:h.n|0}:undefined;
-function pack(){
-  const o={v:9,name:fragName,notes:notepad,anchor:anchorId,shape:shape,bpm:bpm,
-    layers:layers.map(l=>({i:l.inst,l:l.loop?1:0,m:l.mute?1:0,id:l.id,s:l.sh,g:Math.round(layVol(l)*100)/100,
+/* 0.24: a project is {layers, song, bpm, anchorId, joins, notepad}: the live one is the globals */
+function liveState(){ return {layers,song,bpm,anchorId,joins,notepad}; }
+function allLayers(){ return projects.flatMap((p,i)=>i===projIdx?layers:((p.data&&p.data.layers)||[])); }
+function projPack(st){
+  return {notes:st.notepad||"",anchor:st.anchorId,bpm:st.bpm,
+    layers:st.layers.map(l=>({i:l.inst,l:l.loop?1:0,m:l.mute?1:0,id:l.id,s:l.sh,g:Math.round(layVol(l)*100)/100,
       evn:Math.round((l.even||0)*100)/100, ho:l.holdMs||0,
       ti:l.trimIn||0, to:l.trimOut==null?-1:l.trimOut,
       e:packEv(l.ev),
-      /* 0.23: the hum memo (a key into this device's shelf) and the other takes */
       hm:packHum(l.hum), tk:(l.takes&&l.takes.length)?l.takes.map(t=>({e:packEv(t.ev),ti:t.ti||0,to:t.to==null?-1:t.to,hm:packHum(t.hum)})):undefined,
-      tn:(l.takes&&l.takes.length)?(l.take|0):undefined})),
-    song:song.map(b=>[b.lay,b.bar,b.reps]),
-    joins:joins.map(j=>[j.from,j.to,j.kind])};
+      tn:(l.takes&&l.takes.length)?(l.take|0):undefined, pk:l.pk===false?0:undefined})),
+    song:st.song.map(b=>[b.lay,b.bar,b.reps]),
+    joins:st.joins.map(j=>[j.from,j.to,j.kind])};
+}
+function pack(){
+  const pj=projects.map((p,i)=>({nm:p.name,...projPack(i===projIdx?liveState():p.data)}));
+  const o={v:10,name:fragName,shape:shape,pi:projIdx,pj};
   return DB.code+"|"+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 }
 function unpack(code){
   const s=String(code||"").trim();
-  const tag=s.slice(0,4);
-  if(!DB.code.startsWith(tag)&&!DB.oldCodes.includes(tag)) throw new Error("not a Scribe code");
+  const bar=s.indexOf("|"), tag=bar>0?s.slice(0,bar):s.slice(0,4);
+  if(DB.code!==tag&&!DB.oldCodes.includes(tag)) throw new Error("not a Scribe code");
   if(tag==="SCR1"){
     const p=s.split("|"), out=[];
     (p[2]||"").split(";").filter(Boolean).forEach(r=>{
@@ -3033,13 +3188,21 @@ function unpack(code){
       const id=fixId(DB.V1_IDS[f[0]]); if(!id) return;
       out.push({inst:id,midi:id==="drums"?padAt(f[1]).m:clampM(f[1]),
         pad:id==="drums"?padAt(f[1]).id:null,start:Math.max(0,f[2]|0),dur:Math.max(40,f[3]|0)}); });
-    return {name:"imported",notes:"",anchor:null,shape:{...DB.SHAPE0},bpm:DB.BPM0,
+    return {name:"imported",shape:{...DB.SHAPE0},pi:0,projects:[{name:"Project 1",st:{notepad:"",anchorId:null,bpm:DB.BPM0,song:[],joins:[],
       layers:out.length?[{id:newId(),inst:out[0].inst,sh:{...DB.SHAPE0},loop:false,mute:false,
-        trimIn:0,trimOut:null,
-        ev:out.map(e=>({midi:e.midi,pad:e.pad,start:e.start,dur:e.dur}))}]:[]};
+        trimIn:0,trimOut:null,pk:true,
+        ev:out.map(e=>({midi:e.midi,pad:e.pad,start:e.start,dur:e.dur}))}]:[]}}]};
   }
-  const o=JSON.parse(decodeURIComponent(escape(atob(s.slice(5)))));
+  const o=JSON.parse(decodeURIComponent(escape(atob(s.slice(bar+1)))));
   const legacy=tag==="SCR2"?DB.V1_IDS:tag==="SCR3"?DB.V4_IDS:tag==="SCR4"?DB.V5_IDS:null;
+  const shp={...DB.SHAPE0,...(o.shape&&typeof o.shape==="object"?o.shape:{})};
+  if(Array.isArray(o.pj)&&o.pj.length){
+    const pj=o.pj.slice(0,24).map((p,i)=>({name:String(p.nm||("Project "+(i+1))).slice(0,40),st:readState(p,null)}));
+    return {name:String(o.name||"sketch").slice(0,60),shape:shp,projects:pj,pi:Math.max(0,Math.min(pj.length-1,o.pi|0))};
+  }
+  return {name:String(o.name||"sketch").slice(0,60),shape:shp,projects:[{name:"Project 1",st:readState(o,legacy)}],pi:0};
+}
+function readState(o,legacy){
   const L=[];
   const readEv=(e,id)=>(e||[]).slice(0,4000).map(f=>({
         midi:f[3]||id==="drums"?padAt(f[0]).m:clampM(f[0]),
@@ -3062,11 +3225,11 @@ function unpack(code){
       ev:readEv(l.e,id),
       hum:readHum(l.hm),
       takes:takes.length?takes:undefined,
-      take:takes.length?Math.max(0,Math.min(takes.length,l.tn|0)):0});
+      take:takes.length?Math.max(0,Math.min(takes.length,l.tn|0)):0, pk:l.pk!==0});
   });
   (o.takes||[]).slice(0,32).forEach(t=>{
     const id=fixId(t.i);
-    L.push({id:newId(),inst:id,sh:{...DB.SHAPE0},loop:!!t.l,mute:!!t.m,trimIn:0,trimOut:null,
+    L.push({id:newId(),inst:id,sh:{...DB.SHAPE0},loop:!!t.l,mute:!!t.m,trimIn:0,trimOut:null,pk:true,
       ev:(t.e||[]).slice(0,4000).map(f=>({
         midi:id==="drums"?padAt(f[0]).m:clampM(f[0]),
         pad:id==="drums"?padAt(f[0]).id:null,
@@ -3075,13 +3238,12 @@ function unpack(code){
   if(o.free&&o.free.length&&legacy){
     const g={};
     o.free.forEach(f=>{ const id=fixId(legacy[f[0]]||"piano"); (g[id]=g[id]||[]).push(f); });
-    Object.keys(g).forEach(id=>L.push({id:newId(),inst:id,sh:{...DB.SHAPE0},loop:false,mute:false,trimIn:0,trimOut:null,
+    Object.keys(g).forEach(id=>L.push({id:newId(),inst:id,sh:{...DB.SHAPE0},loop:false,mute:false,trimIn:0,trimOut:null,pk:true,
       ev:g[id].map(f=>({midi:id==="drums"?padAt(f[1]).m:clampM(f[1]),
         pad:id==="drums"?padAt(f[1]).id:null,start:Math.max(0,f[2]|0),dur:Math.max(40,f[3]|0)}))}));
   }
-  return {name:String(o.name||"sketch").slice(0,60),notes:String(o.notes||"").slice(0,8000),
-    anchor:typeof o.anchor==="string"?o.anchor.slice(0,24):null,
-    shape:{...DB.SHAPE0,...(o.shape&&typeof o.shape==="object"?o.shape:{})},layers:L,
+  return {notepad:String(o.notes||"").slice(0,8000),
+    anchorId:typeof o.anchor==="string"?o.anchor.slice(0,24):null,layers:L,
     bpm:clampBpm(o.bpm),song:readSong(o.song,L),joins:readJoins(o.joins,L)};
 }
 function readJoins(raw,L){
@@ -3094,20 +3256,75 @@ function readJoins(raw,L){
 }
 function readSong(raw,L){ const S=[], ids=new Set(L.map(l=>l.id));
   (Array.isArray(raw)?raw:[]).slice(0,400).forEach(b=>{ if(!Array.isArray(b)||!ids.has(b[0])) return;
-    S.push({id:newId(),lay:b[0],bar:Math.max(0,Math.min(999,Math.round((+b[1]||0)*4)/4)),reps:[1,2,4,8].includes(b[2]|0)?b[2]|0:1}); });
+    S.push({id:newId(),lay:b[0],bar:snap16(+b[1]||0),reps:Math.max(1,Math.min(64,b[2]|0||1))}); });
   return S; }
 const c01=x=>Math.max(0,Math.min(1,+x||0));
 function readFx(a){ const fx={v:c01(a[0]),s:c01(a[1]),f:c01(a[2]),b:Math.max(-1,Math.min(1,+a[3]||0)),t:a[4]?1:0,vr:a[5]==null?.5:c01(a[5])}; return fxAny(fx)?fx:undefined; }
 const clampBpm=v=>{ v=Math.round(+v); return isFinite(v)&&v>0?Math.min(DB.BPM_MAX,Math.max(DB.BPM_MIN,v)):DB.BPM0; };
 function adopt(o,label){
-  fragName=o.name; notepad=o.notes; layers=o.layers; anchorId=o.anchor; shape=o.shape; bpm=o.bpm||DB.BPM0;
-  song=o.song||[]; joins=o.joins||[]; selB=null; selN=-1; selNs=[];
-  selL=layers.length?layers[0].id:null;
+  if(playing) stop();
+  fragName=o.name; shape=o.shape;
+  projects=o.projects.map(p=>({id:newId(),name:p.name,data:p.st}));
+  loadProj(o.pi);
   renderStrip(); paint(); save(); markFitKeys();
   /* every layer's own sound, straight away, from the shelf when it is there */
   if(layers.length) ensureLayers(true);
-  toast((label||"loaded")+" \u00b7 "+layers.length+" layers");
+  toast((label||"loaded")+" \u00b7 "+(projects.length>1?projects.length+" projects \u00b7 ":"")+layers.length+" layers");
 }
+/* =========================== PROJECTS (0.24) =========================== */
+function loadProj(i){
+  const d=projects[i].data||{layers:[],song:[],bpm:DB.BPM0,anchorId:null,joins:[],notepad:""};
+  layers=d.layers||[]; song=d.song||[]; bpm=d.bpm||DB.BPM0; anchorId=d.anchorId||null; joins=d.joins||[]; notepad=d.notepad||"";
+  projects[i].data=null; projIdx=i;
+  selL=layers.length?layers[0].id:null; selB=null; selN=-1; selNs=[]; hist=[]; future=[];
+}
+function afterProj(label){ renderStrip(); paint(); save(); markFitKeys(); if(layers.length) ensureLayers(true); if(label) toast(label); }
+function switchProject(i){
+  if(i===projIdx||!projects[i]) return;
+  if(takeLive()){ toast("stop the take first"); return; }
+  if(playing) stop();
+  projects[projIdx].data=liveState(); loadProj(i); afterProj(projects[i].name+" \u00b7 "+layers.length+(layers.length===1?" layer":" layers"));
+}
+function newProject(){
+  if(takeLive()){ toast("stop the take first"); return; }
+  if(playing) stop();
+  projects[projIdx].data=liveState();
+  projects.push({id:newId(),name:"Project "+(projects.length+1),data:{layers:[],song:[],bpm:bpm,anchorId:null,joins:[],notepad:""}});
+  loadProj(projects.length-1); afterProj("new project");
+}
+function moveLayerTo(l,i){
+  if(i===projIdx||!projects[i]||!projects[i].data) return;
+  if(takeLive()){ toast("stop the take first"); return; }
+  if(playing) stop();
+  layers=layers.filter(x=>x!==l); song=song.filter(b=>b.lay!==l.id); joins=joins.filter(j=>j.from!==l.id&&j.to!==l.id);
+  if(anchorId===l.id) anchorId=null;
+  const d=projects[i].data; l.pk=true; d.layers.push(l);
+  selL=layers.length?layers[0].id:null; selN=-1; selNs=[]; hist=[]; future=[];
+  renderStrip(); paint(); save(); markFitKeys(); toast("moved to "+projects[i].name);
+}
+function openProjects(){
+  sheet('<h2>Projects</h2><p class="note">Each project keeps its own layers, song and tempo. Play and the red button work inside the one you are in. <button class="qm" data-help="proj" aria-label="What projects are">?</button></p>'+
+    projects.map((p,i)=>{ const n=i===projIdx?layers.length:((p.data&&p.data.layers)||[]).length;
+      return '<div class="slot"><span class="sn">'+esc(p.name)+'<br><span class="lbl">'+n+(n===1?' layer':' layers')+(i===projIdx?' \u00b7 open now':'')+'</span></span>'+
+        (i===projIdx?'':'<button class="mini" data-proj="'+i+'">open</button>')+'</div>'; }).join("")+
+    '<div class="grid2" style="margin-top:10px"><button class="btn sm go" data-pj="new">New project</button><button class="btn sm" data-pj="rename">Rename this one</button></div>'+
+    '<div class="grid2" style="margin-top:6px"><button class="btn sm" data-pj="copy">Copy this one</button><button class="btn sm dan" data-pj="del">Delete this one</button></div>'+
+    '<button class="big ghost" data-close>Close</button>');
+}
+$("sheetIn").addEventListener("click",e=>{
+  const o=e.target.closest("[data-proj]");
+  if(o){ switchProject(+o.dataset.proj); closeSheet(); return; }
+  const b=e.target.closest("[data-pj]"); if(!b) return;
+  const a=b.dataset.pj, cur=projects[projIdx];
+  if(a==="new"){ newProject(); closeSheet(); return; }
+  if(a==="rename"){ const nm=(prompt("Name this project:",cur.name)||"").trim(); if(!nm) return; cur.name=nm.slice(0,40); renderStrip(); save(); openProjects(); return; }
+  if(a==="copy"){ if(takeLive()){ toast("stop the take first"); return; } if(playing) stop();
+    const copy=JSON.parse(JSON.stringify(liveState())); projects[projIdx].data=liveState();
+    projects.push({id:newId(),name:(cur.name+" copy").slice(0,40),data:copy}); loadProj(projects.length-1); closeSheet(); afterProj("copied"); return; }
+  if(a==="del"){ if(projects.length<2){ toast("the last project stays: use New sketch in the menu to start over"); return; }
+    if(!confirm('Delete "'+cur.name+'" and all its layers?')) return;
+    if(playing) stop(); projects.splice(projIdx,1); loadProj(Math.max(0,Math.min(projIdx,projects.length-1))); closeSheet(); afterProj("project deleted"); return; }
+});
 /* =========================== SAVING, ALWAYS ============================
    0.23. autosave stays on after every change (no switch, ever). on top of it:
    a mirror in IndexedDB, a save when the page is hidden or closed, a ring of
@@ -3489,7 +3706,8 @@ $("sheetIn").addEventListener("click",e=>{
   if(a==="guide"){ openGuide(); return; }
   if(a==="share"){ doShare(); return; }
   if(a==="sounds"){ closeSheet(); loadAll(); return; }
-  if(a==="wipe"){ if(confirm("Start a new sketch? Every layer is deleted.")){ layers=[]; song=[]; selB=null; selN=-1; selL=null; anchorId=null;
+  if(a==="wipe"){ if(confirm("Start a new sketch? Every project and every layer is deleted.")){ if(playing) stop(); layers=[]; song=[]; selB=null; selN=-1; selL=null; anchorId=null; joins=[];
+    projects=[{id:newId(),name:"Project 1",data:null}]; projIdx=0; hist=[]; future=[];
     renderStrip(); paint(); save(); closeSheet(); toast("new sketch"); } return; }
 });
 $("sheetIn").addEventListener("click",e=>{
@@ -3580,7 +3798,7 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 document.addEventListener("gesturestart",e=>e.preventDefault());
 try{ const c=JSON.parse(getLS(LS.col)||"null"); if(c&&typeof c==="object") collapsed={...collapsed,...c}; }catch(e){}
 if(getLS(LS.click)==="0") clickOn=false; if(getLS(LS.bars)==="0") barSnap=false;
-{ const z=parseInt(getLS(LS.zoom)); if([24,36,48,72,96].includes(z)) songBW=z; }
+{ const z=parseInt(getLS(LS.zoom)); if([24,36,48,72,96,144,192].includes(z)) songBW=z; }
 { const cv=parseFloat(getLS(LS.clickVol)), mv=parseFloat(getLS(LS.vol));
   if(isFinite(cv)) clickVol=Math.min(1,Math.max(0,cv)); if(isFinite(mv)) vol=Math.min(1,Math.max(0,mv)); }
 if(getLS(LS.fitkeys)==="0") fitKeys=false;
