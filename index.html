@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#07060b">
-<title>The Scribe v0.22</title>
+<title>The Scribe v0.23</title>
 <style>
 /* ---- UI FREQUENCY REALISM ---------------------------------------------------
    The screen is a dark field, not a page. Mist in uneven pockets, grain like a
@@ -155,8 +155,12 @@ button,input,textarea{font-family:inherit;font-size:16px}
   background:#080e17;border-bottom:1px solid rgba(143,214,255,.16);
   box-shadow:0 8px 16px rgba(0,0,0,.55)}
 #panel .rail-bar{display:flex;gap:4px;align-items:center;margin-top:4px}
-#panel .rail-bar .name{flex:0 1 auto;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);font-weight:800}
+#panel .rail-bar .name{flex:0 1 auto;max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);font-weight:800;
+  /* 0.23: the name is the layer's sound button: a small plate, the sound's colour on it */
+  border:1px solid color-mix(in srgb,currentColor 45%,transparent);border-radius:8px;background:var(--face);box-shadow:var(--lift);
+  padding:6px 7px;min-height:30px;text-align:left}
+#panel .rail-bar .name:active{box-shadow:var(--press);transform:translateY(1px)}
 #panel .rail-bar .btn{flex:1;min-height:30px;padding:4px 3px;font-size:11px}
 #panel .rail-bar .btn::before{inset:1px}
 #panel .panel-rest{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 9px 16px}
@@ -444,9 +448,109 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
   .dpad{min-height:96px;font-size:15px}
   .toast{max-width:520px}
 }
+
+/* ---- 0.23 ------------------------------------------------------------------
+   The lamp, drawn the way he sees it (calibrated 21 Sept, cell C): one solid
+   gem-shaped source with a tight halo and a slightly soft edge, four same-sized
+   flat see-through grainy mirror copies fanned from the same root, hard-edged,
+   each glowing faintly from within, no halo on a copy. The Feather (the wide
+   soft body whose edge frays) only on the brightest emitter: a held key.
+   Emitters only. Never on text, labels, readouts or resting plates. Static. */
+.lamp{position:absolute;pointer-events:none;z-index:5;overflow:visible}
+.lamp svg{display:block;overflow:visible}
+/* on the keys the lamp sits near the top: on the phone the keyboard is cropped
+   to its top 96px while a tool panel is open, and the light must stay in view */
+.wk .lamp,.bk .lamp{left:50%;top:18px;width:48px;height:48px;margin-left:-24px}
+.bk .lamp{width:30px;height:30px;margin-left:-15px;top:12px}
+.dpad .lamp{left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px}
+.scope-play .lamp,.tl-play .lamp{right:-12px;top:-4px;width:24px;height:24px;color:var(--grn)}
+/* a held note is what is alive right now, so its lamp is THE lamp: green-yellow
+   core, blue shine. the key itself still lights in the instrument's colour. */
+.wk .lamp,.bk .lamp,.dpad .lamp{color:var(--grn)}
+@media(prefers-reduced-motion:reduce){ .lamp{opacity:.9} }
+/* keys that fit: a mote at the foot of every key in the key the sketch is in.
+   the root gets a second, brighter one. dust, not ink. */
+.wk.fit::after,.bk.fit::after{content:"";position:absolute;left:50%;top:7px;width:3px;height:3px;margin-left:-1.5px;
+  border-radius:50%;background:rgba(63,126,163,.75);box-shadow:0 0 3px rgba(143,214,255,.45)}
+.bk.fit::after{top:5px;background:rgba(143,214,255,.55)}
+.wk.root::after,.bk.root::after{width:4px;height:4px;margin-left:-2px;background:var(--grn);box-shadow:0 0 4px rgba(182,255,60,.8),0 0 8px var(--shine)}
+.wk.hit::after,.bk.hit::after{display:none}
+/* the layer card: a hum mark and a take count under the name */
+.lay .lt{font-size:10px;font-weight:800;color:var(--dim);margin-top:2px;letter-spacing:.04em}
+.lay .lt b{color:var(--blue);font-weight:900}
+/* take chips: one per take, the one you hear is lit */
+.takes{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.takes .btn{flex:0 0 auto;padding:8px 12px;min-height:36px;font-size:12px}
+/* the hum sheet: one big red thing, then a level you can see */
+.humlvl{height:10px;border-radius:6px;border:1px solid var(--edge);background:#03050a;overflow:hidden;margin:10px 0 4px;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.8)}
+.humlvl i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue-dim),var(--grn));
+  box-shadow:0 0 8px var(--shine);transition:width .06s linear}
+.big.rec{background:linear-gradient(180deg,#ff7a97,var(--rec) 40%,#b21f3f);color:#fff;
+  box-shadow:0 0 0 1.5px rgba(255,61,102,.5),0 0 22px rgba(255,61,102,.45),0 5px 10px rgba(0,0,0,.6)}
+.big.rec.live{animation:pu 1s infinite}
+/* half speed lives in the dock as a small tile; lit when it is on */
+.tbtn.slow{width:40px;font-size:13px;color:var(--blue);border-color:var(--edge);background:var(--face)}
+.tbtn.slow.on{color:var(--grn);border-color:rgba(143,214,255,.4);background:linear-gradient(180deg,#1d3a24 0%,#132a1a 40%,#0b1a10 100%);
+  box-shadow:var(--glow),inset 0 -3px 5px rgba(0,0,0,.45);text-shadow:0 0 6px rgba(182,255,60,.8)}
+.addlay.hum{font-size:15px;color:var(--blue);border-color:rgba(143,214,255,.3)}
+@media (orientation:landscape) and (max-height:560px) and (max-width:959px){
+  .tbtn.slow{width:36px;min-height:36px}
+  #strip .addlay.hum{padding:8px 0}
+}
+@media (orientation:landscape) and (max-height:430px){ .tbtn.slow{width:34px;min-height:32px} }
 </style>
 </head>
 <body>
+
+<!-- the lamp, once. every emitter that lights up borrows it with <use>. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- grain: frosted glass. alpha thresholded at about half, so the sheet is mostly see-through -->
+    <filter id="lampGrain" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.3" numOctaves="2" seed="7" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 9 -4" result="m"/>
+      <feComposite in="SourceGraphic" in2="m" operator="in"/>
+    </filter>
+    <!-- the source edge: the only soft edge in the whole effect -->
+    <filter id="lampSoft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.1"/></filter>
+    <!-- the feather: a wide soft body whose outer edge frays into fibres -->
+    <filter id="lampFray" x="-40%" y="-40%" width="180%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="3" seed="3" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <radialGradient id="lampHalo"><stop offset="0" stop-color="#8fd6ff" stop-opacity=".55"/><stop offset=".55" stop-color="#8fd6ff" stop-opacity=".18"/><stop offset="1" stop-color="#8fd6ff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="lampHalo2"><stop offset="0" stop-color="#8fd6ff" stop-opacity=".22"/><stop offset="1" stop-color="#8fd6ff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="lampShine" cx=".5" cy=".5" r=".55"><stop offset="0" stop-color="#e6f2fb" stop-opacity=".55"/><stop offset=".6" stop-color="#e6f2fb" stop-opacity=".12"/><stop offset="1" stop-color="#e6f2fb" stop-opacity="0"/></radialGradient>
+    <radialGradient id="lampFadeG"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#000"/></radialGradient>
+    <mask id="lampFade" maskUnits="userSpaceOnUse" x="-60" y="-70" width="120" height="120"><circle cx="0" cy="-6" r="42" fill="url(#lampFadeG)"/></mask>
+    <!-- one copy: a flat mirror of the gem, grainy body + hollow inner shine, then a hard edge and two chords -->
+    <g id="lampCopy">
+      <g filter="url(#lampGrain)">
+        <polygon points="0,-32 10,-16 10,6 0,20 -10,6 -10,-16" fill="currentColor" fill-opacity=".30"/>
+        <polygon points="0,-32 10,-16 10,6 0,20 -10,6 -10,-16" fill="url(#lampShine)"/>
+      </g>
+      <polygon points="0,-32 10,-16 10,6 0,20 -10,6 -10,-16" fill="none" stroke="#8fd6ff" stroke-opacity=".7" stroke-width=".9"/>
+      <path d="M-10,-16 L10,6 M-6,-26 L8,-8" stroke="#8fd6ff" stroke-opacity=".45" stroke-width=".6" fill="none"/>
+    </g>
+    <!-- the whole lamp. root = the gem's foot at (0,20). four copies fan from it, dimmer the further out -->
+    <symbol id="mdiv" viewBox="-50 -60 100 100" overflow="visible">
+      <circle cx="0" cy="-6" r="24" fill="url(#lampHalo2)"/>
+      <circle cx="0" cy="-6" r="12" fill="url(#lampHalo)"/>
+      <use href="#lampCopy" transform="rotate(-42 0 20) scale(-1 1)" opacity=".55"/>
+      <use href="#lampCopy" transform="rotate(-16 0 20) scale(-1 1)" opacity=".8"/>
+      <use href="#lampCopy" transform="rotate(18 0 20) scale(-1 1)" opacity=".8"/>
+      <use href="#lampCopy" transform="rotate(44 0 20) scale(-1 1)" opacity=".5"/>
+      <g filter="url(#lampSoft)">
+        <polygon points="0,-32 10,-16 10,6 0,20 -10,6 -10,-16" fill="currentColor"/>
+        <ellipse cx="0" cy="-8" rx="4.5" ry="9" fill="#eaf6ff" fill-opacity=".5"/>
+      </g>
+    </symbol>
+    <symbol id="feather" viewBox="-50 -60 100 100" overflow="visible">
+      <circle cx="0" cy="-6" r="42" fill="currentColor" fill-opacity=".32" filter="url(#lampFray)" mask="url(#lampFade)"/>
+    </symbol>
+  </defs>
+</svg>
 
 <div class="card pad" id="head">
   <div style="flex:1;min-width:0">
@@ -499,6 +603,7 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
     <button data-v="notes">Notes</button>
     <button data-v="song">Song</button>
   </div>
+  <button class="tbtn slow" id="bHalf" aria-label="Half speed">&#189;</button>
   <button class="tbtn un" id="bUndo" aria-label="Undo">↩</button>
   <button class="tbtn pl" id="bPlay" aria-label="Play everything">&#9654;</button>
   <button class="tbtn" id="bRec" aria-label="Record a new layer">&#9679;</button>
@@ -591,13 +696,36 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
         labels stacked on top of it; the last time label no longer runs off the
         right edge. Nothing else touched: DB, SCR8, recording, exports, Shape,
         Song, portrait.
+   0.23: a layer owns its sound. Every layer loads its own recording when the
+        sketch opens and before play, and the recordings are kept on the device
+        (IndexedDB) so a reload or a new version never downloads them again.
+        "Sound" on the layer card re-voices a recorded layer; with play running
+        the swap is live (Try it as). Hum it first: the mic records a hum into a
+        layer as notes (nearest key, YIN pitch tracking) and keeps the hum itself
+        as a memo you can hear back. Fit to key moves every note in a layer onto
+        the key the sketch is in; whole-layer up/down already existed. Takes: a
+        layer keeps every take, chips switch between them. Keep adding: record
+        more into a repeating layer while it loops. Keys that fit: the keyboard
+        marks the notes in the sketch's key. Half speed: play and record at half
+        tempo, notes land in real time. Save now + a backup ring + recovery;
+        autosave also on leaving the page. Paste from clipboard and select all on
+        the track code. The lamp (Photon Mass MultiDiv, Halo Dispersion Feather)
+        on held keys and the playhead, from the 21 Sept calibration. Track code
+        SCR9 (takes, hum flag, and a layer's own sound per take). Reads SCR1-8.
+   0.23.1: stop lets go of every note it started (a held note used to ring out
+        its whole recording, and the stand-in forever). An empty layer is never
+        the anchor, so re-recording the anchor leaves the other loops alone.
+        Another take / keep adding put the keyboard on that layer's sound. While
+        red or hum is live, undo, half speed and play wait. A new take always goes
+        at the end, so take 1 stays take 1; a take with nothing played is dropped.
+        The half-speed tile has its own class. Track code unchanged (SCR9).
    =========================================================================== */
 /* every knob on a sound, all at rest. new keys default to 0 so old codes read the same. */
 const SHAPE0=Object.freeze({fade:0,bite:.5,dark:0,tail:.12,room:0,echo:0,len:.5,warp:0,chrome:0,tune:0,
   harm:0,swirl:0,dbl:0,pulse:0,breath:0,grit:0});
 const P=o=>Object.freeze({...SHAPE0,...o});
 const DB=Object.freeze({
-  version:"0.22", code:"SCR8", oldCodes:Object.freeze(["SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
+  version:"0.23.1", code:"SCR9", oldCodes:Object.freeze(["SCR8","SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
   SF:"https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
   A4:440, A4_MIDI:69, PPQ:480, OCT_MIN:1, OCT_MAX:6,
   BPM0:128, BPM_MIN:40, BPM_MAX:240, GRID:4,   /* 128 is the count-in that was already there (470ms a tick) */
@@ -798,7 +926,19 @@ const DB=Object.freeze({
     dup:"Makes an independent copy of this layer: same notes, same shape, its own life from here on. Use it when you want a variation without losing the original.",
     tempofrom:"Listens to how the hits were punched, finds the speed hiding in them, sets the tempo to it, then sits every note on that beat. The layer's start moves onto the beat too, so a repeat lands on the bar line. Only a run that was already dead even gets spaced out evenly.",
     tighten:"Slides every note onto the nearest step of the beat you already have, and the start of the layer with them. Does not change the speed. Use it once the tempo is right.",
-    barsnap:"A repeating layer normally cycles every whole bar at the tempo: a take that runs 3.9 bars repeats every 4, so the first beat waits for the bar line instead of jumping in after the last note. Every repeating layer follows the anchor's cycle, so they stay lined up. Off: repeats use the exact recorded length, like before."
+    barsnap:"A repeating layer normally cycles every whole bar at the tempo: a take that runs 3.9 bars repeats every 4, so the first beat waits for the bar line instead of jumping in after the last note. Every repeating layer follows the anchor's cycle, so they stay lined up. Off: repeats use the exact recorded length, like before.",
+    laySound:"Which instrument this layer plays. Change it any time: the notes stay, the voice changes. Start play first and the change is live, so you can try a violin under what you made and keep it or go back. Drums are a kit, not a pitch, so a drum layer keeps its kit.",
+    hum:"Hum, whistle or sing a line and it lands in a new layer as notes on the nearest key, with your hum kept underneath as a memo. You will be off: that is expected. Fit to key drags every note into the key the sketch is in, then move the stragglers up or down yourself.",
+    hearHum:"Plays the hum itself, as you recorded it, so you can check the notes against it. The hum never plays with the sketch and never goes into a file: it lives on this device only.",
+    fitkey:"Listens to the other layers, works out the key the sketch is in, and moves every note in this layer onto the nearest note of that key. Off by a bit becomes right; off by a lot becomes the nearest wrong-but-in-key note, so check it by ear and use a step up or down where it guessed wrong. With no other layers it uses this layer's own notes.",
+    takes:"Every time you record another take into this layer, the old one is kept. Tap a take to hear that one instead; the others wait. Drop a take you do not want. The layer plays whichever take is lit.",
+    retake:"Records a fresh take into this same layer. What you had is kept as a take you can switch back to.",
+    overdub:"The layer keeps repeating while you add more notes into it, on top of what is already there, round after round. Stop when the part is full. Only for a layer set to repeat.",
+    fitkeys:"Marks the keys that belong to the key the sketch is in with a small dot, the root with a green one. No dots until something with pitch is recorded.",
+    half:"Plays everything at half speed so you can catch a fast part. Record with it on and you play along slowly, but the notes land at the real speed. The pitch does not change.",
+    savenow:"Writes the sketch to this device right now and keeps the last six saves as backups, so if the app ever comes back empty, Recover brings one back. Saving also happens on its own after every change and when you leave the page: there is no switch for that.",
+    recover:"The last six saves, newest first. Open one and it replaces what is on screen; the sketch you were on gets a backup first, so nothing is lost either way.",
+    soundsKept:"Downloaded sounds are kept on this device, so a reload, a new version, or the home-screen app does not fetch them again. If the phone clears its storage, they download again the first time they are needed."
   })
 });
 const mFreq=m=>DB.A4*Math.pow(2,(m-DB.A4_MIDI)/12);
@@ -871,8 +1011,13 @@ let shape={...DB.SHAPE0}, notepad="", fragName="sketch";
 let collapsed={Lay:false,Kb:false};
 let pf=null;
 const LS={auto:"scribe.v6.auto",slots:"scribe.v6.slots",seen:"scribe.v6.seen",col:"scribe.v6.col",click:"scribe.v6.click",
-  clickVol:"scribe.v6.clickvol",vol:"scribe.v6.vol",bars:"scribe.v6.bars",zoom:"scribe.v6.zoom"};
+  clickVol:"scribe.v6.clickvol",vol:"scribe.v6.vol",bars:"scribe.v6.bars",zoom:"scribe.v6.zoom",
+  backups:"scribe.v6.backups",fitkeys:"scribe.v6.fitkeys"};
 let clickOn=true, clickT=0, clickAt=0, clickN=0, clickVol=.3, vol=.7, barSnap=true;
+/* 0.23: half speed (1 or .5), keys-that-fit on/off, what the red button is about
+   to do (a fresh take / keep adding into a looping layer), the sound picker's
+   target layer, the hum recorder, and the last code we backed up */
+let rate=1, fitKeys=true, recMode=null, recTarget=null, soundFor=null, hum=null, lastBackup="";
 let song=[], selB=null, selN=-1, selNs=[], pickMore=false, touchAmt=.6, songBW=DB.SONG_BW, songDragged=false;
 let joins=[], hist=[], future=[], hushHist=false;
 let folds={fit:true,notes:false,layer:false,touch:true,start:true,stay:false,space:false,colour:false,machine:false};
@@ -898,10 +1043,13 @@ function loadSnap(o){
   renderStrip(); paint(); save(); hushHist=false;
 }
 function undo(){
+  /* 0.23.1: undo mid-take swapped the layers out from under the take and lost it */
+  if(recording||(hum&&hum.live)){ toast("stop the take first"); return; }
   if(!hist.length){ toast("nothing to undo"); return; }
   future.push(JSON.stringify(liveSnap())); loadSnap(JSON.parse(hist.pop())); toast("undone");
 }
 function redo(){
+  if(recording||(hum&&hum.live)){ toast("stop the take first"); return; }
   if(!future.length){ toast("nothing to redo"); return; }
   hist.push(JSON.stringify(liveSnap())); loadSnap(JSON.parse(future.pop())); toast("redone");
 }
@@ -926,6 +1074,42 @@ function boot(){
 }
 const PACKS={};
 const packState=id=>PACKS[id]?PACKS[id].state:"none";
+/* =========================== KEPT ON THE DEVICE =========================
+   0.23. Three shelves in IndexedDB: the sound recordings (so a reload or a new
+   version never downloads them again), the hums, and a mirror of the autosave.
+   Everything here is best-effort: if the shelf is missing the app still runs. */
+let idbP=null;
+function idb(){
+  if(idbP) return idbP;
+  idbP=new Promise(res=>{
+    try{
+      if(!window.indexedDB){ res(null); return; }
+      const r=indexedDB.open("scribe",1);
+      r.onupgradeneeded=()=>{ const d=r.result; ["packs","hums","state"].forEach(s=>{ if(!d.objectStoreNames.contains(s)) d.createObjectStore(s); }); };
+      r.onsuccess=()=>res(r.result); r.onerror=()=>res(null); r.onblocked=()=>res(null);
+    }catch(e){ res(null); }
+  });
+  return idbP;
+}
+function kvGet(store,key){ return idb().then(d=>new Promise(res=>{ if(!d){ res(undefined); return; }
+  try{ const q=d.transaction(store,"readonly").objectStore(store).get(key); q.onsuccess=()=>res(q.result); q.onerror=()=>res(undefined); }catch(e){ res(undefined); } })); }
+function kvPut(store,key,val){ return idb().then(d=>new Promise(res=>{ if(!d){ res(false); return; }
+  try{ const tx=d.transaction(store,"readwrite"); tx.objectStore(store).put(val,key); tx.oncomplete=()=>res(true); tx.onerror=()=>res(false); tx.onabort=()=>res(false); }catch(e){ res(false); } })); }
+function kvDel(store,key){ return idb().then(d=>new Promise(res=>{ if(!d){ res(false); return; }
+  try{ const tx=d.transaction(store,"readwrite"); tx.objectStore(store).delete(key); tx.oncomplete=()=>res(true); tx.onerror=()=>res(false); tx.onabort=()=>res(false); }catch(e){ res(false); } })); }
+function kvKeys(store){ return idb().then(d=>new Promise(res=>{ if(!d){ res([]); return; }
+  try{ const q=d.transaction(store,"readonly").objectStore(store).getAllKeys(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>res([]); }catch(e){ res([]); } })); }
+try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){}
+/* which sounds are already on the shelf, for the dots in the picker before anything is decoded */
+const KEPT=new Set();
+kvKeys("packs").then(ks=>{ ks.forEach(k=>KEPT.add(k)); });
+const packKept=id=>{ const I=IN(id); return !!(I&&I.sf&&KEPT.has(I.sf)); };
+/* run jobs a few at a time */
+function pool(items,n,job){ let i=0, liveN=0; return new Promise(res=>{
+  const step=()=>{ if(i>=items.length&&liveN===0){ res(); return; }
+    while(liveN<n&&i<items.length){ const it=items[i++]; liveN++;
+      Promise.resolve().then(()=>job(it)).catch(()=>{}).then(()=>{ liveN--; step(); }); } };
+  step(); }); }
 function nameToMidi(n){
   const m=/^([A-G])([b#]?)(-?\d)$/.exec(n); if(!m) return null;
   const base={C:0,D:2,E:4,F:5,G:7,A:9,B:11}[m[1]];
@@ -937,33 +1121,51 @@ function loadPack(id,prog){
   if(PACKS[id]&&PACKS[id].state==="ready") return Promise.resolve(true);
   if(PACKS[id]&&PACKS[id].p) return PACKS[id].p;
   boot();
-  const r=PACKS[id]={state:"loading",map:{},n:0,total:0};
-  r.p=new Promise(res=>{
-    const done=ok=>{ r.state=ok?"ready":"failed"; r.p=null; if(prog) prog(r); res(ok); };
+  const r=PACKS[id]={state:"loading",map:{},n:0,total:0,kept:false};
+  const decode=b=>new Promise((ok,no)=>{ const q=ctx.decodeAudioData(b,ok,no); if(q&&q.then) q.then(ok,no); });
+  const finish=ok=>{ r.state=ok?"ready":"failed"; r.p=null; if(prog) prog(r); return ok; };
+  /* the shelf first: decode what is kept, no network at all */
+  const fromShelf=kept=>{ const keys=Object.keys(kept.map); r.total=keys.length; r.kept=true;
+    return pool(keys,6,k=>decode(kept.map[k].slice(0)).then(buf=>{ r.map[+k]=buf; }).catch(()=>{}).then(()=>{ r.n++; if(prog) prog(r); }))
+      .then(()=>finish(Object.keys(r.map).length>0)); };
+  /* the network: fetch the raw bytes onto the shelf, then decode from there */
+  const fromNet=()=>fetchRaw(I,pr=>{ r.total=pr.total; r.n=pr.n; if(prog) prog(r); }).then(raw=>{
+    if(!raw){ return finish(false); } r.n=0; return fromShelf({map:raw}); });
+  r.p=kvGet("packs",I.sf).then(kept=>(kept&&kept.map&&Object.keys(kept.map).length)?fromShelf(kept):fromNet()).catch(()=>fromNet());
+  return r.p;
+}
+/* the soundfont script, then every note's bytes, kept raw on the shelf. no
+   decoding here: decoded sound is thirty times the size, and decoding every
+   instrument at once is what can throw a phone out of the page. */
+const RAWP={};
+function fetchRaw(I,prog){
+  if(RAWP[I.sf]) return RAWP[I.sf];
+  RAWP[I.sf]=new Promise(res=>{
+    const done=v=>{ delete RAWP[I.sf]; res(v); };
     const sc=document.createElement("script");
     sc.src=DB.SF+I.sf+"-mp3.js"; sc.async=true;
-    sc.onerror=()=>done(false);
+    sc.onerror=()=>done(null);
     sc.onload=()=>{
       const tbl=(window.MIDI&&window.MIDI.Soundfont)?window.MIDI.Soundfont[I.sf]:null;
-      if(!tbl){ done(false); return; }
-      const keys=Object.keys(tbl); r.total=keys.length;
-      if(!r.total){ done(false); return; }
-      let i=0,liveN=0;
-      const step=()=>{ while(liveN<6&&i<keys.length){
-        const k=keys[i++], mi=nameToMidi(k);
-        if(mi==null){ r.n++; continue; }
-        liveN++;
-        fetch(tbl[k]).then(x=>x.arrayBuffer())
-          .then(b=>new Promise((ok,no)=>{ const q=ctx.decodeAudioData(b,ok,no); if(q&&q.then) q.then(ok,no); }))
-          .then(buf=>{ r.map[mi]=buf; }).catch(()=>{})
-          .then(()=>{ liveN--; r.n++; if(prog) prog(r);
-            if(r.n>=keys.length) done(Object.keys(r.map).length>0); else step(); });
-      } };
-      step();
+      if(!tbl){ done(null); return; }
+      const keys=Object.keys(tbl).filter(k=>nameToMidi(k)!=null), p={n:0,total:keys.length};
+      if(!p.total){ done(null); return; }
+      const raw={};
+      pool(keys,6,k=>fetch(tbl[k]).then(x=>x.arrayBuffer()).then(b=>{ raw[nameToMidi(k)]=b; }).catch(()=>{}).then(()=>{ p.n++; if(prog) prog(p); }))
+        .then(()=>{ if(!Object.keys(raw).length){ done(null); return; }
+          kvPut("packs",I.sf,{map:raw,t:Date.now()}).then(w=>{ if(w) KEPT.add(I.sf); }).catch(()=>{});
+          try{ delete window.MIDI.Soundfont[I.sf]; }catch(e){}
+          done(raw); });
     };
     document.head.appendChild(sc);
   });
-  return r.p;
+  return RAWP[I.sf];
+}
+/* every layer's own sound, quietly. resolves when all are ready (or failed). */
+function ensureLayers(quiet){
+  const ids=[...new Set(layers.map(l=>l.inst).filter(id=>IN(id).sf&&packState(id)!=="ready"))];
+  if(!ids.length) return Promise.resolve(true);
+  return Promise.all(ids.map(id=>ensure(id,quiet!==false))).then(rs=>rs.every(Boolean));
 }
 function nearest(id,midi){
   const m=PACKS[id]&&PACKS[id].map; if(!m) return null;
@@ -1096,6 +1298,9 @@ function fallback(id,midi,sh,fx,dur,vol,from){
   node.connect(out);
   wire(out,sh);
   const atk=env(out,sh,t,.55*vol/(1+(sh.harm>.03?sh.harm*.6:0)),I.hold); fxGain(out,t,.55*vol,fx,dur,atk);
+  /* 0.23.1: the stand-in is a synth with no end of its own. if nothing ever lets
+     go of it, it still stops: a minute past its length at the very most. */
+  nodes.forEach(n=>{ try{ n.stop(t+Math.max(dur,1)+60) }catch(e){} });
   return {out,nodes,sh};
 }
 function wire(out,sh){
@@ -1234,9 +1439,9 @@ function click(accent){
 function clickStart(){
   clickStop(); if(!clickOn) return;
   clickAt=performance.now(); clickN=0;
-  const step=()=>{ if(!recording) return;
+  const step=()=>{ if(!recording&&!(hum&&hum.live)) return;
     click(clickN%4===0); clickN++;
-    const next=clickAt+clickN*(60000/bpm);
+    const next=clickAt+clickN*(60000/(bpm*rate));   /* half speed: the click slows with it */
     clickT=setTimeout(step,Math.max(0,next-performance.now())); };
   clickT=setTimeout(step,0);
 }
@@ -1288,16 +1493,20 @@ function layerAudible(l){
   if(useSong()) return song.some(b=>b.lay===l.id);
   return true;
 }
+/* 0.23.1: an empty layer cannot set the cycle. while the anchor is being
+   re-recorded (or was emptied) the next repeating layer with notes leads, and
+   the anchor takes over again the moment it has notes. anchorId never changes. */
 function anchorLayer(){
-  return layers.find(l=>l.id===anchorId&&l.loop&&!l.mute)
-      || layers.find(l=>l.loop&&!l.mute) || null;
+  return layers.find(l=>l.id===anchorId&&l.loop&&!l.mute&&l.ev.length)
+      || layers.find(l=>l.loop&&!l.mute&&l.ev.length) || null;
 }
-function mix(){
+function mix(minTotal){
   const out=[], an=anchorLayer(), aL=an?loopStep(an):0;
   const solid=layers.filter(l=>!l.loop&&!l.mute).map(layLen);
   let total=solid.length?Math.max(...solid,0):0;
   if(total<=0&&aL>0) total=aL*4;
   if(aL>0) total=Math.max(total,aL*2);
+  if(minTotal>0) total=Math.max(total,minTotal);   /* 0.23: keep adding wants the loop to run on */
   layers.forEach(l=>{
     if(l.mute||!l.ev.length) return;
     const ev=eventsOf(l);
@@ -1390,12 +1599,12 @@ function scopeTick(){
   scopeRaf=0;
   const tp=$("tlPlay");
   if(tp){ if(!playing||playOrigin==null){ tp.style.opacity=0; return; }
-    const t=performance.now()-playOrigin; tp.style.opacity=1; tp.style.left=(92+(t/barMs())*songBW)+"px";
+    const t=(performance.now()-playOrigin)*rate; tp.style.opacity=1; tp.style.left=(92+(t/barMs())*songBW)+"px";
     scopeRaf=requestAnimationFrame(scopeTick); return; }
   const ph=$("scopePlay"); if(!ph) return;
   if(!playing||playOrigin==null){ ph.style.opacity=0; return; }
   const l=layers.find(x=>x.id===selL); if(!l){ ph.style.opacity=0; return; }
-  const tw=trimWindow(l), raw=Math.max(tw.raw,1), t=performance.now()-playOrigin;
+  const tw=trimWindow(l), raw=Math.max(tw.raw,1), t=(performance.now()-playOrigin)*rate;   /* half speed: the string walks at half pace */
   let pos=-1;
   if(soloId){ if(soloId===l.id&&t<=tw.span) pos=tw.tIn+t; }
   else if(!l.mute&&l.ev.length){
@@ -1545,14 +1754,18 @@ function renderStrip(){
       '<div class="ln">'+esc(I.n)+'</div>'+
       '<div class="lm">'+(empty?'empty \u00b7 ready':(l.ev.length+(l.ev.length===1?' note':' notes')+(l.loop?' \u00b7 '+(barSnap?loopBars(l)+(loopBars(l)===1?' bar':' bars'):(layLen(l)/1000).toFixed(1)+'s'):'')))+'</div>'+
       '<div class="lr">'+(empty?"red records here":(l.loop?(an&&an.id===l.id?"anchor":"loop"):"once")+(layVol(l)<.99?' \u00b7 '+Math.round(layVol(l)*100)+'%':''))+'</div>'+
+      ((l.hum||(l.takes&&l.takes.length))?'<div class="lt">'+(l.hum?'<b>hum</b>':'')+(l.hum&&l.takes&&l.takes.length?' \u00b7 ':'')+
+        (l.takes&&l.takes.length?'take <b>'+((l.take|0)+1)+'</b> of '+(l.takes.length+1):'')+'</div>':'')+
       '<span class="lay-play'+(on?" on":"")+'" data-playlay="'+l.id+'" role="button" aria-label="Play this layer">'+(on?"&#9632;":"&#9654;")+'</span>'+
       '<span class="lay-mute'+(l.mute?" on":"")+'" data-mutelay="'+l.id+'" role="button" aria-label="'+(l.mute?"Unsilence":"Silence")+'">'+(l.mute?"\u2715":"\u266A")+'</span>'+
       '</button>';
-  }).join("")+'<button class="addlay" id="addLay" aria-label="New empty layer">+</button>';
+  }).join("")+'<button class="addlay" id="addLay" aria-label="New empty layer">+</button>'+
+    '<button class="addlay hum" id="humLay" aria-label="Hum it first">hum</button>';
   st.scrollLeft=sx; st.scrollTop=sy;
 }
 $("strip").onclick=e=>{
   if(e.target.closest("#addLay")){ addEmptyLayer(); return; }
+  if(e.target.closest("#humLay")){ openHum(); return; }
   const p=e.target.closest("[data-playlay]");
   if(p){ e.stopPropagation(); playLayer(p.dataset.playlay); return; }
   const m=e.target.closest("[data-mutelay]");
@@ -1589,6 +1802,7 @@ function buildKB(){
     h+='<div class="bk" data-m="'+m+'" style="left:'+((o*7+wi)*W-BW/2)+'px;width:'+BW+'px;height:'+Math.round(H*.62)+'px;--hi:'+col+'">'+mName(m)+'</div>'; });
   kb.style.height=H+"px"; kb.style.width=(octs*7*W)+"px"; kb.innerHTML=h;
   $("kbLbl").textContent=mName(base)+" \u2013 "+mName(base+octs*12-1);
+  markFitKeys();
   $("bSound").textContent=IN(inst).n;
   $("bSound").style.borderColor=IN(inst).c;
   $("bSound").style.color=IN(inst).c;
@@ -1597,13 +1811,39 @@ function buildKB(){
   $("dpads").classList.toggle("hidden",!d);
 }
 $("dpads").innerHTML=DB.PADS.map(p=>'<button class="dpad" data-p="'+p.id+'">'+p.n+'</button>').join("");
+/* =========================== KEYS THAT FIT ============================== */
+/* the key the sketch is in, read from every pitched note in it. null when there
+   is nothing with pitch yet. pc = the root, minor = which scale. */
+const MAJ_SCALE=[0,2,4,5,7,9,11], MIN_SCALE=[0,2,3,5,7,8,10];
+function sketchKey(exceptId){
+  const midis=layers.filter(l=>l.id!==exceptId&&!l.mute).flatMap(l=>l.ev.filter(e=>!e.pad).map(e=>e.midi));
+  if(!midis.length) return null;
+  return detectKey(midis);
+}
+function scaleSet(k){ const s=new Set(); (k.minor?MIN_SCALE:MAJ_SCALE).forEach(i=>s.add((k.pc+i)%12)); return s; }
+function markFitKeys(){
+  const kb=$("kb"); if(!kb) return;
+  const k=fitKeys?sketchKey():null, set=k?scaleSet(k):null;
+  kb.querySelectorAll("[data-m]").forEach(el=>{ const pc=((+el.dataset.m)%12+12)%12;
+    el.classList.toggle("fit",!!(set&&set.has(pc))); el.classList.toggle("root",!!(k&&pc===k.pc)); });
+  const lbl=$("kbLbl"); if(lbl){ const base=lbl.textContent.split(" · ")[0]; lbl.textContent=base+(k&&fitKeys?" · fits "+k.name:""); }
+}
+/* the lamp on an emitter: the source with its copies, and the feather only on
+   the brightest (a held key). one <svg> that borrows the symbol. */
+function lampSvg(feather){
+  /* no viewBox out here on purpose: the symbols carry their own, and a second
+     one would shift the drawing by the symbol's origin */
+  return '<svg class="lamp" aria-hidden="true">'+(feather?'<use href="#feather"></use>':'')+'<use href="#mdiv"></use></svg>';
+}
+function lampOn(el){ if(!el||el.querySelector(".lamp")) return; el.insertAdjacentHTML("beforeend",lampSvg(true)); }
+function lampOff(el){ if(!el) return; el.querySelectorAll(".lamp").forEach(x=>x.remove()); }
 /* what the keyboard sounds like: the selected layer's shape when there is one,
    the keyboard's own shape otherwise. while recording, the layer being recorded. */
 function kbShape(){ const l=recording&&recL?recL:layers.find(x=>x.id===selL); return l&&l.sh?l.sh:shape; }
 let kbLast={midi:null,off:0};
 function noteOn(key,midi,padId){
   if(live.has(key)) return;
-  const t0=recording?performance.now()-recT0:null;
+  const t0=recording?(performance.now()-recT0)*rate:null;   /* half speed: played slow, lands at real speed */
   let v=null,m=midi;
   const recVol=recL?layVol(recL):1, sh=kbShape();
   if(inst==="drums"){ drum(padId,sh,recVol); m=(DB.PADS.find(p=>p.id===padId)||DB.PADS[0]).m; }
@@ -1618,32 +1858,43 @@ function noteOff(key){
   live.delete(key); kbLast.off=performance.now();
   if(h.v) release(h.v);
   if(recording&&h.inst!=="drums"&&h.t0!=null)
-    addNote({midi:h.midi,pad:null,start:h.t0,dur:Math.max(70,performance.now()-recT0-h.t0)});
+    addNote({midi:h.midi,pad:null,start:h.t0,dur:Math.max(70,(performance.now()-recT0)*rate-h.t0)});
 }
+let overStep=0, overIn=0;   /* keep adding: the cycle we are riding and where the layer's window starts */
 function addNote(e){
   if(!recL) return;
-  recL.ev.push({midi:e.midi|0,pad:e.pad||null,start:Math.round(e.start),dur:Math.round(e.dur)});
+  /* 0.23.1: a drum layer only takes pads, a played layer only takes keys */
+  if((recL.inst==="drums")!==!!e.pad) return;
+  let start=Math.round(e.start), dur=Math.round(e.dur);
+  if(recMode==="over"&&overStep>0){
+    /* the loop came round: this note lands on its place inside the cycle */
+    const pos=((start%overStep)+overStep)%overStep;
+    start=Math.round(overIn+pos); dur=Math.max(40,Math.min(dur,Math.round(overStep-pos)));
+  }
+  const n={midi:e.midi|0,pad:e.pad||null,start,dur};
+  recL.ev.push(n); if(recMode==="over") overNew.push(n);
   recL.ev.sort((a,b)=>a.start-b.start);
   renderStrip(); if(view==="layers") paint(); save();
 }
+let overNew=[];
 function allOff(){ [...live.keys()].forEach(noteOff);
-  document.querySelectorAll(".hit").forEach(el=>el.classList.remove("hit")); }
+  document.querySelectorAll(".hit").forEach(el=>{ el.classList.remove("hit"); lampOff(el); }); }
 function bindKeys(root,mk){
   root.addEventListener("pointerdown",e=>{
     const el=e.target.closest("[data-m],[data-p]"); if(!el) return;
     e.preventDefault(); try{ el.setPointerCapture(e.pointerId) }catch(_){}
-    el.classList.add("hit"); const k=mk(el,e.pointerId);
+    el.classList.add("hit"); lampOn(el); const k=mk(el,e.pointerId);
     el.dataset.live=k; noteOn(k,+el.dataset.m||0,el.dataset.p||null);
   },{passive:false});
   const up=e=>{ const el=e.target.closest("[data-m],[data-p]");
     if(!el||!el.dataset.live) return;
-    el.classList.remove("hit"); noteOff(el.dataset.live); delete el.dataset.live; };
+    el.classList.remove("hit"); lampOff(el); noteOff(el.dataset.live); delete el.dataset.live; };
   root.addEventListener("pointerup",up); root.addEventListener("pointercancel",up);
 }
 bindKeys($("kb"),(el,p)=>"k"+el.dataset.m+"_"+p);
 bindKeys($("dpads"),(el,p)=>"p"+el.dataset.p+"_"+p);
 const panic=()=>{ [...live.keys()].filter(k=>!k.startsWith("kb_")).forEach(noteOff);
-  document.querySelectorAll("[data-live]").forEach(el=>{ el.classList.remove("hit"); delete el.dataset.live; }); };
+  document.querySelectorAll("[data-live]").forEach(el=>{ el.classList.remove("hit"); lampOff(el); delete el.dataset.live; }); };
 document.addEventListener("pointerup",panic);
 document.addEventListener("pointercancel",panic);
 window.addEventListener("blur",allOff);
@@ -1654,14 +1905,14 @@ document.addEventListener("keydown",e=>{
   const k=e.key.toLowerCase(); if(DB.KEYS[k]===undefined) return;
   e.preventDefault();
   if(inst==="drums"){ const p=padAt(DB.KEYS[k]); noteOn("kb_"+k,0,p.id);
-    const el=$("dpads").querySelector('[data-p="'+p.id+'"]'); if(el) el.classList.add("hit"); return; }
+    const el=$("dpads").querySelector('[data-p="'+p.id+'"]'); if(el){ el.classList.add("hit"); lampOn(el); } return; }
   const m=(octave+1)*12+DB.KEYS[k]; noteOn("kb_"+k,m,null);
-  const el=$("kb").querySelector('[data-m="'+m+'"]'); if(el) el.classList.add("hit");
+  const el=$("kb").querySelector('[data-m="'+m+'"]'); if(el){ el.classList.add("hit"); lampOn(el); }
 });
 document.addEventListener("keyup",e=>{
   const k=e.key.toLowerCase(); if(DB.KEYS[k]===undefined) return;
   noteOff("kb_"+k);
-  document.querySelectorAll(".hit").forEach(el=>{ if(!el.dataset.live) el.classList.remove("hit"); });
+  document.querySelectorAll(".hit").forEach(el=>{ if(!el.dataset.live){ el.classList.remove("hit"); lampOff(el); } });
 });
 $("bDn").onclick=()=>{ if(octave>DB.OCT_MIN){ allOff(); octave--; buildKB(); } };
 $("bUp").onclick=()=>{ if(octave<DB.OCT_MAX){ allOff(); octave++; buildKB(); } };
@@ -1703,7 +1954,7 @@ function paintSong(){
       '<p class="note">'+pos+' \u00b7 drag the block to move it; arrows move one beat.</p>'
      :'<p class="note">Numbers are bars, thin lines are beats. Tap an empty spot on a lane to place that layer there; tap a block to change it, or drag it.</p>')+
     '<div class="tl" id="tl"><div class="tl-in" style="width:'+(total*BW+92)+'px"><div class="ruler"><div class="ruler-in" style="background:repeating-linear-gradient(90deg,rgba(143,214,255,.12) 0 1px,transparent 1px '+BW+'px)">'+ruler+'</div></div>'+lanes+
-    '<div class="tl-play" id="tlPlay"></div></div></div>';
+    '<div class="tl-play" id="tlPlay">'+lampSvg(false)+'</div></div></div>';
 }
 function bindSong(){
   const tl=$("tl"); if(!tl) return;
@@ -1769,11 +2020,11 @@ function scopeRail(l){
       '<canvas id="scopeCv"></canvas>'+
       '<div class="scope-handle in" data-h="in" style="left:'+(tw.tIn/Math.max(tw.raw,1)*100)+'%"></div>'+
       '<div class="scope-handle out" data-h="out" style="left:'+(tw.tOut/Math.max(tw.raw,1)*100)+'%"></div>'+
-      '<div class="scope-play" id="scopePlay"></div>'+
+      '<div class="scope-play" id="scopePlay">'+lampSvg(false)+'</div>'+
       '<div class="scope-ylab" aria-hidden><span>2k</span><span>500</span><span>100</span></div>'+
     '</div><div class="scope-x">'+ticks+'</div></div>'+
     '<div class="rail-bar">'+
-    '<span class="name" style="color:'+I.c+'">'+esc(I.n)+(nPick?(' ·'+nPick):'')+'</span>'+
+    '<button class="name" data-act="laysound" style="color:'+I.c+'" aria-label="Change this layer\'s sound">'+esc(I.n)+(nPick?(' ·'+nPick):'')+'</button>'+
     '<button class="btn sm zap'+(pickMore?" on":"")+'" data-act="pickmore">pick many</button>'+
     '<button class="btn sm zap" data-act="pickall">pick all</button>'+
     '<button class="btn sm" data-act="clearpick">pick none</button>'+
@@ -1806,6 +2057,13 @@ function paintLayers(){
       '<div class="row" style="margin-bottom:6px">'+
       '<button class="btn sm go'+(soloOn?" on":"")+'" data-act="playlay">'+(soloOn?"stop this layer":"play this layer")+'</button>'+
       '<button class="btn sm" data-act="trimsilence">trim silence</button></div>'+
+      (l.hum?'<div class="row" style="margin-bottom:6px"><button class="btn sm zap" data-act="hearhum">hear my hum</button>'+
+        '<button class="qm" data-help="hearHum" aria-label="What hear my hum does">?</button></div>':'')+
+      '<div class="row" style="margin-bottom:6px">'+
+      (l.ev.length?'<button class="btn sm" data-act="retake">record another take</button>':'')+
+      (l.ev.length&&l.loop?'<button class="btn sm" data-act="overdub">keep adding</button>':'')+
+      (l.ev.length?'<button class="qm" data-help="'+(l.loop?"overdub":"retake")+'" aria-label="What these do">?</button>':'')+'</div>'+
+      takeChips(l)+
       '<div class="row" style="margin-bottom:6px">'+
       '<button class="btn sm zap" data-act="tempofrom">tempo from this layer</button>'+
       '<button class="btn sm zap" data-act="tighten">tighten to the beat</button>'+
@@ -1821,6 +2079,9 @@ function paintLayers(){
     )+
     foldBox("layer","The layer",
       '<div class="row" style="margin-bottom:6px">'+
+      '<button class="btn sm" data-act="laysound" style="color:'+I.c+';border-color:'+I.c+'">sound: '+esc(I.n)+'</button>'+
+      '<button class="qm" data-help="laySound" aria-label="What the layer sound is">?</button></div>'+
+      '<div class="row" style="margin-bottom:6px">'+
       '<button class="btn sm'+(l.loop?" on":"")+'" data-act="loop">'+(l.loop?"repeats":"plays once")+'</button>'+
       '<button class="btn sm'+(an&&an.id===l.id?" on":"")+'" data-act="anchor"'+(l.loop?"":" disabled")+'>anchor</button></div>'+
       '<div class="row" style="margin-bottom:6px">'+
@@ -1831,7 +2092,10 @@ function paintLayers(){
       '<button class="btn sm zap" data-pitch="-1" data-all="1">&#9660; a step</button>'+
       '<button class="btn sm zap" data-pitch="1" data-all="1">&#9650; a step</button>'+
       '<button class="btn sm zap" data-pitch="-12" data-all="1">&#9660; an octave</button>'+
-      '<button class="btn sm zap" data-pitch="12" data-all="1">&#9650; an octave</button></div>':'')+
+      '<button class="btn sm zap" data-pitch="12" data-all="1">&#9650; an octave</button></div>'+
+      '<div class="row" style="margin-bottom:6px">'+
+      '<button class="btn sm zap" data-act="fitkey">fit to key'+(fitKeyOf(l)?' ('+esc(fitKeyOf(l).name)+')':'')+'</button>'+
+      '<button class="qm" data-help="fitkey" aria-label="What fit to key does">?</button></div>':'')+
       '<div class="row" style="margin-bottom:6px">'+
       '<button class="btn sm" data-act="resetlay">reset shape</button>'+
       '<button class="btn sm" data-act="empty">empty it</button>'+
@@ -2059,10 +2323,21 @@ $("panel").addEventListener("click",e=>{
     const first=notes.slice().sort((a,b)=>a.start-b.start)[0]; if(first) hearNote(l,first); return; }
   const fd=e.target.closest("[data-fold]");
   if(fd){ folds[fd.dataset.fold]=!folds[fd.dataset.fold]; paint(); return; }
+  const tk2=e.target.closest("[data-take]");
+  if(tk2){ const l=layers.find(x=>x.id===selL); if(!l) return; snap(); switchTake(l,+tk2.dataset.take); renderStrip(); paint(); save(); toast("take "+((l.take|0)+1)); return; }
+  const dt=e.target.closest("[data-droptake]");
+  if(dt){ const l=layers.find(x=>x.id===selL); if(!l) return; snap(); dropTake(l,+dt.dataset.droptake); renderStrip(); paint(); save(); toast("take dropped"); return; }
   const a=e.target.closest("[data-act]");
   if(!a) return;
   const act=a.dataset.act, l=layers.find(x=>x.id===selL);
   if(act==="hearit"){ hearIt(); return; }
+  if(act==="laysound"){ if(!l) return; openSound(l.id); return; }
+  if(act==="retake"){ if(!l) return; armRec("take",l.id); return; }
+  if(act==="overdub"){ if(!l||!l.loop) return; armRec("over",l.id); return; }
+  if(act==="hearhum"){ if(!l) return; humHear(l); return; }
+  if(act==="fitkey"){ if(!l||!l.ev.length) return; const k=fitKeyOf(l); if(!k){ toast("nothing with pitch to fit to yet"); return; }
+    snap(); const moved=fitToKey(l,k); renderStrip(); paint(); save(); markFitKeys();
+    toast(moved?moved+(moved===1?" note":" notes")+" moved into "+k.name:"already in "+k.name); const f=l.ev.slice().sort((a,b)=>a.start-b.start)[0]; if(f) hearNote(l,f); return; }
   if(act==="undress"){ if(!l) return; snap(); picked(l).forEach(e=>{ e.sh=undefined; }); paint(); save(); toast("back to the layer's shape"); return; }
   if(act==="toshape"){ setView("shape"); return; }
   if(!l) return;
@@ -2082,13 +2357,18 @@ $("panel").addEventListener("click",e=>{
   if(act==="resetsong"){ snap(); song=[]; selB=null; paint(); save(); toast("song cleared"); return; }
   if(act==="fxall"){ const ev=l.ev[selN]; if(!ev) return; snap(); l.ev.forEach(x=>{ x.fx=ev.fx?{...ev.fx}:undefined; }); paint(); save(); toast("copied to every note"); return; }
   if(act==="fxclear"){ snap(); picked(l).forEach(ev=>{ ev.fx=undefined; }); paint(); save(); return; }
-  if(act==="dup"){ snap(); const c={...l,id:newId(),sh:{...l.sh},vol:layVol(l),ev:l.ev.map(x=>({...x,fx:x.fx?{...x.fx}:undefined}))};
-    const at=layers.indexOf(l); layers.splice(at+1,0,c); selL=c.id; selN=-1; selNs=[]; renderStrip(); paint(); save(); toast("layer copied"); return; }
+  if(act==="dup"){ snap(); const c={...l,id:newId(),sh:{...l.sh},vol:layVol(l),ev:l.ev.map(x=>({...x,fx:x.fx?{...x.fx}:undefined})),
+      takes:(l.takes||[]).map(t=>({ev:t.ev.map(x=>({...x,fx:x.fx?{...x.fx}:undefined})),ti:t.ti,to:t.to,hum:t.hum})),take:l.take|0};
+    const at=layers.indexOf(l); layers.splice(at+1,0,c); selL=c.id; selN=-1; selNs=[]; renderStrip(); paint(); save(); toast("layer copied · give it a sound"); return; }
   if(act==="loop"){ snap(); l.loop=!l.loop; if(l.loop&&!anchorId) anchorId=l.id; }
   else if(act==="anchor"){ snap(); if(l.loop) anchorId=l.id; }
   else if(act==="mute"){ snap(); l.mute=!l.mute; }
   else if(act==="del"){ snap(); layers=layers.filter(x=>x.id!==l.id); song=song.filter(b=>b.lay!==l.id); joins=joins.filter(j=>j.from!==l.id&&j.to!==l.id);
-    selL=layers.length?layers[0].id:null; if(anchorId===l.id) anchorId=null; selN=-1; selNs=[]; }
+    selL=layers.length?layers[0].id:null; if(anchorId===l.id) anchorId=null; selN=-1; selNs=[];
+    /* the hums that only this layer knew go off the shelf */
+    const keys=[l.hum,...(l.takes||[]).map(t=>t.hum)].filter(Boolean).map(h=>h.k);
+    const still=new Set(layers.flatMap(x=>[x.hum,...(x.takes||[]).map(t=>t.hum)]).filter(Boolean).map(h=>h.k));
+    keys.forEach(k=>{ if(!still.has(k)){ delete HUMS[k]; kvDel("hums",k); } }); }
   else if(act==="empty"){ snap(); l.ev=[]; l.trimIn=0; l.trimOut=null; selN=-1; selNs=[]; }
   else if(act==="playlay"){ playLayer(l.id); return; }
   else if(act==="trimsilence"){
@@ -2150,6 +2430,19 @@ function applyEven(l){
 function picked(l){ return selNs.map(i=>l&&l.ev[i]).filter(Boolean); }
 /* move notes up or down. a step is one key, an octave is twelve. drums are skipped. */
 function transpose(notes,semis){ notes.forEach(e=>{ if(e.pad) return; e.midi=clampM(e.midi+semis); }); }
+/* 0.23 fit to key: the key the OTHER layers are in (this layer's own notes when
+   it is alone), then every note walks to the nearest note of that key. a tie
+   goes down. returns how many notes moved. */
+function fitKeyOf(l){ return sketchKey(l.id)||(l.ev.some(e=>!e.pad)?detectKey(l.ev.filter(e=>!e.pad).map(e=>e.midi)):null); }
+function fitToKey(l,k){
+  const set=scaleSet(k); let moved=0;
+  l.ev.forEach(e=>{ if(e.pad) return; const pc=((e.midi%12)+12)%12; if(set.has(pc)) return;
+    let best=e.midi, bd=99;
+    for(let d=-6;d<=6;d++){ const m=e.midi+d, p=((m%12)+12)%12; if(!set.has(p)) continue;
+      const cost=Math.abs(d)+(d>0?.1:0); if(cost<bd){ bd=cost; best=m; } }
+    if(best!==e.midi){ e.midi=clampM(best); moved++; } });
+  return moved;
+}
 function setPick(i,add){
   if(i==null||i<0){ selNs=[]; selN=-1; return; }
   if(add||pickMore){ const k=selNs.indexOf(i); if(k>=0) selNs.splice(k,1); else selNs.push(i); }
@@ -2230,9 +2523,23 @@ function applyJoins(list){
   });
   return out;
 }
+/* 0.23: a note asks its layer which sound to use at the moment it fires, so a
+   sound swapped while play runs is heard on the very next note (Try it as).
+   half speed stretches every start and hold by 1/rate; pitch is untouched. */
+function playInst(ev){ const L=ev.lay?layers.find(x=>x.id===ev.lay):null; return L?L.inst:ev.inst; }
+let playGate=0;
+/* 0.23.1: while red or hum is live, nothing but the take's own guide plays */
+const takeLive=()=>recording||!!(hum&&hum.live);
 function play(list,isGuide,sid){
+  if(!isGuide&&takeLive()){ toast("stop the take first"); return; }
   if(playing&&!isGuide){ stop(); return; }
   if(!list.length){ toast("nothing to play yet"); return; }
+  /* every layer's own sound first, so nothing plays through the stand-in */
+  if(!isGuide&&layers.some(l=>IN(l.inst).sf&&(packState(l.inst)==="none"||packState(l.inst)==="loading")&&list.some(e=>e.lay===l.id))){
+    const gate=++playGate; toast("getting the sounds first…");
+    ensureLayers(true).then(()=>{ if(gate===playGate&&!playing) play(list,isGuide,sid); });
+    return;
+  }
   list=applyJoins(list);
   boot(); if(ctx.resume) ctx.resume();
   if(!isGuide){
@@ -2242,26 +2549,44 @@ function play(list,isGuide,sid){
     if(view==="layers") paint();
     scopeOn();
   }
-  const end=Math.max(...list.map(e=>e.start+e.dur));
+  const k=1/rate, end=Math.max(...list.map(e=>e.start+e.dur))*k;
   { const last={}; list.slice().sort((a,b)=>a.start-b.start).forEach(ev=>{ if(ev.inst==="drums"||ev.pad) return;
-      const p=last[ev.lay]; ev.from=p?{d:ev.midi-p.midi,gap:ev.start-(p.start+p.dur)}:null; last[ev.lay]=ev; }); }
+      const p=last[ev.lay]; ev.from=p?{d:ev.midi-p.midi,gap:(ev.start-(p.start+p.dur))*k}:null; last[ev.lay]=ev; }); }
   list.forEach(ev=>timers.push(setTimeout(()=>{
-    if(ev.inst==="drums"){ drum(ev.pad||"kick",ev.sh,ev.vol); return; }
-    const v=voice(ev.inst,ev.midi,ev.sh,ev.fx,ev.dur/1000,ev.vol,ev.from);
-    timers.push(setTimeout(()=>release(v),ev.dur));
-  },ev.start)));
+    const id=playInst(ev), dur=ev.dur*k;
+    if(id==="drums"){ drum(ev.pad||"kick",ev.sh,ev.vol); return; }
+    const v=voice(id,ev.midi,ev.sh,ev.fx,dur/1000,ev.vol,ev.from);
+    /* 0.23.1: every note that sounds is on the list stop() sweeps */
+    playVoices.add(v);
+    timers.push(setTimeout(()=>{ if(playVoices.delete(v)) release(v); },dur));
+  },ev.start*k)));
   timers.push(setTimeout(stop,end+1100));
 }
-function stop(){ playing=false; soloId=null; playOrigin=null;
+/* 0.23.1: the notes play() started and has not let go of yet. stop() used to
+   cancel their "let go" timers without letting go, so a held note rang out its
+   whole recording (seconds) and a stand-in never stopped at all. */
+const playVoices=new Set();
+function stop(){ playing=false; soloId=null; playOrigin=null; playGate++;
   timers.forEach(clearTimeout); timers=[];
+  playVoices.forEach(v=>{ try{ release(v) }catch(e){} }); playVoices.clear();
   auxVoices.forEach(v=>{ try{ release(v) }catch(e){} }); auxVoices=[];
+  humStop();
   $("bPlay").classList.remove("on");
   $("countVeil").classList.add("hidden");
-  renderStrip(); if(view==="layers") paint(); }
+  renderStrip(); if(view==="layers") paint();
+  const tb=$("tryPlay"); if(tb){ tb.classList.remove("on"); tb.textContent="play while you try"; } }
 function togglePlay(){
   if(playing&&soloId){ stop(); play(activeMix(),false,null); return; }
   play(activeMix(),false,null);
 }
+$("bHalf").onclick=()=>{
+  if(takeLive()){ toast("stop the take first"); return; }
+  const was=playing&&!soloId;
+  rate=rate===1?.5:1; $("bHalf").classList.toggle("on",rate<1);
+  if(playing) stop();
+  toast(rate<1?"half speed":"full speed");
+  if(was) play(activeMix(),false,null);
+};
 function playLayer(id){
   const l=layers.find(x=>x.id===id);
   if(!l||!l.ev.length){ toast("nothing to play yet"); return; }
@@ -2284,44 +2609,236 @@ function addEmptyLayer(){
 function startRec(){
   boot(); if(ctx.resume) ctx.resume(); allOff();
   const cur=layers.find(x=>x.id===selL);
-  if(cur&&!cur.ev.length){
-    recL=cur; recL.inst=inst;
+  const target=recTarget&&layers.find(x=>x.id===recTarget);
+  if(recMode==="take"&&target){
+    /* a fresh take into this same layer: what it had goes on the shelf of takes */
+    snap(); stashTake(target); target.ev=[]; target.trimIn=0; target.trimOut=null; target.hum=null;
+    recL=target; selL=target.id;
+  }else if(recMode==="over"&&target&&target.ev.length){
+    snap(); recL=target; selL=target.id;
+    const an=anchorLayer(), aL=an?loopStep(an):0; overStep=aL||loopStep(target); overIn=trimWindow(target).tIn; overNew=[];
+  }else if(cur&&!cur.ev.length){
+    recMode=null; recL=cur; recL.inst=inst;
   }else{
-    recL=blankLayer(); layers.push(recL); selL=recL.id;
+    recMode=null; recL=blankLayer(); layers.push(recL); selL=recL.id;
   }
-  recording=true; recT0=performance.now();
+  recording=true; recT0=performance.now(); selN=-1; selNs=[];
   clickStart();
   $("bRec").classList.add("live"); $("bRec").innerHTML="&#9632;";
   $("countVeil").classList.add("hidden");
-  const guide=mix().filter(e=>e.lay!==recL.id);
+  /* keep adding: the layer itself is in the guide and the loop runs on for a good while */
+  const guide=recMode==="over"?mix(overStep*64):mix().filter(e=>e.lay!==recL.id);
   if(guide.length) play(guide,true);
   renderStrip(); setView("layers");
-  toast("recording into this layer");
+  toast(recMode==="over"?"keep adding · stop when it is full":recMode==="take"?"recording take "+(recL.takes.length+1):"recording into this layer");
 }
 function stopRec(){
   recording=false; clickStop(); allOff(); stop();
-  let skipped=0;
-  if(recL&&recL.ev.length){
+  let skipped=0; const mode=recMode; recMode=null; recTarget=null;
+  if(recL&&recL.ev.length&&mode!=="over"){
     const first=firstAttack(recL);
     if(first>80){ recL.trimIn=first; skipped=first; }
   }
+  if(recL&&mode==="over"){ keepInside(recL,overNew); overNew=[]; }
+  /* 0.23.1: another take with nothing played in it is not a take: drop it and
+     go back to the one you were on */
+  let dropped=false;
+  if(recL&&mode==="take"&&!recL.ev.length&&recL.takes&&recL.takes.length){
+    dropTake(recL,recL.take|0); switchTake(recL,recFrom); dropped=true; }
   recL=null;
   $("bRec").classList.remove("live"); $("bRec").innerHTML="&#9679;";
   renderStrip(); paint(); save();
-  toast(skipped?"layer saved \u00b7 start at "+(skipped/1000).toFixed(2)+"s":"layer saved");
+  toast(dropped?"nothing played · back to take "+(recFrom+1):mode==="over"?"added to the layer":skipped?"layer saved \u00b7 start at "+(skipped/1000).toFixed(2)+"s":"layer saved");
 }
 function startOrStop(){
   if(recording){ stopRec(); return; }
+  if(hum&&hum.live){ humStopRec(); return; }
   if(!mix().length&&!clickOn){ startRec(); return; }   /* no click, no earlier layers: start straight away, as before */
   boot(); if(ctx.resume) ctx.resume();
   let n=0; toast("get ready");
   $("countVeil").classList.remove("hidden"); $("countNum").textContent="1";
   const tick=()=>{ if(n<4){ click(n===0); n++;
     $("countNum").textContent=String(n);
-    timers.push(setTimeout(tick,Math.round(60000/bpm))); } else startRec(); };
+    timers.push(setTimeout(tick,Math.round(60000/(bpm*rate)))); } else startRec(); };
   tick();
 }
 $("bRec").onclick=startOrStop;
+/* what the red button is about to do, chosen from the layer's own buttons */
+/* 0.23.1: another take / keep adding play and record in the layer's own sound:
+   the keyboard switches to it (pads for a drum layer) and stays there after */
+function armRec(mode,id){ if(recording) return; if(playing) stop(); recMode=mode; recTarget=id;
+  const L=layers.find(x=>x.id===id);
+  if(L&&L.inst!==inst){ allOff(); inst=L.inst; octave=IN(inst).o; buildKB(); showNote((octave+1)*12,inst==="drums"?"kick":null); ensure(inst,true); }
+  recFrom=L?(L.take|0):0;
+  startOrStop(); }
+let recFrom=0;
+/* =========================== TAKES ====================================== */
+/* a layer keeps every take. l.takes holds the ones you are not hearing, in
+   order of birth; l.take is the number of the live one. switching swaps the
+   notes, the trim and the hum in and out; the shape and the sound stay. */
+/* 0.23.1: the take you are on goes back into its own place among the others and
+   the new one is born at the end. it used to be pushed to the end, so after
+   switching back to take 1 and recording again, take 1 became take 2. */
+function stashTake(l){
+  l.takes=allTakes(l).map(x=>({ev:x.ev,ti:x.ti,to:x.to,hum:x.hum||null}));
+  l.take=l.takes.length;
+}
+function allTakes(l){ const all=(l.takes||[]).slice(); all.splice(l.take|0,0,{ev:l.ev,ti:l.trimIn||0,to:l.trimOut==null?null:l.trimOut,hum:l.hum||null,live:true}); return all; }
+function setTakes(l,all,k){ const t=all[k]; l.ev=t.ev; l.trimIn=t.ti; l.trimOut=t.to; l.hum=t.hum||null;
+  l.takes=all.filter((x,i)=>i!==k).map(x=>({ev:x.ev,ti:x.ti,to:x.to,hum:x.hum||null})); l.take=k; selN=-1; selNs=[]; }
+function switchTake(l,k){ const all=allTakes(l); if(k<0||k>=all.length||k===(l.take|0)) return; setTakes(l,all,k); }
+function dropTake(l,k){ const all=allTakes(l); if(all.length<2||k<0||k>=all.length) return;
+  all.splice(k,1); const cur=l.take|0, nk=k<cur?cur-1:k===cur?Math.min(cur,all.length-1):cur; setTakes(l,all,nk); }
+function takeChips(l){
+  if(!l.takes||!l.takes.length) return '';
+  const all=allTakes(l), cur=l.take|0;
+  return '<div class="lbl mh" style="display:flex;align-items:center;gap:6px"><span style="flex:1">Takes</span><button class="qm" data-help="takes" aria-label="What takes are">?</button></div><div class="takes">'+
+    all.map((t,k)=>'<button class="btn sm'+(k===cur?" on":"")+'" data-take="'+k+'">take '+(k+1)+' \u00b7 '+t.ev.length+(t.hum?' \u00b7 hum':'')+'</button>').join("")+
+    '<button class="btn sm dan" data-droptake="'+cur+'">drop this take</button></div>';
+}
+
+/* =========================== HUM IT FIRST =============================== */
+/* the mic records a hum. two things come out of it: the hum itself, kept on
+   this device as a memo (never in the mix, never in a file), and the notes it
+   heard, on the nearest key, in a new layer. he WILL be off: fit to key and
+   the up/down steps are the second half of this feature. */
+const HUM_SR=16000, HUMS={};
+let humSrc=null;
+function openHum(){
+  if(recording||(hum&&hum.live)) return;
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){ toast("this browser has no microphone for web pages"); return; }
+  hum={live:false,chunks:[],n:0,others:false,lvl:0};
+  sheet('<h2>Hum it first</h2>'+
+    '<p>Hum, whistle or sing the line. It lands in a new layer as notes, and the hum itself is kept so you can check against it. Being off is fine: <b style="color:var(--blue)">fit to key</b> on the layer fixes most of it, the up and down steps fix the rest.</p>'+
+    '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-hum="others">play the other layers while I hum: off</button>'+
+    '<button class="qm" data-help="hum" aria-label="What hum it first does">?</button></div>'+
+    '<p class="note">With the others on, use headphones, or the mic hears them too and they end up in the notes. The click stays on either way if it is on in Settings.</p>'+
+    '<div class="humlvl"><i id="humLvl"></i></div>'+
+    '<button class="big rec" data-hum="go" id="humGo">start humming</button>'+
+    '<button class="big ghost" data-close>Cancel</button>');
+}
+$("sheetIn").addEventListener("click",e=>{
+  const b=e.target.closest("[data-hum]"); if(!b||!hum) return;
+  const a=b.dataset.hum;
+  if(a==="others"){ hum.others=!hum.others; b.textContent="play the other layers while I hum: "+(hum.others?"on":"off"); b.classList.toggle("on",hum.others); return; }
+  if(a==="go"){ if(hum.live) humStopRec(); else humStartRec(); }
+});
+function humStartRec(){
+  boot(); if(ctx.resume) ctx.resume(); allOff(); if(playing) stop();
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}).then(stream=>{
+    if(!hum){ stream.getTracks().forEach(t=>t.stop()); return; }
+    const src=ctx.createMediaStreamSource(stream);
+    const proc=ctx.createScriptProcessor(4096,1,1), mute=ctx.createGain(); mute.gain.value=0;
+    hum.stream=stream; hum.src=src; hum.proc=proc; hum.mute=mute; hum.sr=ctx.sampleRate; hum.chunks=[]; hum.n=0;
+    proc.onaudioprocess=ev=>{ if(!hum||!hum.live) return; const d=ev.inputBuffer.getChannelData(0);
+      hum.chunks.push(new Float32Array(d)); hum.n+=d.length;
+      let s=0; for(let i=0;i<d.length;i+=4) s+=d[i]*d[i]; hum.lvl=Math.sqrt(s/(d.length/4)); };
+    src.connect(proc); proc.connect(mute); mute.connect(master);
+    hum.live=true; hum.t0=performance.now();
+    const g=$("humGo"); if(g){ g.textContent="stop · I have it"; g.classList.add("live"); }
+    $("bRec").classList.add("live"); $("bRec").innerHTML="&#9632;";
+    clickStart();
+    if(hum.others){ const guide=mix(); if(guide.length) play(guide,true); }
+    const tick=()=>{ if(!hum||!hum.live) return; const el=$("humLvl"); if(el) el.style.width=Math.min(100,Math.round(hum.lvl*420))+"%"; requestAnimationFrame(tick); };
+    tick();
+    toast("humming… tap stop when you have it");
+  }).catch(()=>{ toast("no microphone: allow it in the browser and try again"); });
+}
+function humStopRec(){
+  if(!hum||!hum.live) return;
+  hum.live=false; clickStop(); stop();
+  try{ hum.src.disconnect(); hum.proc.disconnect(); hum.mute.disconnect(); }catch(e){}
+  try{ hum.stream.getTracks().forEach(t=>t.stop()); }catch(e){}
+  $("bRec").classList.remove("live"); $("bRec").innerHTML="&#9679;";
+  const g=$("humGo"); if(g){ g.textContent="listening…"; g.classList.remove("live"); }
+  const h=hum; hum=null;
+  setTimeout(()=>{ try{ humFinish(h); }catch(e){ toast("could not read the hum"); closeSheet(); } },30);
+}
+/* 48k (or whatever the phone runs at) down to 16k mono, then YIN per 20ms */
+function humFinish(h){
+  const total=h.n; if(total<h.sr*.3){ toast("too short to hear anything"); closeSheet(); return; }
+  const all=new Float32Array(total); let o=0; h.chunks.forEach(c=>{ all.set(c,o); o+=c.length; });
+  const ratio=h.sr/HUM_SR, n=Math.floor(total/ratio), pcm=new Float32Array(n);
+  for(let i=0;i<n;i++){ const a=Math.floor(i*ratio), b=Math.min(total,Math.floor((i+1)*ratio)); let s=0; for(let j=a;j<b;j++) s+=all[j]; pcm[i]=s/Math.max(1,b-a); }
+  const notes=humNotes(pcm,HUM_SR);
+  const id=(inst==="drums")?"ooh":inst;
+  const l=blankLayer(); l.inst=id; l.sh={...shape};
+  l.ev=notes.map(x=>({midi:x.midi,pad:null,start:x.start,dur:x.dur}));
+  l.hum={k:newId(),sr:HUM_SR,n:n};
+  layers.push(l); selL=l.id; selN=-1; selNs=[];
+  if(l.ev.length){ const first=firstAttack(l); if(first>80) l.trimIn=first; }
+  /* keep the hum: in memory now, on the shelf for next time */
+  const buf=ctx.createBuffer(1,n,HUM_SR); buf.getChannelData(0).set(pcm); HUMS[l.hum.k]=buf;
+  const i16=new Int16Array(n); for(let i=0;i<n;i++) i16[i]=Math.max(-32768,Math.min(32767,Math.round(pcm[i]*32767)));
+  kvPut("hums",l.hum.k,{sr:HUM_SR,pcm:i16.buffer,t:Date.now()});
+  closeSheet(); ensure(id,true); renderStrip(); setView("layers"); paint(); save(); markFitKeys();
+  toast(l.ev.length?l.ev.length+(l.ev.length===1?" note heard":" notes heard")+" · fit to key if it is off":"nothing with pitch heard: the hum is kept");
+}
+/* pitch per frame: YIN, cumulative mean normalised difference, threshold .15,
+   70..1000 Hz. then frames become notes: same pitch held = one note. */
+function humNotes(x,sr){
+  const W=1024, HOP=Math.round(sr*.02), tMin=Math.floor(sr/1000), tMax=Math.ceil(sr/70);
+  const frames=[]; const d=new Float32Array(tMax+1), c=new Float32Array(tMax+1);
+  let rmsMax=0;
+  for(let p=0;p+W+tMax<x.length;p+=HOP){
+    let e=0; for(let i=0;i<W;i++) e+=x[p+i]*x[p+i]; const rms=Math.sqrt(e/W); if(rms>rmsMax) rmsMax=rms;
+    let f0=null, conf=1;
+    if(rms>.004){
+      d[0]=0; for(let t=1;t<=tMax;t++){ let s=0; for(let i=0;i<W;i++){ const v=x[p+i]-x[p+i+t]; s+=v*v; } d[t]=s; }
+      c[0]=1; let run=0; for(let t=1;t<=tMax;t++){ run+=d[t]; c[t]=run>0?d[t]*t/run:1; }
+      let tau=-1; for(let t=tMin;t<=tMax;t++){ if(c[t]<.15){ while(t+1<=tMax&&c[t+1]<c[t]) t++; tau=t; break; } }
+      if(tau<0){ let bt=tMin, bv=9; for(let t=tMin;t<=tMax;t++) if(c[t]<bv){ bv=c[t]; bt=t; } if(bv<.35) tau=bt; }
+      if(tau>0){ const a=c[tau-1]||c[tau], b=c[tau], cc=c[tau+1]||c[tau], den=a-2*b+cc; const sh=den?(a-cc)/(2*den):0;
+        f0=sr/(tau+sh); conf=b; }
+    }
+    frames.push({t:p*1000/sr,rms,f0,conf});
+  }
+  const thr=Math.max(.006,rmsMax*.12);
+  const midi=frames.map(f=>(f.f0&&f.rms>thr&&f.conf<.3)?69+12*Math.log2(f.f0/440):null);
+  /* a short median to calm the flicker, then runs of one pitch */
+  const sm=midi.map((m,i)=>{ if(m==null) return null; const w=[]; for(let k=-2;k<=2;k++){ const v=midi[i+k]; if(v!=null) w.push(v); }
+    w.sort((a,b)=>a-b); return w[w.length>>1]; });
+  const out=[]; let cur=null;
+  const close=(endT)=>{ if(!cur) return; const ms=cur.ms.slice().sort((a,b)=>a-b), m=Math.round(ms[ms.length>>1]);
+    const dur=endT-cur.t; if(dur>=90) out.push({midi:clampM(m),start:Math.round(cur.t),dur:Math.round(dur)}); cur=null; };
+  let gap=0;
+  sm.forEach((m,i)=>{ const t=frames[i].t;
+    if(m==null){ gap++; if(cur&&gap>=2) close(frames[i-gap+1].t); return; }
+    gap=0;
+    if(cur){ const ref=cur.ms.slice().sort((a,b)=>a-b)[cur.ms.length>>1]; if(Math.abs(m-ref)>=.75){ close(t); } }
+    if(!cur) cur={t,ms:[m]}; else cur.ms.push(m); });
+  if(cur) close(frames[frames.length-1].t+20);
+  /* same note twice with a hair between: one note */
+  const merged=[]; out.forEach(n=>{ const p=merged[merged.length-1];
+    if(p&&p.midi===n.midi&&n.start-(p.start+p.dur)<60){ p.dur=n.start+n.dur-p.start; } else merged.push(n); });
+  return merged;
+}
+function humBuffer(l){
+  if(!l.hum||!l.hum.k) return Promise.resolve(null);
+  if(HUMS[l.hum.k]) return Promise.resolve(HUMS[l.hum.k]);
+  return kvGet("hums",l.hum.k).then(v=>{ if(!v||!v.pcm) return null;
+    const i16=new Int16Array(v.pcm), buf=ctx.createBuffer(1,i16.length,v.sr||HUM_SR), ch=buf.getChannelData(0);
+    for(let i=0;i<i16.length;i++) ch[i]=i16[i]/32767; HUMS[l.hum.k]=buf; return buf; });
+}
+function humHear(l){
+  boot(); if(ctx.resume) ctx.resume(); if(playing) stop();
+  humBuffer(l).then(buf=>{ if(!buf){ toast("the hum is not on this device"); return; }
+    humStop(); const s=ctx.createBufferSource(); s.buffer=buf; const g=ctx.createGain(); g.gain.value=1.4;
+    s.connect(g); g.connect(master); const off=(l.trimIn||0)/1000; s.start(0,Math.min(off,Math.max(0,buf.duration-.05))); humSrc=s; meterOn();
+    s.onended=()=>{ if(humSrc===s) humSrc=null; }; toast("your hum"); });
+}
+function humStop(){ if(humSrc){ try{ humSrc.stop(); }catch(e){} humSrc=null; } }
+/* cancel: the sheet went away mid-hum. nothing is kept. */
+function humCancel(){
+  if(!hum) return;
+  if(hum.live){ hum.live=false; clickStop(); stop();
+    try{ hum.src.disconnect(); hum.proc.disconnect(); hum.mute.disconnect(); }catch(e){}
+    try{ hum.stream.getTracks().forEach(t=>t.stop()); }catch(e){}
+    $("bRec").classList.remove("live"); $("bRec").innerHTML="&#9679;"; toast("hum dropped"); }
+  hum=null;
+}
+$("sheet").addEventListener("click",e=>{ if(e.target.id==="sheet") humCancel(); });
+$("sheetIn").addEventListener("click",e=>{ if(e.target.closest("[data-close]")) humCancel(); });
 
 /* =========================== COLLAPSE ================================== */
 function applyCollapse(){
@@ -2358,25 +2875,56 @@ document.addEventListener("click",e=>{
   const h=e.target.closest("[data-help]"); if(!h||h.closest("#panel")) return;
   e.stopPropagation(); openHelp(h.dataset.help);
 });
-function openSound(){
-  sheet('<h2>Pick a sound</h2>'+
+/* the picker serves two things: the keyboard (as before) and, from a layer's
+   card, that layer. for a layer the sheet stays open so a sound can be tried
+   with play running (Try it as), then kept or put back. */
+let soundWas=null;
+function openSound(forLayer){
+  soundFor=forLayer||null; const L=soundFor?layers.find(x=>x.id===soundFor):null; soundWas=L?L.inst:null;
+  const cur=L?L.inst:inst;
+  sheet('<h2>'+(L?'Sound for this layer':'Pick a sound')+'</h2>'+
+    (L?'<div class="row" style="margin-bottom:8px">'+
+      '<button class="btn sm go'+(playing&&!soloId?" on":"")+'" id="tryPlay" data-try="play">'+(playing&&!soloId?"stop":"play while you try")+'</button>'+
+      '<button class="btn sm" data-try="back">back to '+esc(IN(soundWas).n)+'</button>'+
+      '<button class="qm" data-help="laySound" aria-label="What this is">?</button></div>'+
+      '<p class="note">Tap a sound and this layer speaks in it. With play running you hear it in place. Keep closes with what is lit.</p>':'')+
     DB.GROUPS.map(g=>'<div class="lbl" style="margin:12px 0 6px">'+esc(g.g)+'</div><div class="grid3">'+
       g.ids.map(id=>{ const I=IN(id);
-        return '<button class="ins'+(!I.sf||packState(id)==="ready"?" rdy":"")+'" data-ins="'+id+
-          '" style="color:'+I.c+'">'+esc(I.n)+'</button>'; }).join("")+'</div>'+
+        return '<button class="ins'+(!I.sf||packState(id)==="ready"||packKept(id)?" rdy":"")+(id===cur?" on":"")+'" data-ins="'+id+
+          '" style="color:'+I.c+(id===cur?';box-shadow:0 0 0 1.5px '+I.c+',0 0 12px var(--shine)':'')+'">'+esc(I.n)+'</button>'; }).join("")+'</div>'+
       (DB.GROUP_NOTES[g.g]?'<p class="note" style="margin-top:6px">'+esc(DB.GROUP_NOTES[g.g])+'</p>':'')).join("")+
-    '<p>A dot means it is downloaded and ready. The rest download the first time you tap them.</p>'+
+    '<p>A dot means it is on this device and ready. The rest download the first time you tap them, then stay. <button class="qm" data-help="soundsKept" aria-label="Where the sounds live">?</button></p>'+
     '<button class="big" data-loadall>Download all sounds now</button>'+
-    '<button class="big ghost" data-close>Close</button>');
+    '<button class="big ghost" data-close>'+(L?"Keep":"Close")+'</button>');
+}
+function setLayerSound(l,id){
+  if(l.inst===id) return true;
+  if(l.inst==="drums"||id==="drums"){ toast(l.inst==="drums"?"drums are a kit: duplicate the layer and record the other sound":"a played layer cannot become drums"); return false; }
+  l.inst=id; ensure(id); renderStrip(); if(view==="layers"||view==="shape") paint(); save(); return true;
 }
 $("sheetIn").addEventListener("click",e=>{
+  const tr=e.target.closest("[data-try]");
+  if(tr){ const L=layers.find(x=>x.id===soundFor); if(!L) return;
+    if(tr.dataset.try==="play"){ if(playing) stop(); else { play(activeMix(),false,null);
+        const b=$("tryPlay"); if(b&&playing){ b.classList.add("on"); b.textContent="stop"; } } return; }
+    if(tr.dataset.try==="back"){ if(soundWas&&setLayerSound(L,soundWas)) openSound(L.id); return; } }
   const i=e.target.closest("[data-ins]");
-  if(i){ allOff(); inst=i.dataset.ins; octave=IN(inst).o;
+  if(i){ const id=i.dataset.ins;
+    if(soundFor){ const L=layers.find(x=>x.id===soundFor); if(!L){ closeSheet(); return; }
+      if(!setLayerSound(L,id)) return;
+      $("sheetIn").querySelectorAll("[data-ins]").forEach(b=>{ const on=b.dataset.ins===id; b.classList.toggle("on",on);
+        b.style.boxShadow=on?"0 0 0 1.5px "+IN(id).c+",0 0 12px var(--shine)":""; });
+      if(!playing){ const ev=eventsOf(L).slice(0,6); if(ev.length){ boot(); if(ctx.resume) ctx.resume();
+        ensure(id,true).then(()=>{ if(!playing&&soundFor===L.id) play(ev.map(x=>({...x,inst:id,sh:noteSh(L,x),lay:L.id,vol:layVol(L)})),false,L.id); }); } }
+      return; }
+    allOff(); inst=id; octave=IN(inst).o;
     buildKB(); showNote((octave+1)*12,inst==="drums"?"kick":null);
     closeSheet(); ensure(inst); return; }
   if(e.target.closest("[data-loadall]")){ closeSheet(); loadAll(); return; }
 });
-$("bSound").onclick=openSound;
+$("bSound").onclick=()=>openSound(null);
+$("sheet").addEventListener("click",e=>{ if(e.target.id==="sheet") soundFor=null; });
+$("sheetIn").addEventListener("click",e=>{ if(e.target.closest("[data-close]")) soundFor=null; });
 
 /* pitch finder */
 function openFind(){
@@ -2433,27 +2981,43 @@ function ensure(id,quiet){
       if(!quiet) toast(ok?I.n.toLowerCase()+" ready":I.n.toLowerCase()+" failed, rough stand-in for now");
       return ok; });
 }
+/* download all = put every sound on the shelf. nothing is decoded here: a
+   sound is decoded the first time a layer or the keyboard needs it. one at a
+   time, with a running count in the readout, and the view stays where it is. */
+let loadingAll=false;
 function loadAll(){
-  const ids=DB.IDS.filter(i=>IN(i).sf&&packState(i)!=="ready");
-  if(!ids.length){ toast("everything is already downloaded"); return; }
-  let i=0; toast("downloading "+ids.length+" sounds");
-  const next=()=>{ if(i>=ids.length){ toast("all sounds ready"); return; }
-    ensure(ids[i++],true).then(next); };
+  if(loadingAll){ toast("already downloading"); return; }
+  const ids=DB.IDS.filter(i=>IN(i).sf&&!packKept(i)&&packState(i)!=="ready");
+  if(!ids.length){ toast("every sound is already on this device"); return; }
+  let i=0, failed=0; loadingAll=true; toast("keeping "+ids.length+" sounds on this device");
+  const sub=$("nSub");
+  const next=()=>{ if(i>=ids.length){ loadingAll=false; sub.textContent=IN(inst).n;
+      toast(failed?"done · "+failed+" could not be fetched, they will try again later":"all "+DB.IDS.filter(x=>IN(x).sf).length+" sounds are on this device"); return; }
+    const id=ids[i++], I=IN(id); sub.textContent="keeping "+I.n.toLowerCase()+" · "+i+" of "+ids.length;
+    fetchRaw(I,p=>{ sub.textContent="keeping "+I.n.toLowerCase()+" "+Math.round(p.n/p.total*100)+"% · "+i+" of "+ids.length; })
+      .then(raw=>{ if(!raw) failed++; next(); }); };
   next();
 }
 
 /* =========================== SAVE / SHARE ============================== */
+function packEv(ev){
+  return ev.map(e=>{ const a=[e.pad?DB.PADS.findIndex(p=>p.id===e.pad):e.midi,e.start,e.dur,e.pad?1:0];
+    const hasSh=e.sh&&typeof e.sh==="object", hasRd=e.rawDur!=null&&Math.round(e.rawDur)!==e.dur;
+    if(fxAny(e.fx)) a.push([e.fx.v||0,e.fx.s||0,e.fx.f||0,e.fx.b||0,e.fx.t?1:0,e.fx.vr==null?.5:e.fx.vr].map(x=>Math.round(x*100)/100));
+    else if(hasSh||hasRd) a.push(null);
+    if(hasSh) a.push(e.sh); else if(hasRd) a.push(null);
+    if(hasRd) a.push(Math.round(e.rawDur)); return a; });
+}
+const packHum=h=>h&&h.k?{k:h.k,sr:h.sr||HUM_SR,n:h.n|0}:undefined;
 function pack(){
-  const o={v:8,name:fragName,notes:notepad,anchor:anchorId,shape:shape,bpm:bpm,
+  const o={v:9,name:fragName,notes:notepad,anchor:anchorId,shape:shape,bpm:bpm,
     layers:layers.map(l=>({i:l.inst,l:l.loop?1:0,m:l.mute?1:0,id:l.id,s:l.sh,g:Math.round(layVol(l)*100)/100,
       evn:Math.round((l.even||0)*100)/100, ho:l.holdMs||0,
       ti:l.trimIn||0, to:l.trimOut==null?-1:l.trimOut,
-      e:l.ev.map(e=>{ const a=[e.pad?DB.PADS.findIndex(p=>p.id===e.pad):e.midi,e.start,e.dur,e.pad?1:0];
-        const hasSh=e.sh&&typeof e.sh==="object", hasRd=e.rawDur!=null&&Math.round(e.rawDur)!==e.dur;
-        if(fxAny(e.fx)) a.push([e.fx.v||0,e.fx.s||0,e.fx.f||0,e.fx.b||0,e.fx.t?1:0,e.fx.vr==null?.5:e.fx.vr].map(x=>Math.round(x*100)/100));
-        else if(hasSh||hasRd) a.push(null);
-        if(hasSh) a.push(e.sh); else if(hasRd) a.push(null);
-        if(hasRd) a.push(Math.round(e.rawDur)); return a; })})),
+      e:packEv(l.ev),
+      /* 0.23: the hum memo (a key into this device's shelf) and the other takes */
+      hm:packHum(l.hum), tk:(l.takes&&l.takes.length)?l.takes.map(t=>({e:packEv(t.ev),ti:t.ti||0,to:t.to==null?-1:t.to,hm:packHum(t.hum)})):undefined,
+      tn:(l.takes&&l.takes.length)?(l.take|0):undefined})),
     song:song.map(b=>[b.lay,b.bar,b.reps]),
     joins:joins.map(j=>[j.from,j.to,j.kind])};
   return DB.code+"|"+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
@@ -2477,8 +3041,17 @@ function unpack(code){
   const o=JSON.parse(decodeURIComponent(escape(atob(s.slice(5)))));
   const legacy=tag==="SCR2"?DB.V1_IDS:tag==="SCR3"?DB.V4_IDS:tag==="SCR4"?DB.V5_IDS:null;
   const L=[];
+  const readEv=(e,id)=>(e||[]).slice(0,4000).map(f=>({
+        midi:f[3]||id==="drums"?padAt(f[0]).m:clampM(f[0]),
+        pad:(f[3]||id==="drums")?padAt(f[0]).id:null,
+        start:Math.max(0,f[1]|0),dur:Math.max(40,f[2]|0),
+        fx:Array.isArray(f[4])?readFx(f[4]):undefined,
+        sh:f[5]&&typeof f[5]==="object"&&!Array.isArray(f[5])?{...DB.SHAPE0,...f[5]}:undefined,
+        rawDur:typeof f[6]==="number"&&f[6]>=40?Math.round(f[6]):undefined}));
+  const readHum=h=>(h&&typeof h==="object"&&typeof h.k==="string")?{k:h.k.slice(0,24),sr:+h.sr||HUM_SR,n:h.n|0}:null;
   (o.layers||[]).slice(0,32).forEach(l=>{
     const id=fixId(l.i);
+    const takes=(Array.isArray(l.tk)?l.tk:[]).slice(0,16).map(t=>({ev:readEv(t.e,id),ti:Math.max(0,t.ti||0),to:(typeof t.to==="number"&&t.to>=0)?t.to:null,hum:readHum(t.hm)}));
     L.push({id:typeof l.id==="string"?l.id.slice(0,24):newId(),inst:id,
       sh:{...DB.SHAPE0,...(l.s&&typeof l.s==="object"?l.s:{})},
       loop:!!l.l,mute:!!l.m,vol:l.g==null?1:Math.max(0,Math.min(1,+l.g||0)),
@@ -2486,13 +3059,10 @@ function unpack(code){
       holdMs:l.ho>0?Math.max(80,Math.min(1600,+l.ho)):undefined,
       trimIn:Math.max(0,l.ti||0),
       trimOut:(typeof l.to==="number"&&l.to>=0)?l.to:null,
-      ev:(l.e||[]).slice(0,4000).map(f=>({
-        midi:f[3]||id==="drums"?padAt(f[0]).m:clampM(f[0]),
-        pad:(f[3]||id==="drums")?padAt(f[0]).id:null,
-        start:Math.max(0,f[1]|0),dur:Math.max(40,f[2]|0),
-        fx:Array.isArray(f[4])?readFx(f[4]):undefined,
-        sh:f[5]&&typeof f[5]==="object"&&!Array.isArray(f[5])?{...DB.SHAPE0,...f[5]}:undefined,
-        rawDur:typeof f[6]==="number"&&f[6]>=40?Math.round(f[6]):undefined}))});
+      ev:readEv(l.e,id),
+      hum:readHum(l.hm),
+      takes:takes.length?takes:undefined,
+      take:takes.length?Math.max(0,Math.min(takes.length,l.tn|0)):0});
   });
   (o.takes||[]).slice(0,32).forEach(t=>{
     const id=fixId(t.i);
@@ -2533,10 +3103,48 @@ function adopt(o,label){
   fragName=o.name; notepad=o.notes; layers=o.layers; anchorId=o.anchor; shape=o.shape; bpm=o.bpm||DB.BPM0;
   song=o.song||[]; joins=o.joins||[]; selB=null; selN=-1; selNs=[];
   selL=layers.length?layers[0].id:null;
-  renderStrip(); paint(); save();
+  renderStrip(); paint(); save(); markFitKeys();
+  /* every layer's own sound, straight away, from the shelf when it is there */
+  if(layers.length) ensureLayers(true);
   toast((label||"loaded")+" \u00b7 "+layers.length+" layers");
 }
-function save(){ setLS(LS.auto,pack()); }
+/* =========================== SAVING, ALWAYS ============================
+   0.23. autosave stays on after every change (no switch, ever). on top of it:
+   a mirror in IndexedDB, a save when the page is hidden or closed, a ring of
+   the last six distinct saves, and Save now / Recover in the menu. */
+let saveT=0;
+function save(){
+  const code=pack(); setLS(LS.auto,code);
+  clearTimeout(saveT); saveT=setTimeout(()=>{ kvPut("state","auto",{code,t:Date.now()}); markFitKeys(); },400);
+}
+function backups(){ try{ const b=JSON.parse(getLS(LS.backups)||"[]"); return Array.isArray(b)?b:[]; }catch(e){ return []; } }
+function backupNow(label){
+  const code=pack(); if(code===lastBackup) return false;
+  const ring=backups().filter(b=>b.code!==code);
+  ring.unshift({t:Date.now(),n:layers.length,name:fragName,code,why:label||"save"});
+  while(ring.length>6) ring.pop();
+  lastBackup=code;
+  const ok=setLS(LS.backups,JSON.stringify(ring)); kvPut("state","backups",ring);
+  return ok;
+}
+function saveNow(){ const code=pack(); setLS(LS.auto,code); kvPut("state","auto",{code,t:Date.now()}); const did=backupNow("save now");
+  toast(did?"saved \u00b7 "+layers.length+(layers.length===1?" layer":" layers")+" \u00b7 backup kept":"saved \u00b7 nothing new to back up"); }
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden"){ setLS(LS.auto,pack()); backupNow("leaving"); } });
+window.addEventListener("pagehide",()=>{ setLS(LS.auto,pack()); backupNow("leaving"); });
+setInterval(()=>{ if(layers.length) backupNow("every few minutes"); },5*60000);
+function openRecover(){
+  const ring=backups();
+  const when=t=>{ const d=new Date(t); return d.toLocaleDateString(undefined,{day:"numeric",month:"short"})+" "+d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"}); };
+  sheet('<h2>Recover</h2><p>The last saves on this device, newest first. Opening one replaces what is on screen (which gets a backup first). <button class="qm" data-help="recover" aria-label="What recover is">?</button></p>'+
+    (ring.length?ring.map((b,i)=>'<div class="slot"><span class="sn">'+esc(b.name||"sketch")+' \u00b7 '+b.n+(b.n===1?' layer':' layers')+'<br><span class="lbl">'+when(b.t)+' \u00b7 '+esc(b.why||"")+'</span></span>'+
+      '<button class="mini" data-recover="'+i+'">open</button></div>').join(""):'<p>No backups yet. Save now makes one.</p>')+
+    '<button class="big ghost" data-m="menu" style="margin-top:12px">Back to menu</button>');
+}
+$("sheetIn").addEventListener("click",e=>{
+  const r=e.target.closest("[data-recover]"); if(!r) return;
+  const b=backups()[+r.dataset.recover]; if(!b) return;
+  try{ backupNow("before recover"); adopt(unpack(b.code),"recovered"); closeSheet(); }catch(err){ toast("that backup will not read"); }
+});
 const slots=()=>{ try{ return JSON.parse(getLS(LS.slots)||"{}") }catch(e){ return {} } };
 function chanMap(list){
   const used=[...new Set(list.map(e=>e.inst))], m={}; let n=0;
@@ -2627,7 +3235,7 @@ function detectKey(midis){
     if(a>best.v) best={v:a,pc:r,minor:false}; if(b>best.v) best={v:b,pc:r,minor:true}; }
   const maj=best.minor?(best.pc+3)%12:best.pc; let f=(maj*7)%12; if(f>6) f-=12;
   const SH=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"], FL=["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
-  return {fifths:f,name:(f<0?FL:SH)[best.pc]+(best.minor?" minor":" major")};
+  return {fifths:f,name:(f<0?FL:SH)[best.pc]+(best.minor?" minor":" major"),pc:best.pc,minor:best.minor};
 }
 function pitchedMidis(){ return activeMix().filter(e=>!e.pad).map(e=>e.midi); }
 function musicXml(){
@@ -2740,6 +3348,9 @@ $("sheetIn").addEventListener("click",e=>{
     const b=$("barsB"); b.classList.toggle("on",barSnap); b.textContent=barSnap?"repeats on whole bars: on":"repeats on whole bars: off";
     renderStrip(); if(view==="layers") drawScope(); return; }
   if(a==="grid"){ grid=grid===4?2:4; $("gridB").textContent=grid===4?"detail: fine (16ths)":"detail: coarse (8ths)"; return; }
+  if(a==="fitkeys"){ fitKeys=!fitKeys; setLS(LS.fitkeys,fitKeys?"1":"0");
+    const b=$("fitB"); b.classList.toggle("on",fitKeys); b.textContent=fitKeys?"mark the keys that fit: on":"mark the keys that fit: off"; markFitKeys(); return; }
+  if(a==="half"){ if(takeLive()){ toast("stop the take first"); return; } $("bHalf").click(); const b=$("halfB"); b.classList.toggle("on",rate<1); b.textContent=rate<1?"half speed: on":"half speed: off"; return; }
   if(a==="tap"){ const now=performance.now(); taps=taps.filter(t=>now-t<3000); taps.push(now);
     if(taps.length>=3){ let d=0; for(let i=1;i<taps.length;i++) d+=taps[i]-taps[i-1];
       setBpm(60000/(d/(taps.length-1))); toast(bpm+" a minute"); } else toast("keep tapping"); return; }
@@ -2776,7 +3387,7 @@ function dl(name,data,type){
 /* menu is three things: this sketch, sending it somewhere, the app itself.
    write it down and settings are their own sheets; help can come back here. */
 function openMenu(){
-  const ready=DB.IDS.filter(i=>IN(i).sf&&packState(i)==="ready").length, all=DB.IDS.filter(i=>IN(i).sf).length;
+  const ready=DB.IDS.filter(i=>IN(i).sf&&(packState(i)==="ready"||packKept(i))).length, all=DB.IDS.filter(i=>IN(i).sf).length;
   sheet('<h2>Menu</h2>'+
     '<div class="lbl mh">This sketch \u00b7 '+esc(fragName)+'</div>'+
     '<div class="grid2" style="margin-bottom:6px">'+
@@ -2786,6 +3397,10 @@ function openMenu(){
     '<button class="btn sm" data-m="copy">Copy track code</button>'+
     '<button class="btn sm" data-m="paste">Paste track code</button></div>'+
     '<p class="note">The track code is the whole sketch as one string: paste it anywhere, load it anywhere.</p>'+
+    '<div class="grid2" style="margin-bottom:6px">'+
+    '<button class="btn sm go" data-m="savenow">Save now</button>'+
+    '<button class="btn sm" data-m="recover">Recover</button></div>'+
+    '<p class="note">Saving is always on: after every change and when you leave. Save now also keeps a backup; Recover lists the last six. <button class="qm" data-help="savenow" aria-label="How saving works">?</button></p>'+
     '<div class="lbl mh">Send it somewhere</div>'+
     '<button class="btn sm on" data-m="export" style="width:100%;margin-bottom:6px">Write it down: sheet music, MIDI, text score</button>'+
     '<button class="btn sm" data-m="share" style="width:100%;margin-bottom:6px">Share the MIDI file</button>'+
@@ -2793,7 +3408,7 @@ function openMenu(){
     '<div class="grid2" style="margin-bottom:6px">'+
     '<button class="btn sm" data-m="settings">Settings</button>'+
     '<button class="btn sm" data-m="guide">Guide</button></div>'+
-    '<p class="note">'+ready+' of '+all+' sounds downloaded. '+(getLS(LS.auto)?"Saved on this device automatically.":"This browser is blocking saving: use copy track code.")+'</p>'+
+    '<p class="note">'+ready+' of '+all+' sounds on this device. '+(getLS(LS.auto)?"Saved on this device automatically.":"This browser is blocking saving: use copy track code.")+'</p>'+
     '<button class="btn sm dan" data-m="wipe" style="width:100%;margin-top:4px">New sketch (deletes every layer)</button>'+
     '<button class="big ghost" data-close>Close</button>');
 }
@@ -2819,6 +3434,11 @@ function openSettings(){
     '<button class="qm" data-help="click" aria-label="What the click is">?</button></div>'+
     '<div class="row" style="margin-bottom:10px"><button class="btn sm'+(barSnap?" on":"")+'" data-x="bars" id="barsB">'+(barSnap?"repeats on whole bars: on":"repeats on whole bars: off")+'</button>'+
     '<button class="qm" data-help="barsnap" aria-label="What bar repeats are">?</button></div>'+
+    '<div class="lbl mh">Keyboard</div>'+
+    '<div class="row" style="margin-bottom:10px"><button class="btn sm'+(fitKeys?" on":"")+'" data-x="fitkeys" id="fitB">'+(fitKeys?"mark the keys that fit: on":"mark the keys that fit: off")+'</button>'+
+    '<button class="qm" data-help="fitkeys" aria-label="What the marks are">?</button></div>'+
+    '<div class="row" style="margin-bottom:10px"><button class="btn sm'+(rate<1?" on":"")+'" data-x="half" id="halfB">'+(rate<1?"half speed: on":"half speed: off")+'</button>'+
+    '<button class="qm" data-help="half" aria-label="What half speed is">?</button></div>'+
     '<div class="lbl mh">The beat</div>'+tempoBlock()+
     '<p class="note">The tempo belongs to the sketch and rides in the track code. It never changes what you played, only the count-in, the click, and how it is written down.</p>'+
     '<div class="lbl mh">Sounds</div>'+
@@ -2861,6 +3481,8 @@ $("sheetIn").addEventListener("click",e=>{
     (navigator.clipboard?navigator.clipboard.writeText(c):Promise.reject())
       .then(()=>{ toast("code copied"); showCode(c,true); }).catch(()=>showCode(c,true)); return; }
   if(a==="paste"){ showCode("",false); return; }
+  if(a==="savenow"){ saveNow(); return; }
+  if(a==="recover"){ openRecover(); return; }
   if(a==="export"){ openExport(); return; }
   if(a==="settings"){ openSettings(); return; }
   if(a==="menu"){ openMenu(); return; }
@@ -2882,13 +3504,27 @@ function showCode(val,ro){
   sheet('<h2>'+(ro?"Track code":"Paste a track code")+'</h2>'+
     '<textarea id="cd" spellcheck="false" autocapitalize="off" autocorrect="off" '+
     'aria-label="Track code"'+(ro?" readonly":"")+'>'+esc(val)+'</textarea>'+
-    '<p>'+(ro?"This one string is the whole sketch. Paste it into Notes or message it to yourself, then use paste on the other device."
-      :"Paste a code here and everything rebuilds.")+'</p>'+
+    (ro?'<div class="row" style="margin-top:8px"><button class="btn sm zap" data-cd="all">Select all</button><button class="btn sm zap" data-cd="copy">Copy</button></div>'
+       :'<div class="row" style="margin-top:8px"><button class="btn sm zap" data-cd="paste">Paste from clipboard</button><button class="btn sm" data-cd="clear">Clear</button></div>')+
+    '<p>'+(ro?"This one string is the whole sketch. Copy it, paste it into Notes or message it to yourself, then Paste from clipboard on the other device."
+      :"Paste from clipboard fills the box from what you last copied; then Load it. Or tap in the box and paste by hand.")+'</p>'+
     (ro?"":'<button class="big" data-cdgo>Load it</button>')+
     '<button class="big ghost" data-close>Close</button>');
-  if(ro) setTimeout(()=>{ const t=$("cd"); if(t){ t.focus(); t.select(); } },60);
+  if(ro) setTimeout(()=>{ selectCode(); },60);
 }
+function selectCode(){ const t=$("cd"); if(!t) return false; t.focus(); t.select(); try{ t.setSelectionRange(0,t.value.length); }catch(e){} return true; }
 $("sheetIn").addEventListener("click",e=>{
+  const c=e.target.closest("[data-cd]");
+  if(c){ const a=c.dataset.cd, t=$("cd");
+    if(a==="all"){ selectCode(); toast("selected · now copy"); return; }
+    if(a==="copy"){ const v=t?t.value:""; (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject())
+        .then(()=>toast("code copied")).catch(()=>{ selectCode(); let ok=false; try{ ok=document.execCommand("copy"); }catch(_){}
+          toast(ok?"code copied":"selected · copy it by hand"); }); return; }
+    if(a==="clear"){ if(t) t.value=""; return; }
+    if(a==="paste"){ (navigator.clipboard&&navigator.clipboard.readText?navigator.clipboard.readText():Promise.reject())
+        .then(v=>{ if(t) t.value=String(v||"").trim(); if(!t||!t.value){ toast("nothing on the clipboard"); return; }
+          try{ adopt(unpack(t.value),"pasted"); closeSheet(); }catch(err){ toast("that is not a Scribe code"); } })
+        .catch(()=>{ if(t) t.focus(); toast("the browser will not hand over the clipboard: hold in the box and paste"); }); return; } }
   if(!e.target.closest("[data-cdgo]")) return;
   try{ adopt(unpack($("cd").value),"pasted"); closeSheet(); }
   catch(err){ toast("that code will not read"); }
@@ -2907,8 +3543,8 @@ async function doShare(){
 /* =========================== GUIDE ===================================== */
 function openGuide(){
   sheet('<h2>The whole thing in eight lines</h2>'+
-    '<p class="gl"><b>1.</b> Tap <b>Sound</b> and pick an instrument. Real recordings, so the first tap downloads it.</p>'+
-    '<p class="gl"><b>2.</b> <b>+</b> opens an empty layer if you want to pick the sound first. The <b>red button</b> is what records. Four ticks count you in, then play. That is one layer.</p>'+
+    '<p class="gl"><b>1.</b> Tap <b>Sound</b> and pick an instrument. Real recordings: the first tap downloads it, then it stays on this device. A recorded layer has its own <b>sound</b> button, so you can change its voice later, even while it plays.</p>'+
+    '<p class="gl"><b>2.</b> <b>+</b> opens an empty layer if you want to pick the sound first. The <b>red button</b> is what records. Four ticks count you in, then play. That is one layer. <b>hum</b> next to it records your voice into a layer as notes, with <b>fit to key</b> to fix what your voice got wrong.</p>'+
     '<p class="gl"><b>3.</b> Hit red again for a second layer. What you already did plays along, so parts stack. A layer set to <b>repeat</b> cycles on whole bars at the tempo, so play to the click and it lands.</p>'+
     '<p class="gl"><b>4.</b> Tap a layer in the strip to work on it: trim the start, play only that layer, make it <b>repeat</b>, silence it. Punched the drums by feel? <b>Tempo from this layer</b> reads the speed out of your hits. Tap a note in the picture to move it or hold it longer.</p>'+
     '<p class="gl"><b>5.</b> <b>Shape</b> changes how a sound behaves. Try a preset first, nudge sliders after. With a note picked, Shape works on just that note: vibrato, a swell, a bend, or its own shape.</p>'+
@@ -2947,12 +3583,18 @@ if(getLS(LS.click)==="0") clickOn=false; if(getLS(LS.bars)==="0") barSnap=false;
 { const z=parseInt(getLS(LS.zoom)); if([24,36,48,72,96].includes(z)) songBW=z; }
 { const cv=parseFloat(getLS(LS.clickVol)), mv=parseFloat(getLS(LS.vol));
   if(isFinite(cv)) clickVol=Math.min(1,Math.max(0,cv)); if(isFinite(mv)) vol=Math.min(1,Math.max(0,mv)); }
+if(getLS(LS.fitkeys)==="0") fitKeys=false;
 const saved=getLS(LS.auto);
 if(saved){ try{ adopt(unpack(saved),"restored") }catch(e){ renderStrip(); } }
 else renderStrip();
 buildKB(); applyCollapse(); setView("layers");
 showNote((octave+1)*12,null);
 if(!getLS(LS.seen)){ openGuide(); setLS(LS.seen,"1"); }
+/* localStorage empty but the shelf has a sketch: the phone cleared one and not
+   the other. bring it back rather than open on nothing. */
+if(!saved){ kvGet("state","auto").then(v=>{ if(v&&v.code&&!layers.length){ try{ adopt(unpack(v.code),"brought back"); }catch(e){} }
+  }).catch(()=>{}); }
+lastBackup=(backups()[0]||{}).code||"";
 </script>
 </body>
 </html>
