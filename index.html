@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- The Scribe · α1.1 (alpha 1.1) · LOCKED 26 Sept 2026 · synced with Ay-Vee Utopia α1.1 · track code SCR10 · was 0.26, then α1.0 -->
+<!-- The Scribe · α1.2 (alpha 1.2) · 28 Sept 2026 · the bays, the stamp stack, nine new touches · track code SCR11 · Ay-Vee Utopia renamed α1.2 to match · was 0.26, then α1.0, α1.1 -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -8,9 +8,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#07060b">
-<title>The Scribe α1.1</title>
-<meta name="version" content="α1.1">
-<meta name="release" content="locked 26 Sept 2026, synced with Ay-Vee Utopia α1.1">
+<title>The Scribe α1.2</title>
+<meta name="version" content="α1.2">
+<meta name="release" content="28 Sept 2026: the bays, the stamp stack, nine new touches; synced with Ay-Vee Utopia α1.2">
 <style>
 /* ---- UI FREQUENCY REALISM ---------------------------------------------------
    The screen is a dark field, not a page. Mist in uneven pockets, grain like a
@@ -330,6 +330,7 @@ textarea{width:100%;height:150px;background:#02040a;border:1px solid var(--edge)
 .tempo .btn{flex:0 0 58px}
 .xp{display:flex;gap:8px;align-items:center;border:1px solid var(--edge);border-radius:12px;padding:10px;margin-bottom:6px;background:var(--face);box-shadow:var(--lift)}
 .mh{margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(143,214,255,.12)}
+.mh::after{content:"q";font-family:"Matherin",serif;font-size:12px;letter-spacing:0;text-transform:none;color:rgba(143,214,255,.45);margin-left:8px;font-weight:400}
 .mh:first-of-type{margin-top:4px}
 .note{font-size:12px;color:var(--dim);line-height:1.45;margin:-2px 2px 8px}
 .xp .xt{flex:1;min-width:0}
@@ -753,6 +754,168 @@ body.drop::after{content:"drop the MIDI file";position:fixed;inset:14px;z-index:
 
   .sheet{max-width:620px;border-radius:8px 24px 0 0}
 }
+
+/* ---- α1.2 (28 Sept 2026): THE BAYS ----------------------------------------
+   The sub-menus read tech. A fold and a sheet are bays: a chamfered, pinned frame
+   with a two-tone edge; a band of Matherin glyphs down the left (the Rosh'Aran
+   towers, an homage); a black console well with a prompt line; faders in rails;
+   cut angular titles in the signature's language. Phone only: the PC layout
+   (min-width 960 and wide) is untouched.                                       */
+@font-face{font-family:"Matherin";src:url(data:font/ttf;base64,AAEAAAAKAIAAAwAgT1MvMkUeRlUAAAEoAAAAYGNtYXADvgSVAAABoAAAAHRnbHlmlNqTBwAAAiQAAAOIaGVhZDARFDQAAACsAAAANmhoZWEGbwMEAAAA5AAAACRobXR4ERwA8AAAAYgAAAAYbG9jYQKtAbgAAAIUAAAADm1heHAADAB+AAABCAAAACBuYW1lkbxIYQAABawAAALocG9zdM6gjlIAAAiUAAAARgABAAAAAQAAlMbtnV8PPPUAAQPoAAAAAOa56D0AAAAA5rnoPQA8AAADTQLaAAAAAwACAAAAAAAAAAEAAAMM/yQAAAOJACgAUAM5AAEAAAAAAAAAAAAAAAAAAAAGAAEAAAAGAHwABQAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAwLaAZAABQAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAAPz8/PwAAACAB8wMM/yQAAAMgAPAAAAAAAAAAAAAAAAAAAAAgAAACvAAoAUAAKAOJACgDFgAoA3UAKAMMACgAAAACAAAAAwAAABQAAwABAAAAFAAEAGAAAAAUABAAAwAEACAAUQBYAHEAeADeAP4B8QHz//8AAAAgAFEAWABxAHgA3gD+AfEB8////+H/s/+q/5T/i/8m/wf+Ef4QAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAFAB0ANUBMAHEAAAAAgBQAAACbAK8AAMABwAAMyERIRMRIRFQAhz95EYBkAK8/YoCMP3QAAUAPAAAA00CvAA5AD0AQQBFAEkAAAEPDR8NNS8NPw0DMxEjFSE1ISEzASMzITUhAaEoJyclIyEdGxcUDwsHAgIHCw8UFxsdISMlJycoIB8eHhwZGBUTDwwJBQICBQkMDxMVGBkcHh4fICVLSwGG/noBOE7+xU4DAdH+LwK8AgcLDxMWGx0gIiQmJycnJyYkIiAdGxYTDwsHAkoCBQgMDxIVFxkbHR4eHx8eHh0bGRcVEg8MCAUC/Y4CvERE/UREAAUAeAAAAtAC2gA5AD0AQQBFAEkAAAEPDR8NNS8NPw0DMxEjEyE1ITMzAyMHITUhAYofHh0dGxkXFBIPDAgFAgIFCAwPEhQXGRsdHR4fFxcXFRUTERANCwkHBAEBBAcJCw0QERMVFRcXFyJERCIBBf77v0bfRgIBaP6YAgABBAcJCw4QEhMVFhcXGBgXFxYVExIQDgsJBwQBQAEDBAcICQsNDQ8PEBARERAQDw8NDQsJCAcEAwH+QALa/uY+/j48PgAABAA8AAADIAK8ADkAPQBBAEUAAAEPDR8NNS8NPw0DMxEjEyE1IQEzESMBoSgnJyUjIR0bFxQPCwcCAgcLDxQXGx0hIyUnJyggHx4eHBkYFRMPDAkFAgIFCQwPExUYGRweHh8gJUtLSwEO/vIBDktLArwCBwsPExYbHSAiJCYnJycnJiQiIB0bFhMPCwcCSgIFCAwPEhUXGRsdHh4fHx4eHRsZFxUSDwwIBQL9jgK8/oBK/noCvAAEAHgAAAK0AtoAOQA9AHcAewAAAQ8NHw01Lw0/DQMzESMBLw0PDTM/DR8NAzMRIwGKHx4dHRsZFxQSDwwIBQICBQgMDxIUFxkbHR0eHxcXFxUVExEQDQsJBwQBAQQHCQsNEBETFRUXFxciREQBTAEDBQcJCw0ODxAREhITExISERAPDg0LCQcFAwFCAQIDBAUHBwkJCgoLCwsLCwsKCgkJBwcFBAMCAQJERAIAAQQHCQsOEBITFRYXFxgYFxcWFRMSEA4LCQcEAUABAwQHCAkLDQ0PDxAQEREQEA8PDQ0LCQgHBAMB/kAC2v6JEhISEBAPDgwKCQcFAwEBAwUHCQoMDg8QEBISEgsLCgsJCQgIBgUFAwEBAQEDBQUGCAgJCQsKCwv+nQFoAAAADgCuAAEAAAAAAAEADgAAAAEAAAAAAAIABwAOAAEAAAAAAAMAGAAVAAEAAAAAAAQAFgAtAAEAAAAAAAUATABDAAEAAAAAAAYAFQCPAAEAAAAAAAgAGgCkAAMAAQQJAAEAHAC+AAMAAQQJAAIADgDaAAMAAQQJAAMAMADoAAMAAQQJAAQALAEYAAMAAQQJAAUAmAFEAAMAAQQJAAYAKgHcAAMAAQQJAAgANAIGTWF0aGVyaW4gQWxwaGFSZWd1bGFyTWF0aGVyaW5BbHBoYS0yMDI2LTA4LTMwTWF0aGVyaW4gQWxwaGEgUmVndWxhclZlcnNpb24gMC4xIC0gZmlyc3QgbmF0aXZlIGxldHRlcmZvcm1zLCB2ZWN0b3JpemVkIGZyb20gdGhlIDgvMzAvMjAyNiBza2V0Y2hNYXRoZXJpbkFscGhhLVJlZ3VsYXJUaGUgQ29kZXggb2YgQW1hcnRoYW4gTmF0ZQBNAGEAdABoAGUAcgBpAG4AIABBAGwAcABoAGEAUgBlAGcAdQBsAGEAcgBNAGEAdABoAGUAcgBpAG4AQQBsAHAAaABhAC0AMgAwADIANgAtADAAOAAtADMAMABNAGEAdABoAGUAcgBpAG4AIABBAGwAcABoAGEAIABSAGUAZwB1AGwAYQByAFYAZQByAHMAaQBvAG4AIAAwAC4AMQAgAC0AIABmAGkAcgBzAHQAIABuAGEAdABpAHYAZQAgAGwAZQB0AHQAZQByAGYAbwByAG0AcwAsACAAdgBlAGMAdABvAHIAaQB6AGUAZAAgAGYAcgBvAG0AIAB0AGgAZQAgADgALwAzADAALwAyADAAMgA2ACAAcwBrAGUAdABjAGgATQBhAHQAaABlAHIAaQBuAEEAbABwAGgAYQAtAFIAZQBnAHUAbABhAHIAVABoAGUAIABDAG8AZABlAHgAIABvAGYAIABBAG0AYQByAHQAaABhAG4AIABOAGEAdABlAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAAMBAgEDAQQBBQVtdGhEWgVtdGhkegVtdGhUSAVtdGh0aAAA) format("truetype");font-display:block}
+/* outside the phone: the bay parts stay out of the way, titles fall back to text,
+   and the stack / switches / prompt get plain, quiet rules so the PC layout keeps its look */
+.bay .face,.bay .pins,.bay .band,#sheetIn .pins,#sheetIn .band,.cutsvg,.led{display:none}
+.prm{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:11px;color:var(--grn);margin:0 0 8px;opacity:.85}
+.prm b{color:var(--blue);font-weight:400}
+.cur{display:none}
+.sec{display:flex;align-items:center;gap:8px;margin:10px 0 6px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);font-weight:800}
+.sec .mth{display:none}
+.sec .qm{margin-left:auto}
+.stack{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.stack .slot{display:inline-flex;align-items:center;gap:6px;margin:0;padding:8px 6px 8px 10px;font-weight:900;color:var(--grn);border-color:rgba(182,255,60,.4)}
+.stack .slot .n{font-size:10px;color:var(--blue)}
+.stack .slot .x{border:0;background:none;color:var(--dim);font-size:16px;line-height:1;padding:2px 6px}
+.stack .slot.empty{border-style:dashed;color:var(--dim);font-weight:800}
+.pool{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 8px}
+.pchip{border:1px solid var(--edge);background:var(--face);box-shadow:var(--lift);color:var(--ink);border-radius:9px;padding:9px 10px;font-size:12px;font-weight:900}
+.pchip.clear{color:var(--rec)}
+.own{font-style:normal;font-size:10px;color:var(--blue);opacity:.85}
+.own.you{color:var(--dim)}
+@media (max-width:959px),(max-aspect-ratio:5/4){
+  .bay .face,.bay .pins,.bay .band,#sheetIn .pins,#sheetIn .band,.cutsvg,.led{display:block}
+  .led{display:inline-block}
+  .cur{display:inline-block}
+  .sec .mth{display:inline}
+  .bay{padding:0 0 0 24px;border:none;border-radius:0;background:none;box-shadow:none;margin:0 0 9px;overflow:visible;
+    clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+  .bay::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(135deg,rgba(143,214,255,.55),rgba(143,214,255,.22) 40%,rgba(182,255,60,.3) 75%,rgba(143,214,255,.2))}
+  .bay.open::before{background:linear-gradient(135deg,rgba(143,214,255,.7),rgba(143,214,255,.28) 40%,rgba(182,255,60,.42) 75%,rgba(143,214,255,.25))}
+  .bay .face{position:absolute;inset:1px;z-index:0;pointer-events:none;
+    clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);
+    background:linear-gradient(180deg,#121d2a 0%,#0b131d 30%,#070d15 100%);
+    box-shadow:inset 0 1px 0 rgba(143,214,255,.12),inset 0 -8px 16px rgba(0,0,0,.5)}
+  .bay .pins{position:absolute;left:0;top:16px;bottom:16px;width:5px;z-index:3;pointer-events:none;
+    background:repeating-linear-gradient(180deg,#5d86a5 0 3px,transparent 3px 16px);
+    box-shadow:0 0 3px rgba(143,214,255,.45)}
+  .bay .band{position:absolute;left:7px;top:14px;bottom:14px;width:14px;z-index:2;pointer-events:none;
+    display:flex;flex-direction:column;justify-content:space-between;align-items:center}
+  .bay .band::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;z-index:-1;
+    background:linear-gradient(180deg,transparent,rgba(143,214,255,.28) 30%,rgba(143,214,255,.28) 70%,transparent)}
+  .bay .band b{font-family:"Matherin",serif;font-weight:400;font-size:15px;line-height:1;color:rgba(143,214,255,.26);
+    background:#0b131d;padding:2px 0}
+  .bay .band b.lit{color:var(--grn);text-shadow:0 0 5px rgba(182,255,60,.9),0 0 12px var(--shine)}
+  .bay:not(.open) .band{display:none}
+  .bay.open::after{top:1px}
+  .bay .fold-h{position:relative;z-index:1;padding:9px 12px 8px 8px;text-transform:none;letter-spacing:0;color:var(--blue);gap:0}
+  .bay .fold-h .cut{display:inline-flex;align-items:center;flex:none;order:0}
+  .bay .fold-h::before{order:1}
+  .bay .fold-h::after{order:2}
+  .bay .fold-h .cut+*{display:none}
+  .bay .fold-h::before{content:"";flex:1;height:2px;margin:0 10px;
+    background:linear-gradient(90deg,rgba(143,214,255,.85),rgba(143,214,255,.1))}
+  .bay.open .fold-h::before{background:linear-gradient(90deg,rgba(182,255,60,.8),rgba(143,214,255,.5) 30%,rgba(143,214,255,.08))}
+  .bay .fold-h::after{flex:none;margin-left:0}
+  .cutsvg{display:block;overflow:visible;filter:drop-shadow(0 0 3px rgba(143,214,255,.65))}
+  .cut-t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  /* the well: a black screen set into the plate */
+  .well{position:relative;z-index:1;margin:0 9px 10px 0;padding:8px 9px 11px;
+    background:#01030a;border:1px solid rgba(143,214,255,.3);
+    clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+    box-shadow:inset 0 0 0 1px #000,inset 0 6px 18px rgba(0,0,0,.9),inset 0 -2px 8px rgba(143,214,255,.05)}
+  .well::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:repeating-linear-gradient(180deg,rgba(255,255,255,.022) 0 1px,transparent 1px 3px)}
+  .well>*{position:relative;z-index:1}
+  .prm{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:10.5px;letter-spacing:.05em;color:var(--grn);
+    margin:0 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 4px rgba(182,255,60,.45)}
+  .prm b{color:var(--blue);font-weight:400}
+  .cur{display:inline-block;width:6px;height:11px;margin-left:4px;vertical-align:-2px;background:var(--grn);box-shadow:0 0 5px var(--grn)}
+  .sec{display:flex;align-items:center;gap:8px;margin:10px 0 6px;font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);font-weight:700}
+  .sec::after{content:"";flex:1;order:2;height:1px;background:linear-gradient(90deg,rgba(143,214,255,.35),transparent)}
+  .sec .mth{font-family:"Matherin",serif;font-style:normal;font-weight:400;font-size:12px;letter-spacing:0;text-transform:none;color:rgba(143,214,255,.5);order:1}
+  .sec .qm{order:3;width:24px;height:24px;font-size:12px}
+  .well .sl{margin:7px 0}
+  .well .sl .st{margin-bottom:3px}
+  .well .sl .st span{font-size:12px;font-weight:700}
+  .well .sv,.sheet .sv{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:11px;font-weight:700;min-width:0}
+  .own{font-style:normal;font-size:10px;color:var(--blue);opacity:.85}
+  .own.you{color:var(--dim)}
+  .well .btn,.well .mini,.sheet .btn,.sheet .mini,.sheet .big,.sheet .pfb,.sheet .ins,.sheet .slot,.sheet textarea,.sheet .xp{border-radius:4px}
+  .well .btn::before,.sheet .btn::before,.sheet .big::before{border-radius:3px}
+  .well .touch{border:none;background:none;box-shadow:none;padding:0;margin:0}
+  .well .note,.well p{font-size:12px}
+  /* faders: a filament in a black rail, a diamond head. --p is the lit part */
+  input[type=range]{height:32px}
+  input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:0;border:1px solid rgba(143,214,255,.24);
+    clip-path:polygon(3px 0,100% 0,100% calc(100% - 3px),calc(100% - 3px) 100%,0 100%,0 3px);
+    background:
+      linear-gradient(90deg,var(--grn) 0,var(--grn) var(--p,0%),transparent var(--p,0%)) 0 50%/100% 2px no-repeat,
+      linear-gradient(90deg,rgba(182,255,60,.35) 0,rgba(182,255,60,.35) var(--p,0%),transparent var(--p,0%)) 0 50%/100% 6px no-repeat,
+      repeating-linear-gradient(90deg,transparent 0 24.5%,rgba(143,214,255,.22) 24.5% 25%) 0 0/100% 100%,
+      #000;
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.95)}
+  input[type=range]::-webkit-slider-thumb{width:18px;height:18px;border-radius:0;margin-top:-5px;
+    clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
+    background:radial-gradient(circle at 45% 40%,#f2ffc2 0%,var(--grn) 42%,#5aa61f 78%,#2f5f10 100%);box-shadow:none}
+  /* touches are switches with an LED */
+  .chips.sw .btn{flex:1 1 30%;display:flex;align-items:center;justify-content:flex-start;gap:7px;padding:9px 8px;min-height:38px;
+    border-radius:0;font-size:11.5px;text-transform:lowercase;letter-spacing:.02em;
+    clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px);
+    box-shadow:inset 0 1px 0 rgba(143,214,255,.14),inset 0 -3px 5px rgba(0,0,0,.55)}
+  .chips.sw .btn::before,.chips.sw .btn::after{display:none}
+  .chips.sw .btn.on{box-shadow:inset 0 1px 0 rgba(200,255,140,.22),inset 0 -3px 5px rgba(0,0,0,.45),inset 0 0 14px rgba(182,255,60,.12)}
+  .chips.sw .btn:active,.chips.sw .btn.on:active{transform:none;box-shadow:inset 0 3px 8px rgba(0,0,0,.85)}
+  .led{width:7px;height:7px;flex:none;border-radius:50%;background:#1c2a36;
+    box-shadow:inset 0 1px 1px rgba(0,0,0,.8),0 0 0 1px rgba(143,214,255,.22)}
+  .btn.on .led,.slot.stamp .led{background:var(--grn);box-shadow:0 0 5px rgba(182,255,60,.9),0 0 11px var(--shine)}
+  /* the stamp stack */
+  .stack{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+  .stack .slot{display:inline-flex;align-items:center;gap:6px;margin:0;padding:0 5px 0 8px;min-height:32px;border-radius:0;
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;color:var(--grn);
+    background:linear-gradient(180deg,#1b3324,#0f2216 55%,#0a1810);border:1px solid rgba(182,255,60,.42);
+    clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+    box-shadow:inset 0 1px 0 rgba(200,255,140,.18),inset 0 -3px 5px rgba(0,0,0,.5)}
+  .stack .slot .n{font-size:9px;color:var(--blue);opacity:.85;font-weight:400}
+  .stack .slot .x{border:0;background:none;color:var(--dim);font-size:16px;line-height:1;padding:4px 6px;margin-left:1px;min-height:0}
+  .stack .slot.empty{background:transparent;border:1px dashed rgba(143,214,255,.38);color:var(--dim);text-transform:none;letter-spacing:.02em;padding:0 12px;box-shadow:none}
+  .stack .slot.empty.on{color:var(--blue);border-style:solid}
+  .pool{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 6px;padding-top:7px;border-top:1px dashed rgba(143,214,255,.18)}
+  .pchip{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:10.5px;font-weight:700;color:#9db9cc;padding:8px 9px;min-height:34px;
+    border:1px solid rgba(143,214,255,.22);background:#071019;border-radius:0;
+    clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px)}
+  .pchip.clear{color:var(--rec);border-color:rgba(255,61,102,.4)}
+  /* glass: a pane you look through at the rails behind it. it refracts the traces */
+  .glass,.well .vib{position:relative;margin-top:5px;padding:6px 9px 3px;
+    clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+    background:linear-gradient(160deg,rgba(143,214,255,.085),rgba(143,214,255,.025) 45%,rgba(182,255,60,.035));
+    border:1px solid rgba(143,214,255,.3);
+    box-shadow:inset 1px 1px 0 rgba(255,255,255,.13),inset -1px -1px 0 rgba(0,0,0,.6)}
+  .glass::before,.well .vib::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(143,214,255,.09) 22px 23px);
+    transform:skewX(-6deg) translateX(3px)}
+  .glass::after,.well .vib::after{content:"";position:absolute;left:0;top:0;right:0;height:1px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.55) 30%,transparent 70%)}
+  .glass>*,.well .vib>*{position:relative;z-index:1}
+  /* sheets are bays too */
+  .sheet{border-radius:0;border-color:rgba(143,214,255,.45);padding:14px 12px calc(18px + var(--sB)) 12px;
+    clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%,0 14px)}
+  #sheetIn{position:relative;padding-left:22px;min-height:120px}
+  #sheetIn .pins{position:absolute;left:0;top:14px;bottom:14px;width:5px;z-index:3;pointer-events:none;
+    background:repeating-linear-gradient(180deg,#5d86a5 0 3px,transparent 3px 16px);box-shadow:0 0 3px rgba(143,214,255,.45)}
+  #sheetIn .band{position:absolute;left:7px;top:8px;bottom:8px;width:14px;z-index:2;pointer-events:none;
+    display:flex;flex-direction:column;justify-content:space-between;align-items:center}
+  #sheetIn .band::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;z-index:-1;
+    background:linear-gradient(180deg,transparent,rgba(143,214,255,.28) 30%,rgba(143,214,255,.28) 70%,transparent)}
+  #sheetIn .band b{font-family:"Matherin",serif;font-weight:400;font-size:15px;line-height:1;color:rgba(143,214,255,.26);background:#080e17;padding:2px 0}
+  #sheetIn .band b.lit{color:var(--grn);text-shadow:0 0 5px rgba(182,255,60,.9),0 0 12px var(--shine)}
+  .sheet-w{position:relative;z-index:1}
+  .sheet h2.cut{display:flex;align-items:center;margin:0 0 5px;color:var(--blue);text-shadow:none}
+  .sheet .prm{margin-bottom:12px}
+  .sheet .lbl.mh{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:9.5px;letter-spacing:.26em}
+  .sheet textarea{border-radius:0;clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)}
+}
+@media (prefers-reduced-motion:reduce){ .cur{box-shadow:none} }
 </style>
 </head>
 <body>
@@ -809,7 +972,7 @@ body.drop::after{content:"drop the MIDI file";position:fixed;inset:14px;z-index:
 </svg>
 
 <div class="card pad" id="head">
-  <div class="mark desk" aria-hidden="true"><b>The Scribe</b><small>α1.1 · alpha</small></div>
+  <div class="mark desk" aria-hidden="true"><b>The Scribe</b><small>α1.2 · alpha</small></div>
   <div id="readout" style="flex:1;min-width:0">
     <div id="nRow">
       <div id="nBig">&mdash;</div>
@@ -1024,13 +1187,41 @@ body.drop::after{content:"drop the MIDI file";position:fixed;inset:14px;z-index:
         keys, pads and play buttons is the light itself - no fanned copies, no
         feather (Frequency Realism, the eye in frames; his pick B). Renamed to
         match Ay-Vee. Nothing else changed. Track code unchanged (SCR10).
+   α1.2 (28 Sept 2026, phone only): the sub-menus read tech. Every fold and every
+        sheet is a bay: a chamfered, pinned frame, a band of Matherin glyphs down
+        its edge (an homage, not the universe), a black console well with a prompt
+        line saying where you are, faders in rails instead of round knobs, cut
+        angular titles. Presets became stamps: they stack in order, later wins on
+        a shared slider, each value says which stamp set it, x pulls a stamp off.
+        "As it is" clears the stack. The preset pool lives behind "+ stamp".
+        Touches are switches with LEDs. Nine new touches: roll (the rolled R),
+        wub, wah, stairs, slide from, hiccup, choke, one echo, and "wooow" as a
+        fourth vibrato word. Track code SCR11 (18-number fx, stamps ride inside
+        the shape). Reads SCR1-10. PC layout untouched.
    =========================================================================== */
 /* every knob on a sound, all at rest. new keys default to 0 so old codes read the same. */
 const SHAPE0=Object.freeze({fade:0,bite:.5,dark:0,tail:.12,room:0,echo:0,len:.5,warp:0,chrome:0,tune:0,
   harm:0,swirl:0,dbl:0,pulse:0,breath:0,grit:0});
 const P=o=>Object.freeze({...SHAPE0,...o});
+/* α1.2: a preset is a stamp. STAMPS keeps what each one actually sets, so the stack
+   can say which stamp owns a value and can take a stamp back off. "As it is" sets
+   nothing: it is the one that clears the stack. */
+const STAMPS=Object.freeze([
+  Object.freeze({n:"As it is",     s:Object.freeze({})}),
+  Object.freeze({n:"Pluck it",     s:Object.freeze({fade:.85,bite:1,tail:.4,len:.2})}),
+  Object.freeze({n:"Stutter",      s:Object.freeze({fade:.7,bite:.9,tail:.1,room:.1,echo:.75,len:.15})}),
+  Object.freeze({n:"Ceremonial",   s:Object.freeze({fade:.15,bite:.45,tail:.35,room:.7,echo:.15,len:.7})}),
+  Object.freeze({n:"Long hum",     s:Object.freeze({bite:.2,dark:.1,tail:.3,room:.3,len:1})}),
+  Object.freeze({n:"Far away",     s:Object.freeze({fade:.2,bite:.4,dark:.5,tail:.3,room:.8,echo:.45,len:.7})}),
+  Object.freeze({n:"Mythic",       s:Object.freeze({bite:.25,tail:.4,room:.65,echo:.2,len:.9,harm:.55,breath:.45,dbl:.3,swirl:.15})}),
+  Object.freeze({n:"Hide and seek",s:Object.freeze({bite:.4,tail:.2,room:.35,len:.8,harm:.85,chrome:.12,breath:.3,dbl:.2})}),
+  Object.freeze({n:"Robot",        s:Object.freeze({bite:.8,tail:.1,len:.5,chrome:.85,dark:.2,tune:.6})}),
+  Object.freeze({n:"Auto-tuned",   s:Object.freeze({tune:.9,len:.7,tail:.2,room:.2,breath:.2})}),
+  Object.freeze({n:"Drifting",     s:Object.freeze({fade:.1,bite:.3,dark:.15,tail:.25,room:.35,len:.8,warp:.7})}),
+  Object.freeze({n:"Broken digital",s:Object.freeze({fade:.2,bite:.75,dark:.15,tail:.15,room:.1,echo:.15,len:.4,chrome:.6,grit:.5})})
+]);
 const DB=Object.freeze({
-  version:"α1.1", code:"SCR10", oldCodes:Object.freeze(["SCR9","SCR8","SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
+  version:"α1.2", code:"SCR11", oldCodes:Object.freeze(["SCR10","SCR9","SCR8","SCR7","SCR6","SCR5","SCR4","SCR3","SCR2","SCR1"]),
   SF:"https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
   A4:440, A4_MIDI:69, PPQ:480, OCT_MIN:1, OCT_MAX:6,
   BPM0:128, BPM_MIN:40, BPM_MAX:240, GRID:4,   /* 128 is the count-in that was already there (470ms a tick) */
@@ -1129,8 +1320,30 @@ const DB=Object.freeze({
     Object.freeze({k:"f",n:"fade",h:"fadeout"}),
     Object.freeze({k:"bu",n:"bend up",h:"bend"}),
     Object.freeze({k:"bd",n:"bend down",h:"bend"}),
-    Object.freeze({k:"t",n:"trill",h:"trill"})
+    Object.freeze({k:"t",n:"trill",h:"trill"}),
+    /* α1.2, his batch of 28 Sept: nine more, all stackable with the old ones */
+    Object.freeze({k:"r",n:"roll",h:"roll"}),
+    Object.freeze({k:"w",n:"wub",h:"wub"}),
+    Object.freeze({k:"wa",n:"wah",h:"wah"}),
+    Object.freeze({k:"st",n:"stairs",h:"stairs"}),
+    Object.freeze({k:"sl",n:"slide from",h:"slidefrom"}),
+    Object.freeze({k:"h",n:"hiccup",h:"hiccup"}),
+    Object.freeze({k:"c",n:"choke",h:"choke"}),
+    Object.freeze({k:"e",n:"one echo",h:"oneecho"})
   ]),
+  /* the extra knobs a touch carries once it is on. k = key in fx, lo/hi = the words at the ends */
+  TOUCH_KNOBS:Object.freeze({
+    r:Object.freeze([Object.freeze({k:"rr",n:"Speed",lo:"tongue slow",hi:"tongue fast"}),
+                     Object.freeze({k:"rb",n:"Bursts",lo:"one",hi:"five"}),
+                     Object.freeze({k:"rg",n:"Between bursts",lo:"a dip",hi:"dead silence"})]),
+    w:Object.freeze([Object.freeze({k:"wr",n:"Speed",lo:"slow wub",hi:"fast wub"}),
+                     Object.freeze({k:"w",n:"Depth",lo:"a hint",hi:"all the way"})]),
+    wa:Object.freeze([Object.freeze({k:"wa",n:"Sweep",lo:"quick",hi:"the whole note"})]),
+    st:Object.freeze([Object.freeze({k:"st",n:"Drop",lo:"one step",hi:"an octave"})]),
+    sl:Object.freeze([Object.freeze({k:"sl",n:"Glide",lo:"snappy",hi:"lazy"})]),
+    c:Object.freeze([Object.freeze({k:"c",n:"Cut at",lo:"the start",hi:"the end"})]),
+    e:Object.freeze([Object.freeze({k:"e",n:"Echo",lo:"once, soft",hi:"three, loud"})])
+  }),
   SONG_BW:48,   /* px per bar on the song timeline */
   PADS:Object.freeze([
     Object.freeze({id:"kick", n:"Kick", m:36}), Object.freeze({id:"snare",n:"Snare",m:38}),
@@ -1154,20 +1367,7 @@ const DB=Object.freeze({
     Object.freeze({n:"The colour of it", ids:Object.freeze(["dark","grit","breath","warp"])}),
     Object.freeze({n:"The machine", ids:Object.freeze(["chrome","harm","pulse"])})
   ]),
-  PRESETS:Object.freeze([
-    Object.freeze({n:"As it is",     s:P({})}),
-    Object.freeze({n:"Pluck it",     s:P({fade:.85,bite:1,tail:.4,len:.2})}),
-    Object.freeze({n:"Stutter",      s:P({fade:.7,bite:.9,tail:.1,room:.1,echo:.75,len:.15})}),
-    Object.freeze({n:"Ceremonial",   s:P({fade:.15,bite:.45,tail:.35,room:.7,echo:.15,len:.7})}),
-    Object.freeze({n:"Long hum",     s:P({bite:.2,dark:.1,tail:.3,room:.3,len:1})}),
-    Object.freeze({n:"Far away",     s:P({fade:.2,bite:.4,dark:.5,tail:.3,room:.8,echo:.45,len:.7})}),
-    Object.freeze({n:"Mythic",       s:P({bite:.25,tail:.4,room:.65,echo:.2,len:.9,harm:.55,breath:.45,dbl:.3,swirl:.15})}),
-    Object.freeze({n:"Hide and seek",s:P({bite:.4,tail:.2,room:.35,len:.8,harm:.85,chrome:.12,breath:.3,dbl:.2})}),
-    Object.freeze({n:"Robot",        s:P({bite:.8,tail:.1,len:.5,chrome:.85,dark:.2,tune:.6})}),
-    Object.freeze({n:"Auto-tuned",   s:P({tune:.9,len:.7,tail:.2,room:.2,breath:.2})}),
-    Object.freeze({n:"Drifting",     s:P({fade:.1,bite:.3,dark:.15,tail:.25,room:.35,len:.8,warp:.7})}),
-    Object.freeze({n:"Broken digital",s:P({fade:.2,bite:.75,dark:.15,tail:.15,room:.1,echo:.15,len:.4,chrome:.6,grit:.5})})
-  ]),
+  PRESETS:Object.freeze(STAMPS.map(p=>Object.freeze({n:p.n,s:P(p.s)}))),
   SLIDERS:Object.freeze([
     Object.freeze({k:"bite",  n:"Bite",     lo:"soft in",    hi:"smacks",        h:"shapeBite"}),
     Object.freeze({k:"fade",  n:"Fade",     lo:"rings on",   hi:"collapses",     h:"shapeFade"}),
@@ -1230,7 +1430,15 @@ const DB=Object.freeze({
     pitch:"Moves the picked notes (or the whole layer) up or down in pitch. A step is the next key on the keyboard, black keys included. An octave is the same note higher or lower: twelve steps. Drums have no pitch, so they stay.",
     dragNote:"Tap a note in the picture to pick it. Drag it to slide it in time. The buttons below move only the picked notes, so pick several if three of six should move together.",
     notes:"A notepad for writing a line down when you have no time to play it. Your own shorthand, nothing to learn.",
-    preset:"A whole shape in one tap. Start here, then nudge the sliders if it is not quite right.",
+    preset:"A stamp is a whole shape in one tap. Stamps stack in order: a later stamp wins where two set the same slider, and a value shows which stamp set it (\u00b7 02 = the second). The x on a stamp takes it back off and its values go with it. As it is clears the whole stack. A slider you move yourself stays yours until a later stamp sets it.",
+    roll:"The rolled R. The note is held but chopped at tongue-trill speed, and every burst swells in the middle: quiet r's rising into hard R's and back. Then a gap, then the next burst, each one shorter. Speed is the tongue, Bursts how many, Between bursts runs from a dip to dead silence. Stack it with bend down for the drop.",
+    wub:"The pitch holds, the tone opens and closes: muffled to bright to muffled, over and over. The dubstep bass thing. Speed is how fast it opens, Depth is how far.",
+    wah:"One sweep, muffled to bright, across the note. Sweep is how much of the note it takes.",
+    stairs:"A bend down that drops in semitone steps instead of sliding. A robotic fall. Drop is how far it falls.",
+    slidefrom:"The note glides in from the pitch of the note before it instead of starting on its own. What your voice does when you hum. Glide is how long it takes to arrive. The first note of a line has nothing to slide from.",
+    hiccup:"A tiny octave-up blip at the very start, then the real note.",
+    choke:"The note is cut dead at a point you pick, instead of fading. Drums and stabs love it.",
+    oneecho:"Just this note repeats, fading, two or three times, without the whole layer having echo.",
     trim:"The layer starts when the first note lands, so the second you spent getting ready is not part of the take. Drag the green marks on the picture, or use Start from and Cut after, to keep or cut more. A note you move outside the cut opens the cut back up.",
     playLayer:"Plays only this layer, with its trim. The big play button still plays everything together.",
     tempo:"How many beats go by in a minute. It sets the count-in and the click, where the bar lines fall, and so how long a repeating layer lasts: repeats snap to whole bars at this tempo. It never changes the notes you played. Tap the beat along with your take and it works it out.",
@@ -1647,16 +1855,18 @@ function fallback(id,midi,sh,fx,dur,vol,from,when){
   lp.frequency.value=Math.min(f*8,7000);
   const osc=(hz,g0,ty)=>{ const o=ctx.createOscillator(); o.type=ty; o.frequency.value=hz;
     const g=ctx.createGain(); g.gain.value=g0; o.connect(g); g.connect(hub); o.start(t); nodes.push(o);
-    fxPitch(o.detune,0,fx,t,dur,nodes,true); pitchShape(o.detune,0,sh,t,dur,true,from,nodes); };
+    fxPitch(o.detune,0,fx,t,dur,nodes,true,from); pitchShape(o.detune,0,sh,t,dur,true,from,nodes); };
   osc(f,.35,"sawtooth"); osc(f,.25,"triangle");
   if(sh.harm>.03){ const n=Math.min(4,Math.ceil(sh.harm*4));
     for(let k=0;k<n;k++) osc(f*Math.pow(2,HARM[k]/12),.22*Math.min(1,sh.harm*4-k),"triangle"); }
   breath(hub,sh,t,dur);
   hub.connect(lp);
   let node=colour(darken(lp,sh,t),sh,t,nodes,dur);
+  node=fxTone(node,fx,t,dur,nodes);
   node.connect(out);
   wire(out,sh);
   const atk=env(out,sh,t,.55*vol/(1+(sh.harm>.03?sh.harm*.6:0)),I.hold); fxGain(out,t,.55*vol,fx,dur,atk);
+  fxEcho(id,midi,sh,fx,dur,vol,from,t);
   /* 0.23.1: the stand-in is a synth with no end of its own. if nothing ever lets
      go of it, it still stops: a minute past its length at the very most. */
   nodes.forEach(n=>{ try{ n.stop(t+Math.max(dur,1)+60) }catch(e){} });
@@ -1686,12 +1896,20 @@ function env(out,sh,t,amp,hold){
 /* touches on one note. fx = {v,s,f,b,t} each 0..1 (b is -1..1). dur in seconds.
    pitch things ride on the source's playbackRate (sample) or detune (fallback);
    loudness things re-shape the gain after the normal envelope. */
-function fxPitch(param,base,fx,t,dur,nodes,cents){
+function fxPitch(param,base,fx,t,dur,nodes,cents,from){
   if(!fx) return;
   const at=c=>cents?base+c:base*Math.pow(2,c/1200);
   let free=t+.02;
   if(fx.b){ const from=-fx.b*(60+140*Math.abs(fx.b)), len=.1+.3*Math.abs(fx.b);
     param.setValueAtTime(at(from),t); param.linearRampToValueAtTime(at(0),t+len); free=t+len; }
+  /* α1.2 slide from: start on the note before and glide here. nothing before = nothing to slide from */
+  if(fx.sl&&from&&from.d&&!fx.b){ const len=.05+.4*fx.sl;
+    param.setValueAtTime(at(-from.d*100),t); param.linearRampToValueAtTime(at(0),t+len); free=Math.max(free,t+len); }
+  /* α1.2 hiccup: an octave up for a blink, then the real note */
+  if(fx.h){ param.setValueAtTime(at(1200),t); param.setValueAtTime(at(1200),t+.045); param.linearRampToValueAtTime(at(0),t+.06); free=Math.max(free,t+.06); }
+  /* α1.2 stairs: down in semitone steps. drop = how many, over most of the note */
+  if(fx.st){ const n=1+Math.round(fx.st*11), span=Math.min(Math.max(.25,dur*.85),.3+fx.st*1.1), step=span/n, t0=Math.max(free,t+.05);
+    for(let k=1;k<=n;k++) param.setValueAtTime(at(-100*k),t0+step*k); free=t0+span; }
   if(fx.t){ const step=.072; let k=0;
     for(let tt=Math.max(free,t+.06); tt<t+dur-.03&&k<80; tt+=step,k++) param.setValueAtTime(at(k%2?200:0),tt); }
   if(fx.v){ const vr=fx.vr==null?.5:fx.vr, c=8+92*fx.v;      /* width in cents, speed in Hz */
@@ -1710,7 +1928,45 @@ function fxGain(out,t,amp,fx,dur,atk){
   if(fx.f){ const hold=Math.max(rise+.03,dur*(1-.75*fx.f)); g.setValueAtTime(amp,t+hold);
     g.exponentialRampToValueAtTime(.0008,t+Math.max(hold+.05,dur)); }
 }
-const fxAny=fx=>!!(fx&&(fx.v||fx.s||fx.f||fx.b||fx.t));
+/* α1.2: the touches that live between the sound and its envelope. roll and choke are a
+   gate; wub and wah are a lowpass that moves. returned node replaces the one given. */
+function fxTone(node,fx,t,dur,nodes){
+  if(!fx) return node;
+  if(fx.w){ const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.Q.value=5.5;
+    const depth=140+900*fx.w; lp.frequency.value=180+depth;
+    const lfo=ctx.createOscillator(); lfo.type="sine"; lfo.frequency.value=1.2+(fx.wr==null?.5:fx.wr)*9;
+    const lg=ctx.createGain(); lg.gain.value=depth; lfo.connect(lg); lg.connect(lp.frequency); lfo.start(t); nodes.push(lfo);
+    node.connect(lp); node=lp; }
+  if(fx.wa){ const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.Q.value=4.5;
+    const len=Math.max(.12,Math.min(dur,.15+fx.wa*1.4));
+    lp.frequency.setValueAtTime(240,t); lp.frequency.exponentialRampToValueAtTime(5200,t+len);
+    node.connect(lp); node=lp; }
+  if(fx.r||fx.c){ const g=ctx.createGain(); g.gain.setValueAtTime(1,t);
+    if(fx.r){ const rate=16+18*(fx.rr==null?.5:fx.rr), nb=1+Math.round((fx.rb==null?.5:fx.rb)*4);
+      const floor=(1-(fx.rg==null?.5:fx.rg))*.35, chopFloor=.06, p=1/rate, span=Math.max(.35,dur), gap=.07;
+      /* bursts shrink: len_i = L0*(1-.28*i); they and the gaps fill the note */
+      let sum=0; for(let i=0;i<nb;i++) sum+=Math.max(.2,1-.28*i);
+      const L0=Math.max(.08,(span-gap*(nb-1))/sum); let tt=t;
+      for(let i=0;i<nb;i++){ const L=L0*Math.max(.2,1-.28*i), nChop=Math.max(2,Math.round(L/p));
+        for(let c=0;c<nChop;c++){ const pos=(c+.5)/nChop, lvl=.28+.72*Math.pow(Math.sin(Math.PI*pos),.8), a=tt+c*p;
+          g.gain.setValueAtTime(chopFloor,a); g.gain.linearRampToValueAtTime(lvl,a+.004);
+          g.gain.setValueAtTime(lvl,a+p*.55); g.gain.linearRampToValueAtTime(chopFloor,a+p*.55+.004); }
+        tt+=L; if(i<nb-1){ g.gain.setValueAtTime(floor,tt+.004); g.gain.setValueAtTime(floor,tt+gap-.004); tt+=gap; } }
+      g.gain.setValueAtTime(1,tt+.004); }
+    if(fx.c){ const at=t+Math.max(.03,dur*Math.max(.05,Math.min(1,fx.c)));
+      g.gain.setValueAtTime(g.gain.value===undefined?1:1,at); g.gain.linearRampToValueAtTime(0,at+.006); g.gain.setValueAtTime(0,at+60); }
+    node.connect(g); node=g; }
+  return node;
+}
+/* α1.2 one echo: the same note again, quieter, two or three times. the copies are told
+   to fade so a held sound still ends; they are never handed back, they end on their own */
+function fxEcho(id,midi,sh,fx,dur,vol,from,t){
+  if(!fx||!fx.e||fx._echo) return;
+  const n=fx.e>.5?3:2, gap=Math.max(.13,Math.min(.5,dur*.7)), lvl=.25+.4*fx.e;
+  for(let k=1;k<=n;k++) voice(id,midi,sh,{...fx,e:0,_echo:1,f:Math.max(fx.f||0,.55)},dur,vol*Math.pow(lvl,k),from,t+gap*k);
+}
+const FX_ON=["v","s","f","b","t","r","w","wa","st","sl","h","c","e"];
+const fxAny=fx=>!!fx&&FX_ON.some(k=>!!fx[k]);
 /* from = the note before this one in the same line: {d: semitones from it, gap: ms
    between its end and this start}. auto-tune reads it; nothing else does. */
 /* 0.26: `when` is a time on the audio clock. play() books every note a moment
@@ -1727,7 +1983,7 @@ function voice(id,midi,sh,fx,dur,vol,from,when){
   const nodes=[];
   const addSrc=(h,gain)=>{ const src=ctx.createBufferSource(); src.buffer=h.buf; src.playbackRate.value=h.rate;
     const g=ctx.createGain(); g.gain.value=gain; src.connect(g); g.connect(hub);
-    fxPitch(src.playbackRate,h.rate,fx,t,dur,nodes,false); pitchShape(src.playbackRate,h.rate,sh,t,dur,false,from,nodes);
+    fxPitch(src.playbackRate,h.rate,fx,t,dur,nodes,false,from); pitchShape(src.playbackRate,h.rate,sh,t,dur,false,from,nodes);
     nodes.push(src); src.start(t); return src; };
   addSrc(hit,1);
   /* harmonies: the same recording again at the fifth, the octave, the third, the
@@ -1745,9 +2001,11 @@ function voice(id,midi,sh,fx,dur,vol,from,when){
     node.connect(ls); node=ls;
   }
   node=colour(node,sh,t,nodes,dur);
+  node=fxTone(node,fx,t,dur,nodes);
   node.connect(out);
   wire(out,sh);
   const atk=env(out,sh,t,.95*vol/(1+(sh.harm>.03?sh.harm*.6:0)),I.hold); fxGain(out,t,.95*vol,fx,dur,atk);
+  fxEcho(id,midi,sh,fx,dur,vol,from,t);
   return {out,nodes,sh};
 }
 function release(v){
@@ -2446,7 +2704,7 @@ function bindSong(){
   });
 }
 function paint(){
-  const el=$("panel");
+  const el=$("panel"); bandSeq=0;
   const old=el.querySelector(".panel-rest"); if(old&&paintedView) panelScroll[paintedView]=old.scrollTop;
   const oldTl=$("tl"); if(oldTl){ panelScroll.tlX=oldTl.scrollLeft; panelScroll.tlY=oldTl.scrollTop; }
   el.dataset.view=view;
@@ -2459,6 +2717,7 @@ function paint(){
   if(view==="layers"||view==="shape"){ drawScope(); bindScopeDrag(); if(playing) scopeOn(); }
   if(view==="song"){ bindSong(); if(playing) scopeOn(); const tl=$("tl"); if(tl){ if(panelScroll.tlX) tl.scrollLeft=panelScroll.tlX; if(panelScroll.tlY) tl.scrollTop=panelScroll.tlY; } }
   const nu=el.querySelector(".panel-rest"); if(nu) nu.scrollTop=panelScroll[view]||0;
+  lightFaders(el);
   paintedView=view;
 }
 $("panel").addEventListener("click",e=>{
@@ -2506,10 +2765,64 @@ $("panel").addEventListener("click",e=>{
   if(ln){ const r=ln.getBoundingClientRect(); selLane=ln.dataset.lane; selB=null;
     songCur=snap16(Math.floor((e.clientX-r.left)/songBW*16)/16); paint(); return; }
 });
-function foldBox(id,title,inner){
-  return '<div class="fold'+(folds[id]?" open":"")+'" data-f="'+id+'"><button type="button" class="fold-h" data-fold="'+id+'">'+esc(title)+'</button>'+
-    (folds[id]?'<div class="fold-b">'+inner+'</div>':'')+'</div>';
+/* ---- α1.2: a fold is a bay ---------------------------------------------------
+   a chamfered, pinned frame; a band of Matherin glyphs down its left edge (the
+   Rosh'Aran towers - an homage, the apps sit outside the universe for now); the
+   content in a black console well with a prompt line that says where you are. */
+const BAND_GLYPHS=["q","x","Q","q","X","x","q"];
+let bandSeq=0;
+function bandHtml(lit){
+  return '<i class="band" aria-hidden="true">'+BAND_GLYPHS.map((g,i)=>'<b'+(i===lit?' class="lit"':'')+'>'+g+'</b>').join("")+'</i>';
 }
+function promptLine(title){
+  const l=layers.find(x=>x.id===selL), s=curShape(), st=(s&&s.st)||[];
+  const parts=[view==="layers"?"layers":view==="shape"?"shape":view];
+  parts.push(String(title).toLowerCase());
+  if(l) parts.push(IN(l.inst).n.toLowerCase());
+  if(view==="shape"&&st.length) parts.push(st.length+(st.length===1?" stamp":" stamps"));
+  return '<div class="prm" aria-hidden="true"><b>&gt;</b> '+parts.map(esc).join(' <b>/</b> ')+'<i class="cur"></i></div>';
+}
+function foldBox(id,title,inner){
+  const lit=(bandSeq++)%BAND_GLYPHS.length;
+  return '<div class="fold bay'+(folds[id]?" open":"")+'" data-f="'+id+'"><i class="face" aria-hidden="true"></i><i class="pins" aria-hidden="true"></i>'+bandHtml(lit)+
+    '<button type="button" class="fold-h" data-fold="'+id+'"><span class="cut">'+cut(title)+'</span></button>'+
+    (folds[id]?'<div class="fold-b well">'+promptLine(title)+inner+'</div>':'')+'</div>';
+}
+/* cut lettering: the signature's language - straight strokes, mitred joins, no
+   curves. A-Z and a few marks on a 12x16 grid; anything else falls back to text. */
+const CUT={
+  A:"M0,16 6,0 12,16 M2.5,10 9.5,10", B:"M0,0 V16 H8 L11,13 V10 L8,8 H0 M8,8 L10.5,6 V2 L8,0 H0",
+  C:"M12,3 9,0 H3 L0,3 V13 L3,16 H9 L12,13", D:"M0,0 H8 L12,4 V12 L8,16 H0 Z", E:"M12,0 H0 V16 H12 M0,8 H9",
+  F:"M12,0 H0 V16 M0,8 H9", G:"M12,3 9,0 H3 L0,3 V13 L3,16 H9 L12,13 V9 H7", H:"M0,0 V16 M0,8 H12 M12,0 V16",
+  I:"M3,0 H9 M6,0 V16 M3,16 H9", J:"M12,0 V13 L9,16 H3 L0,13 V10", K:"M0,0 V16 M12,0 L0,9 M4,6 L12,16", L:"M0,0 V16 H12",
+  M:"M0,16 V0 L7,9 L14,0 V16", N:"M0,16 V0 L12,16 V0", O:"M3,0 H9 L12,3 V13 L9,16 H3 L0,13 V3 Z", P:"M0,16 V0 H9 L12,3 V7 L9,10 H0",
+  Q:"M3,0 H9 L12,3 V13 L9,16 H3 L0,13 V3 Z M8,12 L13,17", R:"M0,16 V0 H9 L12,3 V7 L9,10 H0 M6,10 L12,16",
+  S:"M12,3 9,0 H3 L0,3 V6 L3,8 H9 L12,10 V13 L9,16 H3 L0,13", T:"M0,0 H12 M6,0 V16", U:"M0,0 V13 L3,16 H9 L12,13 V0",
+  V:"M0,0 6,16 12,0", W:"M0,0 3,16 7,6 11,16 14,0", X:"M0,0 12,16 M12,0 0,16", Y:"M0,0 6,7 12,0 M6,7 V16", Z:"M0,0 H12 L0,16 H12",
+  "0":"M3,0 H9 L12,3 V13 L9,16 H3 L0,13 V3 Z M0,13 12,3", "1":"M3,3 6,0 V16 M3,16 H9", "2":"M0,3 3,0 H9 L12,3 V6 L0,16 H12",
+  "3":"M0,0 H12 L6,7 H8 L12,10 V13 L9,16 H3 L0,13", "4":"M9,16 V0 L0,11 H12", "5":"M12,0 H0 V7 H9 L12,10 V13 L9,16 H3 L0,13",
+  "6":"M12,0 H3 L0,3 V13 L3,16 H9 L12,13 V10 L9,7 H0", "7":"M0,0 H12 L4,16", "8":"M3,0 H9 L12,3 V6 L9,8 H3 L0,10 V13 L3,16 H9 L12,13 V10 L9,8 M3,8 L0,6 V3 Z",
+  "9":"M12,9 H3 L0,6 V3 L3,0 H9 L12,3 V13 L9,16 H0", "-":"M2,8 H10", ".":"M5,13 H7 V16 H5 Z", "'":"M6,0 V4", ":":"M5,4 H7 V6 H5 Z M5,12 H7 V14 H5 Z"
+};
+const CUT_W={M:14,W:14," ":5,"-":12,".":12,"'":12,":":12};
+function cut(text,h){
+  h=h||11; const T=String(text||""); let x=0; const g=[]; const sc=h/16;
+  for(const ch of T){ const u=ch.toUpperCase();
+    if(ch===" "){ x+=CUT_W[" "]+2; continue; }
+    const d=CUT[u]; if(!d) return esc(T);
+    g.push('<path transform="translate('+x+',0)" d="'+d+'"/>'); x+=(CUT_W[u]||12)+3.5; }
+  const w=Math.max(1,x-3.5);
+  return '<svg class="cutsvg" viewBox="-1 -1 '+(w+2)+' 18" width="'+((w+2)*sc).toFixed(1)+'" height="'+(18*sc).toFixed(1)+'" aria-hidden="true" focusable="false">'+
+    '<g fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="miter" stroke-linecap="square">'+g.join("")+'</g></svg><span class="cut-t">'+esc(T)+'</span>';
+}
+/* faders: the lit filament is the part of the rail behind the head. WebKit cannot draw
+   it on its own, so the rail reads --p from the input */
+function lightFaders(root){
+  (root||document).querySelectorAll('input[type=range]').forEach(el=>{
+    const mn=+el.min||0, mx=+el.max||100, v=+el.value||0;
+    el.style.setProperty("--p",(Math.max(0,Math.min(1,(v-mn)/(mx-mn)))*100).toFixed(1)+"%"); });
+}
+document.addEventListener("input",e=>{ if(e.target&&e.target.type==="range") lightFaders(e.target.parentNode); },true);
 function scopeRail(l){
   if(!l) return '';
   const tw=trimWindow(l), I=IN(l.inst), nPick=selNs.length;
@@ -2658,8 +2971,9 @@ function touchStrip(l){
     '<span class="lbl" style="flex:1;color:var(--blue)">'+esc(noteLabel(l,e))+'</span>'+
     '<button class="qm" data-nn="1" aria-label="Next note">&#9654;</button>'+
     '<button class="qm" data-help="touches" aria-label="What touches are">?</button></div>'+
-    '<div class="chips">'+DB.TOUCHES.filter(t=>!(e.pad&&t.k!=="f"&&t.k!=="s")).map(t=>'<button class="btn sm'+(on(t.k)?" on":"")+'" data-tk="'+t.k+'">'+t.n+'</button>').join("")+'</div>'+
+    '<div class="chips sw">'+DB.TOUCHES.filter(t=>!(e.pad&&t.k!=="f"&&t.k!=="s")).map(t=>'<button class="btn sm'+(on(t.k)?" on":"")+'" data-tk="'+t.k+'" role="switch" aria-checked="'+(on(t.k)?"true":"false")+'"><i class="led"></i>'+t.n+'</button>').join("")+'</div>'+
     (fx.v?vibStrip(fx):'')+
+    Object.keys(DB.TOUCH_KNOBS).filter(k=>fx[k]).map(k=>knobStrip(k,fx)).join("")+
     '<div class="sl" style="margin:8px 0"><div class="st"><span>Amount'+(fx.v?' (swell, fade, bend)':'')+'</span><span class="sv" id="svAmt">'+Math.round(touchAmt*100)+'%</span></div>'+
     '<input type="range" min="5" max="100" step="1" id="amt" value="'+Math.round(touchAmt*100)+'" aria-label="Amount"></div>'+
     '<div class="row"><button class="btn sm" data-act="hearnote">hear this note</button>'+
@@ -2671,22 +2985,49 @@ function setTouch(e,k,onOff){
   if(k==="bu") fx.b=onOff?touchAmt:0; else if(k==="bd") fx.b=onOff?-touchAmt:0;
   else if(k==="t") fx.t=onOff?1:0;
   else if(k==="v"){ fx.v=onOff?.45:0; if(onOff&&fx.vr==null) fx.vr=.5; }
+  /* α1.2: the new touches switch on with their own sensible knobs, kept when switched off
+     so switching back on remembers them (the on/off is the main key) */
+  else if(k==="r"){ fx.r=onOff?1:0; if(onOff){ if(fx.rr==null) fx.rr=.5; if(fx.rb==null) fx.rb=.5; if(fx.rg==null) fx.rg=.5; } }
+  else if(k==="w"){ fx.w=onOff?(fx.w||.7):0; if(onOff&&fx.wr==null) fx.wr=.5; }
+  else if(k==="wa") fx.wa=onOff?(fx.wa||.6):0;
+  else if(k==="st") fx.st=onOff?(fx.st||.35):0;
+  else if(k==="sl") fx.sl=onOff?(fx.sl||.5):0;
+  else if(k==="h") fx.h=onOff?1:0;
+  else if(k==="c") fx.c=onOff?(fx.c||.5):0;
+  else if(k==="e") fx.e=onOff?(fx.e||.6):0;
   else fx[k]=onOff?touchAmt:0;
   e.fx=fxAny(fx)?fx:undefined;
 }
 function scaleTouch(e){ const fx=e.fx; if(!fx) return;
   ["s","f"].forEach(k=>{ if(fx[k]) fx[k]=touchAmt; }); if(fx.b) fx.b=Math.sign(fx.b)*touchAmt; }
 /* the three words. speed is the thing that changes the word; width follows a little */
-const VIB=[{n:"vibrate",vr:.12,v:.6},{n:"viBRate",vr:.5,v:.45},{n:"viBRRRate",vr:.92,v:.3}];
-const vibWord=vr=>vr<.33?"vibrate":vr<.67?"viBRate":"viBRRRate";
+/* α1.2: "wooow" is the fourth word - the slow, wide sway (a warped record) */
+const VIB=[{n:"wooow",vr:.02,v:.95},{n:"vibrate",vr:.18,v:.6},{n:"viBRate",vr:.5,v:.45},{n:"viBRRRate",vr:.92,v:.3}];
+const vibWord=vr=>vr<.1?"wooow":vr<.34?"vibrate":vr<.67?"viBRate":"viBRRRate";
 function vibStrip(fx){
   const vr=fx.vr==null?.5:fx.vr;
-  return '<div class="vib"><div class="lbl" style="margin:8px 0 5px;color:var(--blue)">Vibrato</div>'+
-    '<div class="row" style="margin-bottom:6px">'+VIB.map((p,i)=>'<button class="btn sm'+(Math.abs(vr-p.vr)<.12?" on":"")+'" data-vp="'+i+'">'+p.n+'</button>').join("")+'</div>'+
+  return '<div class="vib"><div class="sec">Vibrato<i class="mth">x</i></div>'+
+    '<div class="row" style="margin-bottom:6px">'+VIB.map((p,i)=>'<button class="btn sm'+(Math.abs(vr-p.vr)<.09?" on":"")+'" data-vp="'+i+'">'+p.n+'</button>').join("")+'</div>'+
     '<div class="sl" style="margin:6px 0"><div class="st"><span>Speed</span><span class="sv" id="svFxvr">'+vibWord(vr)+' \u00b7 '+(3.2+vr*6.5).toFixed(1)+'/s</span></div>'+
     '<input type="range" min="0" max="100" step="1" data-fx="vr" value="'+Math.round(vr*100)+'" aria-label="Vibrato speed"></div>'+
     '<div class="sl" style="margin:6px 0"><div class="st"><span>Width</span><span class="sv" id="svFxv">'+Math.round(fx.v*100)+'%</span></div>'+
     '<input type="range" min="5" max="100" step="1" data-fx="v" value="'+Math.round(fx.v*100)+'" aria-label="Vibrato width"></div></div>';
+}
+/* α1.2: the knobs a switched-on touch carries. every one is a plain 0..1 in fx */
+function knobStrip(k,fx){
+  const T=DB.TOUCHES.find(t=>t.k===k), K=DB.TOUCH_KNOBS[k];
+  return '<div class="vib"><div class="sec">'+esc(T.n)+'<i class="mth">'+(k.length>1?"x":"q")+'</i></div>'+
+    K.map(d=>{ const v=fx[d.k]==null?.5:fx[d.k];
+      return '<div class="sl" style="margin:6px 0"><div class="st"><span>'+esc(d.n)+'</span><span class="sv" id="svFx'+d.k+'">'+knobWord(d,v)+'</span></div>'+
+        '<input type="range" min="0" max="100" step="1" data-fx="'+d.k+'" value="'+Math.round(v*100)+'" aria-label="'+esc(T.n+" "+d.n)+'"></div>'; }).join("")+'</div>';
+}
+function knobWord(d,v){
+  if(d.k==="rb") return String(1+Math.round(v*4))+(v<.13?" burst":" bursts");
+  if(d.k==="st") return String(1+Math.round(v*11))+(v<.05?" step":" steps");
+  if(d.k==="rr") return (16+18*v).toFixed(0)+"/s";
+  if(d.k==="wr") return (1.2+v*9).toFixed(1)+"/s";
+  if(d.k==="e") return v>.5?"three":"twice";
+  return v<=.02?d.lo:v>=.98?d.hi:Math.round(v*100)+"%";
 }
 /* one voice, outside the transport: let go after ms, or when stop() sweeps. */
 function hear(v,ms){ if(!v) return; auxVoices.push(v);
@@ -2707,18 +3048,16 @@ function paintShape(){
     (l?'<div class="sl"><div class="st"><span>Layer volume</span><span class="sv" id="svLayVol">'+Math.round(layVol(l)*100)+'%</span>'+
     '<button class="qm" data-help="layVol" aria-label="What layer volume does">?</button></div>'+
     '<input type="range" min="0" max="100" step="1" id="layVol" value="'+Math.round(layVol(l)*100)+'" aria-label="Layer volume"></div>':'')+
-    '<div class="grid3" style="margin-bottom:8px">'+
-    DB.PRESETS.map((p,i)=>'<button class="btn sm zap" data-pre="'+i+'">'+esc(p.n)+'</button>').join("")+
-    '</div>'+
+    stackBox()+
     DB.SHAPE_GROUPS.map((g,i)=>{
       const id=["start","stay","space","colour","machine"][i]||("g"+i);
       const sl=g.ids.map(k=>DB.SLIDERS.find(s=>s.k===k)).filter(Boolean);
-      return foldBox(id,g.n, sl.map(s=>'<div class="sl">'+
+      return foldBox(id,g.n, '<div class="glass">'+sl.map(s=>'<div class="sl">'+
           '<div class="st"><span>'+esc(s.n)+'</span>'+
           '<span class="sv" id="sv_'+s.k+'"></span>'+
           '<button class="qm" data-help="'+s.h+'" aria-label="What '+esc(s.n)+' does">?</button></div>'+
           '<input type="range" min="0" max="100" step="1" id="sk_'+s.k+'" data-k="'+s.k+'" '+
-          'aria-label="'+esc(s.n)+'"></div>').join(""));
+          'aria-label="'+esc(s.n)+'"></div>').join("")+'</div>');
     }).join("")+
     '<div class="row" style="margin-top:6px"><button class="btn sm go" data-act="hearit">'+(l&&picked(l).length?(picked(l).length===1?"Hear this note":"Hear these notes"):(l&&l.ev.length?"Hear the layer like this":"Hear it"))+'</button>'+
     (l&&picked(l).length?'<button class="btn sm" data-act="undress">back to the layer\'s shape</button>':'')+'</div></div>';
@@ -2737,27 +3076,71 @@ function curShape(){
   if(notes.length) return noteSh(l,notes[0]);
   return l?l.sh:shape;
 }
-function setShape(k,v){
+/* ---- α1.2: the stamp stack ----------------------------------------------------
+   a shape carries two extra keys: st = the stamps on it, in order (indexes into
+   STAMPS), and you = the sliders you moved by hand. The slider values themselves
+   stay plain keys, so the audio never learned anything new. Rules he set:
+   stamps in order, later wins on a shared slider; a slider you move is yours until
+   a later stamp sets it; x takes a stamp off and its values fall back to whatever
+   is left under them; "As it is" clears the whole stack. */
+const cloneSh=sh=>({...sh,st:(sh.st||[]).slice(),you:{...(sh.you||{})}});
+function restack(sh){
+  const st=(sh.st||[]).filter(i=>STAMPS[i]), you=sh.you||{};
+  const out={...DB.SHAPE0}; st.forEach(i=>Object.assign(out,STAMPS[i].s)); Object.assign(out,you);
+  out.st=st; out.you={...you}; return out;
+}
+function stampOn(sh,i){
+  sh=cloneSh(sh);
+  if(!STAMPS[i]||i===0){ sh.st=[]; sh.you={}; return restack(sh); }
+  sh.st=sh.st.filter(x=>x!==i); sh.st.push(i);
+  Object.keys(STAMPS[i].s).forEach(k=>{ delete sh.you[k]; });
+  return restack(sh);
+}
+function stampOff(sh,pos){ sh=cloneSh(sh); sh.st.splice(pos,1); return restack(sh); }
+function stampSet(sh,k,v){ sh=cloneSh(sh); sh[k]=v; sh.you[k]=v; return sh; }
+/* who set a value: 0 = nobody (rest), -1 = you, n = the n-th stamp on the stack (1-based) */
+function shOwner(sh,k){
+  if(sh.you&&sh.you[k]!=null) return -1;
+  const st=sh.st||[]; for(let p=st.length-1;p>=0;p--){ const S=STAMPS[st[p]]; if(S&&S.s[k]!=null) return p+1; }
+  return 0;
+}
+function withShape(fn){
   const l=layers.find(x=>x.id===selL);
   const notes=l?picked(l):[];
-  if(notes.length){ notes.forEach(e=>{ e.sh={...noteSh(l,e),[k]:v}; }); return; }
-  if(l){ l.sh={...l.sh,[k]:v}; } else { shape={...shape,[k]:v}; }
+  if(notes.length){ notes.forEach(e=>{ e.sh=fn(noteSh(l,e)); }); return; }
+  if(l) l.sh=fn(l.sh); else shape=fn(shape);
 }
+function setShape(k,v){ withShape(sh=>stampSet(sh,k,v)); }
 function syncSliders(){
   const s=curShape();
   DB.SLIDERS.forEach(d=>{
     const el=$("sk_"+d.k); if(!el) return;
     el.value=Math.round((s[d.k]||0)*100);
-    const v=s[d.k]||0;
-    $("sv_"+d.k).textContent=v<=.02?d.lo:v>=.98?d.hi:Math.round(v*100)+"%";
+    const v=s[d.k]||0, o=shOwner(s,d.k);
+    $("sv_"+d.k).innerHTML=(v<=.02?d.lo:v>=.98?d.hi:Math.round(v*100)+"%")+(o>0?' <i class="own">\u00b7 '+(o<10?"0"+o:o)+'</i>':o<0?' <i class="own you">\u00b7 you</i>':'');
   });
+  lightFaders($("panel"));
+}
+/* the stamp stack as drawn: slots in order, an empty slot that opens the pool */
+let poolOpen=false;
+function stackBox(){
+  const s=curShape(), st=s.st||[];
+  return '<div class="sec">Stamps<i class="mth">q</i><button class="qm" data-help="preset" aria-label="What stamps are">?</button></div>'+
+    '<div class="stack">'+st.map((i,p)=>'<span class="slot stamp"><i class="led"></i>'+esc(STAMPS[i].n)+'<b class="n">'+(p<9?"0"+(p+1):p+1)+'</b>'+
+      '<button class="x" data-unstamp="'+p+'" aria-label="Take '+esc(STAMPS[i].n)+' off">\u00d7</button></span>').join("")+
+    '<button class="slot empty'+(poolOpen?" on":"")+'" data-act="pool">'+(poolOpen?"\u2212 close":"+ stamp")+'</button></div>'+
+    (poolOpen?'<div class="pool">'+STAMPS.map((p,i)=>'<button class="pchip'+(i===0?" clear":"")+'" data-pre="'+i+'">'+esc(p.n)+'</button>').join("")+'</div>':'');
 }
 $("panel").addEventListener("input",e=>{
   const fxr=e.target.closest("[data-fx]");
   if(fxr){ const l=layers.find(x=>x.id===selL), ev=l&&l.ev[selN]; if(!ev||!ev.fx) return;
     const k=fxr.dataset.fx, v=Math.max(0,Math.min(1,(+fxr.value||0)/100)); ev.fx[k]=k==="v"?Math.max(.05,v):v;
-    $("svFx"+k).textContent=k==="vr"?vibWord(v)+" \u00b7 "+(3.2+v*6.5).toFixed(1)+"/s":Math.round(ev.fx.v*100)+"%";
-    document.querySelectorAll("[data-vp]").forEach((b,i)=>b.classList.toggle("on",k==="vr"&&Math.abs(v-VIB[i].vr)<.12)); save(); return; }
+    /* α1.2: the same knob on every picked note */
+    picked(l).forEach(o=>{ if(o!==ev&&o.fx) o.fx[k]=ev.fx[k]; });
+    const kd=Object.values(DB.TOUCH_KNOBS).flat().find(d=>d.k===k);
+    $("svFx"+k).textContent=k==="vr"?vibWord(v)+" \u00b7 "+(3.2+v*6.5).toFixed(1)+"/s":k==="v"?Math.round(ev.fx.v*100)+"%":kd?knobWord(kd,ev.fx[k]):Math.round(v*100)+"%";
+    lightFaders($("panel"));
+    document.querySelectorAll("[data-vp]").forEach((b,i)=>b.classList.toggle("on",k==="vr"&&Math.abs(v-VIB[i].vr)<.09)); save(); return; }
   if(e.target.id==="amt"){ touchAmt=Math.max(.05,Math.min(1,(+e.target.value||60)/100)); $("svAmt").textContent=Math.round(touchAmt*100)+"%";
     const l=layers.find(x=>x.id===selL); if(l){ picked(l).forEach(scaleTouch); save(); } return; }
   const r=e.target.closest("[data-k]");
@@ -2798,12 +3181,15 @@ $("panel").addEventListener("click",e=>{
   const h=e.target.closest("[data-help]");
   if(h){ openHelp(h.dataset.help); return; }
   const pre=e.target.closest("[data-pre]");
-  if(pre){ const p=DB.PRESETS[+pre.dataset.pre];
-    const l=layers.find(x=>x.id===selL);
-    const notes=l?picked(l):[];
-    if(notes.length) notes.forEach(e=>{ e.sh={...p.s}; });
-    else if(l) l.sh={...p.s}; else shape={...p.s};
-    syncSliders(); save(); toast(p.n); hearIt(); return; }
+  if(pre){ const i=+pre.dataset.pre, p=STAMPS[i]; if(!p) return;
+    snap(); withShape(sh=>stampOn(sh,i));
+    paint(); save(); toast(i===0?"stack cleared":p.n+" stamped"); hearIt(); return; }
+  const un=e.target.closest("[data-unstamp]");
+  if(un){ const pos=+un.dataset.unstamp; let nm="";
+    snap(); withShape(sh=>{ const i=(sh.st||[])[pos]; nm=STAMPS[i]?STAMPS[i].n:""; return stampOff(sh,pos); });
+    paint(); save(); toast(nm?nm+" off":"stamp off"); hearIt(); return; }
+  const pl=e.target.closest("[data-act=pool]");
+  if(pl){ poolOpen=!poolOpen; paint(); return; }
   const nn=e.target.closest("[data-nn]");
   if(nn){ const l=layers.find(x=>x.id===selL); if(!l||!l.ev.length) return;
     const order=l.ev.map((x,i)=>i).sort((a,b)=>l.ev[a].start-l.ev[b].start);
@@ -3325,7 +3711,7 @@ function humFinish(h){
   for(let i=0;i<n;i++){ const a=Math.floor(i*ratio), b=Math.min(total,Math.floor((i+1)*ratio)); let s=0; for(let j=a;j<b;j++) s+=all[j]; pcm[i]=s/Math.max(1,b-a); }
   const notes=humNotes(pcm,HUM_SR);
   const id=(inst==="drums")?"ooh":inst;
-  const l=blankLayer(); l.inst=id; l.sh={...shape};
+  const l=blankLayer(); l.inst=id; l.sh=cloneSh(shape);
   l.ev=notes.map(x=>({midi:x.midi,pad:null,start:x.start,dur:x.dur}));
   l.hum={k:newId(),sr:HUM_SR,n:n};
   layers.push(l); selL=l.id; selN=-1; selNs=[];
@@ -3431,7 +3817,14 @@ function kbFold(){
 }
 
 /* =========================== SHEETS ==================================== */
-function sheet(html){ $("sheetIn").innerHTML=html; $("sheet").classList.remove("hidden"); }
+function sheet(html){
+  /* α1.2: a sheet is a bay too. its h2 becomes cut lettering with a prompt line under it */
+  const m=/^<h2>([^<]*)<\/h2>/.exec(html);
+  if(m){ const t=m[1].replace(/&amp;/g,"&");
+    html='<h2 class="cut">'+cut(t,13)+'</h2><div class="prm" aria-hidden="true"><b>&gt;</b> '+esc(t.toLowerCase())+'<i class="cur"></i></div>'+html.slice(m[0].length); }
+  $("sheetIn").innerHTML='<i class="pins" aria-hidden="true"></i>'+bandHtml(2)+'<div class="sheet-w">'+html+'</div>';
+  $("sheet").classList.remove("hidden"); lightFaders($("sheetIn"));
+}
 function closeSheet(){ $("sheet").classList.add("hidden"); }
 $("sheet").addEventListener("click",e=>{ if(e.target.id==="sheet") closeSheet(); });
 $("sheetIn").addEventListener("click",e=>{
@@ -3579,7 +3972,7 @@ function loadAll(){
 function packEv(ev){
   return ev.map(e=>{ const a=[e.pad?DB.PADS.findIndex(p=>p.id===e.pad):e.midi,e.start,e.dur,e.pad?1:0];
     const hasSh=e.sh&&typeof e.sh==="object", hasRd=e.rawDur!=null&&Math.round(e.rawDur)!==e.dur;
-    if(fxAny(e.fx)) a.push([e.fx.v||0,e.fx.s||0,e.fx.f||0,e.fx.b||0,e.fx.t?1:0,e.fx.vr==null?.5:e.fx.vr].map(x=>Math.round(x*100)/100));
+    if(fxAny(e.fx)) a.push(packFx(e.fx));
     else if(hasSh||hasRd) a.push(null);
     if(hasSh) a.push(e.sh); else if(hasRd) a.push(null);
     if(hasRd) a.push(Math.round(e.rawDur)); return a; });
@@ -3686,7 +4079,14 @@ function readSong(raw,L){ const S=[], ids=new Set(L.map(l=>l.id));
     S.push({id:newId(),lay:b[0],bar:snap16(+b[1]||0),reps:Math.max(1,Math.min(64,b[2]|0||1))}); });
   return S; }
 const c01=x=>Math.max(0,Math.min(1,+x||0));
-function readFx(a){ const fx={v:c01(a[0]),s:c01(a[1]),f:c01(a[2]),b:Math.max(-1,Math.min(1,+a[3]||0)),t:a[4]?1:0,vr:a[5]==null?.5:c01(a[5])}; return fxAny(fx)?fx:undefined; }
+/* SCR11: the fx array is 18 numbers. the first six are SCR8's, the rest are α1.2's
+   touches; an old code stops at six and reads the same as before. */
+const FX_ORDER=["v","s","f","b","t","vr","r","rr","rb","rg","w","wr","wa","st","sl","h","c","e"];
+function packFx(fx){ const a=FX_ORDER.map(k=>k==="t"||k==="r"||k==="h"?(fx[k]?1:0):k==="vr"?(fx.vr==null?.5:fx.vr):(fx[k]||0)).map(x=>Math.round(x*100)/100);
+  let n=a.length; while(n>6&&!a[n-1]) n--; return a.slice(0,n); }
+function readFx(a){ const fx={v:c01(a[0]),s:c01(a[1]),f:c01(a[2]),b:Math.max(-1,Math.min(1,+a[3]||0)),t:a[4]?1:0,vr:a[5]==null?.5:c01(a[5])};
+  FX_ORDER.slice(6).forEach((k,i)=>{ const x=a[6+i]; if(x==null) return; fx[k]=(k==="r"||k==="h")?(x?1:0):c01(x); });
+  return fxAny(fx)?fx:undefined; }
 const clampBpm=v=>{ v=Math.round(+v); return isFinite(v)&&v>0?Math.min(DB.BPM_MAX,Math.max(DB.BPM_MIN,v)):DB.BPM0; };
 function adopt(o,label){
   if(playing) stop();
@@ -3937,8 +4337,10 @@ function musicXml(){
           if(n.pad){ const P=DB.PADS.find(q=>q.id===n.pad)||DB.PADS[0]; s+='<instrument id="'+pid+'-I'+P.m+'"/>'; }
           s+='<type>'+pc.type+'</type>'+(pc.dot?'<dot/>':'');
           if(n.pad) s+='<notehead>'+(/hh|crash/.test(n.pad)?'x':'normal')+'</notehead>';
-          const fx=n.fx||{}, orn=(fx.t?'<trill-mark/>':'')+(fx.v?'<wavy-line type="start"/>':'');
-          if(tieE||tieS||orn) s+='<notations>'+(tieE?'<tied type="stop"/>':'')+(tieS?'<tied type="start"/>':'')+(orn?'<ornaments>'+orn+'</ornaments>':'')+'</notations>';
+          const fx=n.fx||{}, orn=(fx.t?'<trill-mark/>':'')+(fx.v?'<wavy-line type="start"/>':'')+(fx.r?'<tremolo type="single">3</tremolo>':'');
+          /* α1.2: slide from = scoop (from below) or plop (from above); stairs = falloff; choke = staccatissimo; hiccup = a doit is the nearest mark */
+          const art=(fx.sl?((n.from&&n.from.d>0)?'<scoop/>':'<plop/>'):'')+(fx.st?'<falloff/>':'')+(fx.c?'<staccatissimo/>':'')+(fx.h?'<doit/>':'');
+          if(tieE||tieS||orn||art) s+='<notations>'+(tieE?'<tied type="stop"/>':'')+(tieS?'<tied type="start"/>':'')+(orn?'<ornaments>'+orn+'</ornaments>':'')+(art?'<articulations>'+art+'</articulations>':'')+'</notations>';
           if(fx.s&&!ni&&k===0) cur+='<direction placement="below"><direction-type><wedge type="crescendo"/></direction-type></direction>';
           if(fx.f&&!ni&&k===0) cur+='<direction placement="below"><direction-type><wedge type="diminuendo"/></direction-type></direction>';
           cur+=s+'</note>';
@@ -3976,7 +4378,7 @@ function abcOut(){
     tokens(quantize(t.ev)).forEach(tok=>{
       if(tok.rest) line+="z"+tok.units;
       else { const ns=tok.n.map(n=>n.pad?drumPitch(n.pad):abcPitch(n.midi,bar)), fx=tok.n[0].fx||{};
-        line+=(fx.t?"!trill!":"")+(fx.v?"!vibrato!":"")+(fx.s?"!<(!":"")+(fx.f?"!>(!":"")+
+        line+=(fx.t?"!trill!":"")+(fx.v?"!vibrato!":"")+(fx.r?"!roll!":"")+(fx.sl?"!slide!":"")+(fx.st?"!falloff!":"")+(fx.c?"!staccatissimo!":"")+(fx.h?"!doit!":"")+(fx.s?"!<(!":"")+(fx.f?"!>(!":"")+
           (ns.length>1?"["+ns.join("")+"]":ns[0])+tok.units+(tok.tieS?"-":"")+(fx.s?"!<)!":"")+(fx.f?"!>)!":""); }
       line+=" "; pos+=tok.units;
       if(pos%barU===0){ line+="| "; bar={}; bars++; if(bars%4===0) line+="\n"; }
